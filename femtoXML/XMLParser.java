@@ -5,7 +5,7 @@ public class XMLParser<T> implements XMLHandler
 { protected XMLTreeFactory<T> factory; 
   public  XMLParser(XMLTreeFactory<T> factory) { this.factory=factory; }
 
-  protected Stack<Composite<T>>  stack = new Stack<Composite<T>>();
+  protected Stack<XMLComposite<T>>  stack = new Stack<XMLComposite<T>>();
   protected Stack<String>        kinds = new Stack<String>();
   // Invariant: stack.size()==kinds.size()
   

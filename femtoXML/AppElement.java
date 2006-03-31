@@ -1,6 +1,6 @@
    package femtoXML;
    import java.util.*;
-   public class AppElement implements AppTree, Composite<AppTree>, Iterable<AppTree>
+   public class AppElement implements AppTree, XMLComposite<AppTree>, Iterable<AppTree>
    { protected String                kind;
      protected Map<String,String>    attrs;
      protected Vector<AppTree> subtrees = new Vector<AppTree>();

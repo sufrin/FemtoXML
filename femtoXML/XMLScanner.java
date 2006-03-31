@@ -8,7 +8,8 @@ public class XMLScanner
    protected int       lineCount,  // where the current character came from
                        lineNumber; // where the current symbol started
 
-   public class XMLSyntax extends RuntimeException
+   @SuppressWarnings("serial")
+  public class XMLSyntax extends RuntimeException
    { public XMLSyntax(String error) { super(String.format("Line %d: %s", lineNumber, error)); } }
 
    public XMLScanner()                         {  }
@@ -340,6 +341,7 @@ public class XMLScanner
   }
 
   /** An implementation of Map that shows attributes in properly-quoted XML form. */
+  @SuppressWarnings("serial")
   public static class Attributes extends LinkedHashMap<String,String>
   { public String toString()
     { StringBuilder b = new StringBuilder();
