@@ -502,7 +502,7 @@ public class XMLScanner
         b.append(" ");
         b.append(key);
         b.append("='");
-        b.append(unQuote(get(key)));
+        b.append(unQuote(get(key), false));
         b.append("'");
       }
       ;
@@ -511,14 +511,14 @@ public class XMLScanner
   }
 
   /** Re-quote special characters within a string. */
-  public static String unQuote(String s)
+  public static String unQuote(String s, boolean quotespace)
   {
     int len = s.length();
     StringBuilder quoted = null;
     for (int i = 0; i < len; i++)
     {
       char c = s.charAt(i);
-      if (c == ' ' || c == '&' || c == '>' || c == '<' || c == '"' || c == '\''
+      if ((c == ' ' && quotespace) || c == '&' || c == '>' || c == '<' || c == '"' || c == '\''
           || (int) c >= 128)
       {
         quoted = new StringBuilder();
@@ -533,15 +533,14 @@ public class XMLScanner
       {
         char c = s.charAt(i);
         quoted
-              .append((c == '&' ? "&amp;"
-                               : c == '>' ? "&gr;"
-                                         : c == '<' ? "&ls;"
-                                                   : c == '"' ? "&quot;"
-                                                             : c == '\'' ? "&apos;"
-                                                                        : c == ' ' ? "&nbsp;"
-                                                                                  : (int) c > 128 ? ("&#"
-                                                                                                     + (int) c + ";")
-                                                                                                 : ("" + c)));
+              .append(( c == '&' ? "&amp;"
+                      : c == '>' ? "&gr;"
+                      : c == '<' ? "&ls;"
+                      : c == '"' ? "&quot;"
+                      : c == '\'' ? "&apos;"
+                      : (c == ' ' && quotespace) ? "&nbsp;"
+                      : (int) c > 128 ? ("&#" + (int) c + ";")
+                      : ("" + c)));
       }
       return quoted.toString();
     }
