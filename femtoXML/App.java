@@ -15,8 +15,13 @@ public class App
     XMLParser<AppTree> parser  = new XMLParser<AppTree>(new AppTreeFactory())
     {
       public String decodeEntity(String name)
-      {
-         return "&"+name+";";
+      {  if (name.equals("foo"))
+            return "embedded&bar;stuff";
+         else
+         if (name.equals("bar"))
+            return " bar ";
+         else
+            return name;
       }
     };
     XMLScanner         scanner = new XMLScanner(parser);

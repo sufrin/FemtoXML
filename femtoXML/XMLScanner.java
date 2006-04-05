@@ -2,8 +2,11 @@ package femtoXML;
 
 import java.io.InputStreamReader;
 import java.io.LineNumberReader;
+import java.io.Reader;
+import java.io.StringReader;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Stack;
 /**
  * An <code>XMLScanner</code> is primed with an <code>XMLHandler</code>, and then can be used(and re-used) to read XML from a
  * <code>java.io.LineNumberReader</code>.
@@ -130,6 +133,7 @@ public class XMLScanner implements XMLHandler.XMLLocator
     if (this.description==null) 
        setDescription("<anonymous input stream>");
     this.reader = reader;
+    entities = new Stack<Reader>();
     ch = 0;
     nextToken();
     consumer.setLocator(this);
@@ -251,7 +255,7 @@ public class XMLScanner implements XMLHandler.XMLLocator
       while (0 <= ch && ch != close)
       {
         if (ch == '&')
-          b.append(entity);
+          if (charEntity) b.append(entity); else { pushEntity(entity); }
         else
           b.append((char) ch);
         nextChar();
@@ -389,24 +393,35 @@ public class XMLScanner implements XMLHandler.XMLLocator
       // leading & is a special case
       if (ch == '&')
       {
-        token = Lex.WORD;
-        nextEnt();
-        b.append(entity);
-        nextChar();
+          token = Lex.WORD;
+          nextEnt();
+          if (charEntity)
+          { 
+            b.append(entity);
+          } 
+          else 
+          { pushEntity(entity); }//TODO
+          nextChar();
       }
       while (ch > ' ' && ch != '<' && ch != '>'
              && !(inElement && (ch == '/' || ch == '=')))
       {
         if (ch == '&')
-          b.append(entity);
+          if (charEntity) b.append(entity); else { pushEntity(entity); } //TODO
         else
           b.append((char) ch);
-        if (!Character.isLetterOrDigit(ch) && ch != '_' && ch != ':')
-                                                                     token = Lex.WORD;
+        if (!Character.isLetterOrDigit(ch) && ch != '_' && ch != ':') token = Lex.WORD;
         nextChar();
       }
       value = b.toString();
     }
+  }
+  
+  protected Stack<Reader> entities;
+  
+  protected void pushEntity(String body)
+  {
+    entities.push(new StringReader(body));
   }
 
   /** Read the next character -- expanding character entities */
@@ -424,8 +439,13 @@ public class XMLScanner implements XMLHandler.XMLLocator
   protected void nextRawChar()
   {
     try
-    {
-      ch = reader.read();
+    {    while (!entities.isEmpty())
+         { ch = entities.peek().read();
+           if (ch>=0) return;
+           entities.pop();
+         }
+         ch = reader.read();
+
     }
     catch (Exception ex)
     {
@@ -433,6 +453,8 @@ public class XMLScanner implements XMLHandler.XMLLocator
     }
   }
 
+  boolean charEntity;
+  
   /**
    * Read and expand the next entity; the variable 'entity' is set to the
    * expansion.
@@ -440,6 +462,7 @@ public class XMLScanner implements XMLHandler.XMLLocator
   protected void nextEnt()
   {
     String ent = "";
+    charEntity = true;
     nextRawChar();
     while (' ' < ch && ch != ';')
     {
@@ -463,8 +486,10 @@ public class XMLScanner implements XMLHandler.XMLLocator
     else if (ent.matches("#[Xx][0-9a-fA-F]+"))
       entity = ""+(char)Integer.parseInt(ent.substring(2), 16);
     else
+    { charEntity = false;
       entity = consumer.decodeEntity(ent);
-    if (entity == null) throwSyntaxError("Unknown entity: &" + ent + ";");
+      if (entity == null) throwSyntaxError("Unknown entity: &" + ent + ";");
+    }
   }
 
   protected static boolean endComment(StringBuilder b)
