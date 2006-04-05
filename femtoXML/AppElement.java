@@ -1,14 +1,13 @@
 package femtoXML;
 
+import java.io.PrintWriter;
 import java.util.*;
 
-public class AppElement implements AppTree, XMLComposite<AppTree>,
-    Iterable<AppTree>
+public class AppElement 
+       implements AppTree, XMLComposite<AppTree>,  Iterable<AppTree>
 {
   protected String              kind;
-
   protected Map<String, String> attrs;
-
   protected Vector<AppTree>     subtrees = new Vector<AppTree>();
 
   public AppTree close()
@@ -61,7 +60,7 @@ public class AppElement implements AppTree, XMLComposite<AppTree>,
     return s.toString();
   }
 
-  public void printTo(java.io.PrintStream out, int indent)
+  public void printTo(PrintWriter out, int indent)
   {
     for (int i = 0; i < indent; i++)
       out.print(" "); // Indent to open bracket position

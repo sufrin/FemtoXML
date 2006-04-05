@@ -16,12 +16,33 @@ public interface XMLHandler
   public void endElement(String kind);                             // </kind>
 
   public void commentCharacters(CharSequence text);                // <!-- ... -->
+  
+  public void PICharacters(CharSequence text);                     // <? ... ?>
 
-  public void wordCharacters(CharSequence text);                   // ...
-
+  /** Handle non-element text; <code>cdata</code> is true if the text is a  <pre>&lt;![CDATA[ ...]]&gt;</pre> element. */
+  public void wordCharacters(CharSequence text, boolean cdata);   // ...
+  
+  /** Called just before document starts to be consumed */
   public void startDocument();
-
+  
+  /** Called just after the end of a document stream. */
   public void endDocument();
-
+  
+  /**
+   * Called when a non-standard <code>&amp;entityname;</code> is scanned. Should return the
+   * expansion if it's known, and <code>null</code> otherwise.
+   */
   public String decodeEntity(String entity);                       // &entityname;
+  
+  /** Called by an <code>XMLScanner</code> before <code>startDocument</code> to give this handler access to the 
+   *  current location in the source text.
+   * @param loc -- a locator
+   */
+  public void setLocator(XMLLocator loc);
+  
+  public static interface XMLLocator
+  {
+     int   lineNumber();
+     String getDescription();
+  }
 }

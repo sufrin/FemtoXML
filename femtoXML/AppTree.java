@@ -1,6 +1,8 @@
 package femtoXML;
 
+import java.io.PrintWriter;
+
 public interface AppTree
 {
-  void printTo(java.io.PrintStream out, int indent);
+  void printTo(PrintWriter out, int indent);
 }

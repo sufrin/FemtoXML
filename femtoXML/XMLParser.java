@@ -1,6 +1,7 @@
 package femtoXML;
 
 import java.util.*;
+
 /**
  * An <code>XMLParser</code> is an implementation of an <code>XMLHandler</code> that generates parse-trees.
  * 
@@ -23,18 +24,22 @@ public class XMLParser<T> implements XMLHandler
   
   /** The stack of names of unclosed elements. Invariant: <code>stack.size()==kinds.size()</code> */
   protected Stack<String>          kinds = new Stack<String>();
+  
+  /** The stack of starting line-numbers of the unclosed elements */
+  protected Stack<Integer>         lines = new Stack<Integer>();
 
   public void startElement(String kind, Map<String, String> atts)
   {
     stack.push(factory.newElement(kind, atts));
     kinds.push(kind);
+    lines.push(locator.lineNumber());
   }
 
   /**
    * Process an end element tag that matches the enclosing start element tag;
-   * throw an XMLSyntaxError error otherwise. Subclasses can override this with a
-   * more intelligent or forgiving method that simulates the insertion of end
-   * tags, or obeys the more relaxed rules of HTML.
+   * throw an <code>XMLSyntaxError</code> error otherwise. Subclasses can
+   * override this with a more intelligent or forgiving method that simulates
+   * the insertion of end tags, or obeys the more relaxed rules of HTML.
    */
   public void endElement(String kind)
   {
@@ -43,9 +48,16 @@ public class XMLParser<T> implements XMLHandler
     {
       T top = stack.pop().close();
       stack.peek().addTree(top);
+      lines.pop();
     }
     else
-      throw new XMLSyntaxError(String.format("Non-nested: <%s>...</%s>", tkind, kind));
+      throw new XMLSyntaxError(locator,
+                               String
+                                     .format("Non-nested element: <%s>@%s...</%s>@%s",
+                                             tkind,
+                                             lines.peek(),
+                                             kind,
+                                             locator.lineNumber()));
   }
 
   protected T theTree = null;
@@ -61,9 +73,15 @@ public class XMLParser<T> implements XMLHandler
        stack.peek().addTree(factory.newComment(text.toString()));
   }
 
-  public void wordCharacters(CharSequence text)
+  public void wordCharacters(CharSequence text, boolean cdata)
   {
-    stack.peek().addTree(factory.newWord(text.toString()));
+    stack.peek().addTree(factory.newWord(text.toString(), cdata));
+  }
+
+  public void PICharacters(CharSequence text)
+  {
+    if (factory.canPI())
+       stack.peek().addTree(factory.newPI(text.toString()));
   }
 
   public void startDocument()
@@ -72,6 +90,8 @@ public class XMLParser<T> implements XMLHandler
     stack.push(factory.newRoot());
     kinds.clear();
     kinds.push("");
+    lines.clear();
+    lines.push(1);
   }
 
   public void endDocument()
@@ -82,9 +102,9 @@ public class XMLParser<T> implements XMLHandler
         theTree = stack.peek().close();
         break;
       case 0:
-        throw new XMLSyntaxError("Document has no elements.");
+        throw new XMLSyntaxError(locator, String.format("Document has no elements."));
       default:
-        throw new XMLSyntaxError(String.format("Premature end of document in unclosed <%s>",  kinds.peek()));
+        throw new XMLSyntaxError(locator, String.format("Premature end of document in unclosed <%s>@%d", kinds.peek(), lines.peek()));
     }
   }
 
@@ -94,5 +114,12 @@ public class XMLParser<T> implements XMLHandler
   public String decodeEntity(String entity)
   {
     return null;
+  }
+
+  XMLLocator locator;
+  
+  public void setLocator(XMLLocator locator)
+  {
+    this.locator = locator;    
   }
 }

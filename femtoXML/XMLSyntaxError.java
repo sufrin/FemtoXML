@@ -9,9 +9,13 @@ public class XMLSyntaxError extends RuntimeException
     super(error);
   }
   
-  public XMLSyntaxError(String error, int lineNumber)
+  public XMLSyntaxError(XMLHandler.XMLLocator locator, String error)
+  { this(error, locator.getDescription(), locator.lineNumber());
+  }
+
+  public XMLSyntaxError(String error, String description, int lineNumber)
   {
-    super(String.format("Line %d: %s", lineNumber, error));
+    super(String.format("Document %s; Line %d: %s", description, lineNumber, error));
   }
 
 }

@@ -1,29 +1,37 @@
 package femtoXML;
 
 import java.io.InputStreamReader;
-import java.io.Reader;
+import java.io.LineNumberReader;
 import java.util.LinkedHashMap;
 import java.util.Map;
 /**
  * An <code>XMLScanner</code> is primed with an <code>XMLHandler</code>, and then can be used(and re-used) to read XML from a
- * <code>java.io.Reader</code>.
+ * <code>java.io.LineNumberReader</code>.
  * There are almost no limitations on the form of the XML it will read, <b>but</b>:
  * <ul>
  *  <li>No attempt is made to recover from XML parsing errors.</li>
+ *  <li>Only character entities are expanded.</li>
+ *      Should a client class require other forms of entity to be expanded, 
+ *      then it is possible to build a suitable subclass of <code>LineNumberReader</code>
+ *      that performs entity expansion. We prefer to treat character-macro-expansion functionality
+ *      and XML scanning/parsing orthogonally.
  *  <li>DOCTYPE declarations are ignored</li>
  *  <li>Processing instructions are ignored</li>
  *  <li>Namespace prefixes are incorporated into entity names so namespace processing has to be performed further up the analysis chain</li>
  * </ul>
  * 
+ * <p> 
  * */
-public class XMLScanner
+public class XMLScanner implements XMLHandler.XMLLocator
 {
-  protected XMLHandler consumer;
-  protected Reader     reader;
-  protected int        lineCount,  // where the current character came from
-                        lineNumber; // where the current symbol started
+  protected XMLHandler           consumer;
+  protected LineNumberReader     reader;
+  
+  /** The line where the current symbol started */
+  protected int lineNumber; 
 
-  protected void throwSyntaxError(String error) { throw new XMLSyntaxError(error, lineNumber); }
+  protected void throwSyntaxError(String error) 
+  { throw new XMLSyntaxError(error, description, lineNumber()); }
 
   public XMLScanner()
   {}
@@ -42,6 +50,20 @@ public class XMLScanner
   public int lineNumber()
   {
     return lineNumber;
+  }
+  
+  /** Return the current source description */
+  public String getDescription()
+  {
+     return description;
+  }
+  
+  /** Human-readable string describing the source of the current input stream. */
+  protected String description;
+  
+  /** Set a string describing the source of the current input stream. Used for human-readable diagnostics. */
+  public void setDescription(String description)
+  { this.description = description;
   }
 
   /** The current lexical symbol */
@@ -65,10 +87,20 @@ public class XMLScanner
 
   private enum Lex
   {
-    ENDSTREAM("END-OF-XML-STREAM"), POINTBRA("<"), POINTKET(">"), POINTBRASLASH(
-        "</"), SLASHPOINTKET("/>"), WORD("WORD"), IDENTIFIER("IDENTIFIER"), CDATA(
-        "<![CDATA[ ..."), SQUOTE("' or \""), EQUALS("="), COMMENT("<!-- ..."), PROCESS(
-        "<? ... ?>"), DOCTYPE("<!DOCTYPE ...");
+    ENDSTREAM("END-OF-XML-STREAM"), 
+    POINTBRA("<"), 
+    POINTKET(">"), 
+    POINTBRASLASH( "</"), 
+    SLASHPOINTKET("/>"), 
+    WORD("WORD"), 
+    IDENTIFIER("IDENTIFIER"), 
+    CDATA("<![CDATA[ ..."), 
+    SQUOTE("' or \""), 
+    EQUALS("="), 
+    COMMENT("<!-- ..."), 
+    PROCESS("<? ... ?>"), 
+    DOCTYPE("<!DOCTYPE ...");
+    
     Lex(String name)
     {
       this.name = name;
@@ -81,31 +113,54 @@ public class XMLScanner
       return name;
     }
   }
-
+  
+  public void read(LineNumberReader reader) { read(reader, null); }
+  
   /**
-   * Read XML from the given Reader, invoking the current <code>XMLHandler consumer</code>'s methods at
+   * Read XML from the given LineNumberReader, invoking the current <code>XMLHandler consumer</code>'s methods at
    * appropriate times and keeping track of line numbers. If a client needs to keep track of column
    * numbers as well then <code>nextRawChar()</code> should be overridden in a subclass.
+   * @param reader -- the reader
+   * @param description -- a human-readable description
    */
-  public void read(Reader reader)
-  {
+  public void read(LineNumberReader reader, String description)
+  { if (description != null) 
+       setDescription(description); 
+    else
+    if (this.description==null) 
+       setDescription("<anonymous input stream>");
     this.reader = reader;
-    this.lineCount = 1;
     ch = 0;
     nextToken();
+    consumer.setLocator(this);
     consumer.startDocument();
+    readBody();
+    consumer.endDocument();
+    try
+    {
+      reader.close();
+    }
+    catch (Exception e)
+    {}
+  }
+  
+  protected void readBody()
+  {
     while (token != Lex.ENDSTREAM)
     {
       switch (token)
       {
         case DOCTYPE:
+          break;
         case PROCESS:
-          // Ignore DTDs and processing instructions
+          consumer.PICharacters(value);
           break;
         case IDENTIFIER:
         case WORD:
+          consumer.wordCharacters(value, false);
+          break;
         case CDATA:
-          consumer.wordCharacters(value);
+          consumer.wordCharacters(value, true);
           break;
         case POINTBRASLASH: // </ tag >
           checkToken(Lex.IDENTIFIER);
@@ -134,8 +189,8 @@ public class XMLScanner
               nextToken();
             }
             else
-              throwSyntaxError("Found " + token
-                                  + " when string expected in " + key + "=...");
+              throwSyntaxError("Found " + token + " when string expected in "
+                               + key + "=...");
           }
           consumer.startElement(tag, atts);
           if (token == Lex.SLASHPOINTKET) // />
@@ -143,19 +198,12 @@ public class XMLScanner
           else if (token != Lex.POINTKET)
                                          // >
                                          throwSyntaxError("> expected in start tag: found "
-                                                             + token);
+                                                          + token);
           inElement = false;
         }
       }
       nextToken();
     }
-    consumer.endDocument();
-    try
-    {
-      reader.close();
-    }
-    catch (Exception e)
-    {}
   }
 
   /** The current symbol's characters, if it's a class */
@@ -181,7 +229,7 @@ public class XMLScanner
       }
       while (0 <= ch && ch <= ' ');
     }
-    lineNumber = lineCount;
+    lineNumber = reader.getLineNumber();
     value = "";
     if (ch == -1)
     {
@@ -322,8 +370,7 @@ public class XMLScanner
             token = Lex.COMMENT;
           }
           else
-            throwSyntaxError("<!-- ... --> expected; found <!"
-                                + b.toString());
+            throwSyntaxError("<!-- ... --> expected");
         }
       }
       else
@@ -362,7 +409,7 @@ public class XMLScanner
     }
   }
 
-  /** Read the next character -- expanding entities */
+  /** Read the next character -- expanding character entities */
   protected void nextChar()
   {
     nextRawChar();
@@ -373,13 +420,12 @@ public class XMLScanner
     }
   }
 
-  /** Read the next raw character, keeping track of the line number */
+  /** Read the next raw character. */
   protected void nextRawChar()
   {
     try
     {
       ch = reader.read();
-      if (ch == '\n') lineCount++;
     }
     catch (Exception ex)
     {
@@ -402,9 +448,9 @@ public class XMLScanner
     }
     if (ent.equals("amp"))
       entity = "&";
-    else if (ent.equals("ls"))
+    else if (ent.equals("lt"))
       entity = "<";
-    else if (ent.equals("gr"))
+    else if (ent.equals("gt"))
       entity = ">";
     else if (ent.equals("apos"))
       entity = "'";
@@ -412,6 +458,10 @@ public class XMLScanner
       entity = "\"";
     else if (ent.equals("nbsp"))
       entity = " ";
+    else if (ent.matches("#[0-9]+"))
+      entity = ""+(char)Integer.parseInt(ent.substring(1));
+    else if (ent.matches("#[Xx][0-9a-fA-F]+"))
+      entity = ""+(char)Integer.parseInt(ent.substring(2), 16);
     else
       entity = consumer.decodeEntity(ent);
     if (entity == null) throwSyntaxError("Unknown entity: &" + ent + ";");
@@ -452,9 +502,14 @@ public class XMLScanner
         System.out.println(s + " " + t);
       }
 
-      public void wordCharacters(CharSequence chars)
+      public void wordCharacters(CharSequence chars, boolean cdata)
       {
         pr("WD", "'" + chars + "'");
+      };
+      
+      public void PICharacters(CharSequence chars)
+      {
+        pr("PI", "'" + chars + "'");
       };
 
       public void startElement(String kind, Map<String, String> atts)
@@ -485,9 +540,15 @@ public class XMLScanner
       public String decodeEntity(String s)
       {
         return "&" + s + ";";
+      }
+
+      public void setLocator(XMLLocator loc)
+      {
+        // TODO Auto-generated method stub
+        
       };
     };
-    new XMLScanner(sax).read(new InputStreamReader(System.in));
+    new XMLScanner(sax).read(new LineNumberReader(new InputStreamReader(System.in)));
   }
 
   /** An implementation of Map that shows attributes in properly-quoted XML form. */
@@ -534,8 +595,8 @@ public class XMLScanner
         char c = s.charAt(i);
         quoted
               .append(( c == '&' ? "&amp;"
-                      : c == '>' ? "&gr;"
-                      : c == '<' ? "&ls;"
+                      : c == '>' ? "&gt;"
+                      : c == '<' ? "&lt;"
                       : c == '"' ? "&quot;"
                       : c == '\'' ? "&apos;"
                       : (c == ' ' && quotespace) ? "&nbsp;"

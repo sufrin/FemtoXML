@@ -8,9 +8,12 @@ public interface XMLTreeFactory<Tree>
 
   XMLComposite<Tree> newRoot();
 
-  Tree newWord(String text);
+  Tree newWord(String text, boolean cdata);
 
   Tree newComment(String text);
 
+  Tree newPI(String text);
+
   boolean canComment();
+  boolean canPI();
 }

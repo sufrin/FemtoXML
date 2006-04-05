@@ -14,17 +14,27 @@ public class AppTreeFactory implements XMLTreeFactory<AppTree>
     return newElement("", null);
   }
 
-  public AppWord newWord(String name)
+  public AppWord newWord(String name, boolean cdata)
   {
-    return new AppWord(name);
+    return new AppWord(name, cdata);
   }
 
-  public AppWord newComment(String data)
+  public AppTree newComment(String data)
+  {
+    return null;
+  }
+
+  public AppTree newPI(String data)
   {
     return null;
   }
 
   public boolean canComment()
+  {
+    return false;
+  }
+  
+  public boolean canPI()
   {
     return false;
   }
