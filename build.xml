@@ -3,10 +3,13 @@
              $Id: build.xml  2005-12-29 17:01:59Z sufrin $
      -->
 <project        name    ="FemtoXML"
-                default ="jar">
+                default ="all">
+                
         <property name="BUILD"  value="CLASS"/>
         <property name="TEST"   value="TEST"/>
         <property name="SRC"    value="."/>
+        
+        <target name='all' depends='femtoprint.jar,femtoXML.jar'/>
         
         <target name        = "compile" 
                 description = "Compile all .java files below ${SRC}"
@@ -29,16 +32,30 @@
             </javac> 
         </target>
         
-        <target name = "jar" 
+        <target name = "femtoprint.jar" 
+                description  = "Make a self-contained runnable femtoprint.jar in ${BUILD}"
+                depends="compile">
+            <jar    basedir  ="${BUILD}" 
+                    destfile ="${BUILD}/femtoprint.jar"
+                    includes = "**/*.class"
+                    excludes = ""
+                    >                    
+               <manifest>
+                 <attribute name="Main-Class" value="femtoXML.app.App"/>
+               </manifest>               
+           </jar>
+        </target>
+        
+        <target name = "femtoXML.jar" 
                 description  = "Make a self-contained runnable femtoXML.jar in ${BUILD}"
                 depends="compile">
             <jar    basedir  ="${BUILD}" 
                     destfile ="${BUILD}/femtoXML.jar"
                     includes = "**/*.class"
-                    excludes = ""
+                    excludes = "femtoXML/app/*"
                     >                    
                <manifest>
-                 <attribute name="Main-Class" value="femtoXML.App"/>
+                 <attribute name="Main-Class" value="femtoXML.app.App"/>
                </manifest>               
            </jar>
         </target>
@@ -51,6 +68,7 @@
                 <delete dir="${BUILD}" />
         </target>
 </project>
+
 
 
 

@@ -4,17 +4,22 @@ import java.io.Reader;
 import java.util.*;
 
 /**
- * An <code>XMLParser</code> is an implementation of an <code>XMLHandler</code> that generates parse-trees.
+ * An <code>XMLParser&lt;T&gt;</code> is an <code>XMLHandler</code> that can be repeatedly used to generate application structures
+ * from XML documents.
  * 
  * @author sufrin
  *
- * @param <T> -- The type of the parse-tree that will be constructed.
+ * @param <T> -- The type of application tree that will be constructed.
  */
 
 public class XMLParser<T> implements XMLHandler
 {
   protected XMLTreeFactory<T> factory;
 
+  /**
+   * Construct a parser.
+   * @param factory -- the factory that will map the individual XML elements into application substructures.
+   */
   public XMLParser(XMLTreeFactory<T> factory)
   {
     this.factory = factory;
@@ -62,7 +67,8 @@ public class XMLParser<T> implements XMLHandler
   }
 
   protected T theTree = null;
-
+  
+  /** Get the parse-tree */
   public T getTree()
   {
     return theTree;
@@ -109,26 +115,19 @@ public class XMLParser<T> implements XMLHandler
     }
   }
 
-  /** This procedure returns null and must be overridden in a subclass if entities 
-   *  are to be expanded. */
+  /** This procedure returns null and must be overridden in a subclass if non-character entities 
+   *  are to be expanded. When overridden it should return a reader that yields the expansion of the named entity.
+   */
    
   public Reader decodeEntity(String entityName)
   {
     return null;
   }
   
-  /** This procedure returns null and must be overridden in a subclass if character entities other
-   *  than the standard few built-in entities are to be expanded. */
+  /** This procedure uses XMLCharUtil.decodeCharEntity to decode cxharacter entity names.  */
   public char decodeCharEntity(String entityName)
-  { char result = (char) 0;
-    if      ("amp".equals(entityName))  result = '&'; 
-    else if ("apos".equals(entityName)) result = '\'';    
-    else if ("gt".equals(entityName))   result = '>';
-    else if ("lt".equals(entityName))   result = '<';
-    else if ("quot".equals(entityName)) result = '"';
-    else if (entityName.matches("#[Xx][0-9]+")) result = (char) Integer.parseInt(entityName.substring(2), 16);
-    else if (entityName.matches("#[0-9]+"))     result = (char) Integer.parseInt(entityName.substring(1), 10);
-    return result;
+  { 
+    return XMLCharUtil.decodeCharEntity(entityName);
   }
 
 

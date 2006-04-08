@@ -1,0 +1,64 @@
+<top>
+        <horizontal>
+          <slider bordertitle='Text Width' id='textwidth' var='textwidth' max='700' min='50' major='100' minor='50' value='400'/>
+          <slider bordertitle='Text Size' id='fontsize' var='fontsize' max='4' min='-4' major='1'/>
+          <slider bordertitle='Line Border Width' id='borderwidth' var='borderwidth' value='2' max='50' min='0' major='5' snap='false'/>
+          <slider bordertitle='Border Inset' var='borderinset' value='2' max='50' min='0' major='5' snap='false'/>
+          <slider bordertitle='Border Outset' var='borderoutset' value='2' max='50' min='0' major='5' snap='false'/>
+        </horizontal>
+        <strut height='20'/>
+        <horizontal>
+          <glue/>
+          <row bordertitle='Border Style'>
+            <radiobutton selected='true' listener='' group='borderstyle' value='line'>
+              Line
+            </radiobutton>
+            <radiobutton listener='' group='borderstyle' value='flat'>
+              Flat
+            </radiobutton>
+            <radiobutton listener='' group='borderstyle' value='bevel'>
+              Bevel
+            </radiobutton>
+            <radiobutton listener='' group='borderstyle' value='etch'>
+              Etch
+            </radiobutton>
+          </row>
+          <glue/>
+          <row bordertitle='Text Colour'>
+            <radiobutton selected='true' listener='' group='textcolour' value='black'>
+              Black
+            </radiobutton>
+            <radiobutton listener='' group='textcolour' value='red'>
+              Red
+            </radiobutton>
+            <radiobutton listener='' group='textcolour' value='blue'>
+              Blue
+            </radiobutton>
+            <radiobutton listener='' group='textcolour' value='green'>
+              Green
+            </radiobutton>
+            <radiobutton listener='' group='textcolour' value='yellow'>
+              Yellow
+            </radiobutton>
+          </row>
+          <glue/>
+          <row bordertitle='Border Colour'>
+            <radiobutton selected='true' listener='' group='bordercolour' value='black'>
+              Black
+            <!--/radiobutton-->
+            <radiobutton listener='' group='bordercolour' value='red'>
+              Red
+            </radiobutton><!--
+            <radiobutton listener='' group='bordercolour' value='blue'>
+              Blue
+            </radiobutton>
+            <radiobutton listener='' group='bordercolour' value='green'>
+              Green
+            </radiobutton>
+            <radiobutton listener='' group='bordercolour' value='yellow'>
+              Yellow
+            </radiobutton>
+          </row>
+          <glue/>
+        </horizontal>
+</top>

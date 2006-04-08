@@ -11,18 +11,43 @@ import java.io.Reader;
 
 public interface XMLHandler
 { /** Called just after the start tag (and attributes) of an element have been scanned. */
-  public void startElement(String kind, XMLAttributes atts); // <kind attr1="val1" ...
+  public void startElement(String kind, XMLAttributes atts);        // <kind attr1="val1" ...
   
-  /** Called just after the end tag of an element has been scanned. */
-  public void endElement(String kind);                             // </kind>
+  /**
+   * Called just after the end tag of an element has been scanned. This is also
+   * called immediately after <code>startElement</code> when an empty element
+   * is encountered; in other words, we do not distinguish between
+   * 
+   * <pre>
+   * &lt;foo .../&gt; and &lt;foo ...&gt;&lt;/foo&gt;
+   * </pre>
+   */
+  public void endElement(String kind); // </kind>
 
   /** Called just after the closing bracket of a comment has been scanned */
   public void commentCharacters(CharSequence text);                // <!-- ... -->
   
-  /** Called just after the closing bracket of a processing-instruction has been scanned */
-  public void PICharacters(CharSequence text);                     // <? ... ?>
+  /**
+   * Called just after the closing bracket of a processing-instruction (or the
+   * initial
+   * <code>
+   * &lt;?XML ... ?&gt;
+   * </code> declaration)
+   * 
+   * has been scanned. We do not interpret the internal structure of a
+   * processing instruction.
+   */
+  public void PICharacters(CharSequence text); // <? ... ?>
 
-  /** Handle non-element text; <code>cdata</code> is true if the text is a  <pre>&lt;![CDATA[ ...]]&gt;</pre> element. */
+  /**
+   * Handle non-element text; <code>cdata</code> is true if the text is a
+   * 
+   * <pre>
+   * &lt;![CDATA[ ...]]&gt;
+   * </pre>
+   * 
+   * element.
+   */
   public void wordCharacters(CharSequence text, boolean cdata);   // ...
   
   /** Called just before document starts to be consumed */
