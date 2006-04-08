@@ -123,8 +123,8 @@ public class XMLParser<T> implements XMLHandler
     this.locator = locator;    
   }
 
-  public XMLAttrs newAttributes()
+  public XMLAttrs newAttributes(boolean expandEntitites)
   {
-    return new XMLAttributes();
+    return new XMLAttributes(expandEntitites);
   }
 }

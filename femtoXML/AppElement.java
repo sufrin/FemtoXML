@@ -65,10 +65,15 @@ public class AppElement
     for (int i = 0; i < indent; i++)
       out.print(" "); // Indent to open bracket position
     if (subtrees.size() == 0) // Can we abbreviate the tree?
-      out.print(String.format("<%s%s/>", kind, attrs));
+    {  out.print(String.format("<%s", kind));
+       attrs.printTo(out, indent+2);
+       out.print("/>");
+    }
     else
     {
-      out.print(String.format("<%s%s>", kind, attrs));
+      out.print(String.format("<%s", kind));
+      attrs.printTo(out, indent+2);
+      out.print(">");
       boolean wasWord = false; // Last printed tree was a Word
       for (AppTree t : subtrees)
       {

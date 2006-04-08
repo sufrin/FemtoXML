@@ -1,6 +1,5 @@
 package femtoXML;
 
-import java.io.InputStreamReader;
 import java.io.LineNumberReader;
 import java.io.Reader;
 import java.io.StringReader;
@@ -11,13 +10,7 @@ import java.util.Stack;
  * There are almost no limitations on the form of the XML it will read, <b>but</b>:
  * <ul>
  *  <li>No attempt is made to recover from XML parsing errors.</li>
- *  <li>Only character entities are expanded.</li>
- *      Should a client class require other forms of entity to be expanded, 
- *      then it is possible to build a suitable subclass of <code>LineNumberReader</code>
- *      that performs entity expansion. We prefer to treat character-macro-expansion functionality
- *      and XML scanning/parsing orthogonally.
- *  <li>DOCTYPE declarations are ignored</li>
- *  <li>Processing instructions are ignored</li>
+ *  <li>DOCTYPE declarations are ignored</li> 
  *  <li>Namespace prefixes are incorporated into entity names so namespace processing has to be performed further up the analysis chain</li>
  * </ul>
  * 
@@ -185,8 +178,7 @@ public class XMLScanner implements XMLHandler.XMLLocator
           throwSyntaxError("Unexpected token: " + token + " " + value);
         case POINTBRA: // <id id="..." ...
         {
-          XMLAttrs atts = consumer.newAttributes();
-          // new XMLAttributes(expandEntities);
+          XMLAttrs atts = consumer.newAttributes(expandEntities);
           inElement = true;
           checkToken(Lex.IDENTIFIER);
           String tag = value;
@@ -524,70 +516,6 @@ public class XMLScanner implements XMLHandler.XMLLocator
   {
     return endCDATA(b) && (b.length() > 7)
            && b.substring(0, 7).equals("[CDATA[");
-  }
-
-  /** A test rig that prints lexical events, one per line. */
-  public static void main(String[] args)
-  {
-    XMLHandler sax = new XMLHandler()
-    {
-      void pr(CharSequence s, CharSequence t)
-      {
-        System.out.println(s + " " + t);
-      }
-
-      public void wordCharacters(CharSequence chars, boolean cdata)
-      {
-        pr("WD", "'" + chars + "'");
-      };
-      
-      public void PICharacters(CharSequence chars)
-      {
-        pr("PI", "'" + chars + "'");
-      };
-
-      public void startElement(String kind, XMLAttrs atts)
-      {
-        pr("SE", kind + atts);
-      };
-
-      public void endElement(String kind)
-      {
-        pr("EE", kind);
-      };
-
-      public void commentCharacters(CharSequence data)
-      {
-        pr("CO", data);
-      };
-
-      public void startDocument()
-      {
-        pr("ST", "");
-      };
-
-      public void endDocument()
-      {
-        pr("EN", "");
-      };
-
-      public String decodeEntity(String s)
-      {
-        return "&" + s + ";";
-      }
-
-      public void setLocator(XMLLocator loc)
-      {
-        // TODO Auto-generated method stub
-        
-      }
-
-      public XMLAttrs newAttributes()
-      {
-        return new XMLAttributes();
-      }
-    };
-    new XMLScanner(sax).read(new LineNumberReader(new InputStreamReader(System.in)));
   }
 
   /** Re-quote special characters within a string. */

@@ -44,5 +44,5 @@ public interface XMLHandler
      String getDescription();
   }
 
-  public XMLAttrs newAttributes();
+  public XMLAttrs newAttributes(boolean expandEntities);
 }
