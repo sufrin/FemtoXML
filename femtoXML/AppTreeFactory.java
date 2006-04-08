@@ -31,7 +31,7 @@ public class AppTreeFactory implements XMLTreeFactory<AppTree>
 
   public AppTree newPI(String data)
   {
-    return null;
+    return new AppPI(data);
   }
 
   public boolean canComment()
@@ -41,6 +41,7 @@ public class AppTreeFactory implements XMLTreeFactory<AppTree>
   
   public boolean canPI()
   {
-    return false;
+    return true;
   }
 }
+
