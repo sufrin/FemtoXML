@@ -1,4 +1,4 @@
-package femtoXML;
+package femtoXML.app;
 
 import java.io.PrintWriter;
 

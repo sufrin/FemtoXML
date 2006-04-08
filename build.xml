@@ -4,7 +4,6 @@
      -->
 <project        name    ="FemtoXML"
                 default ="jar">
-                
         <property name="BUILD"  value="CLASS"/>
         <property name="TEST"   value="TEST"/>
         <property name="SRC"    value="."/>
@@ -17,6 +16,7 @@
                     cache  ="${BUILD}/dependencies"
                     closure= "true"/>
             <javac srcdir    = "${SRC}" 
+                   destdir   = "${BUILD}"
                    debug     = "true"
                    debuglevel= "lines,vars,source"
                    classpath = "${CLASSPATH}"
@@ -51,5 +51,6 @@
                 <delete dir="${BUILD}" />
         </target>
 </project>
+
 
 

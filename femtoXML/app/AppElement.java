@@ -1,13 +1,15 @@
-package femtoXML;
+package femtoXML.app;
 
 import java.io.PrintWriter;
 import java.util.*;
+import femtoXML.XMLAttributes;
+import femtoXML.XMLComposite;
 
 public class AppElement 
        implements AppTree, XMLComposite<AppTree>,  Iterable<AppTree>
 {
   protected String              kind;
-  protected XMLAttrs            attrs;
+  protected XMLAttributes       attrs;
   protected Vector<AppTree>     subtrees = new Vector<AppTree>();
 
   public AppTree close()
@@ -15,7 +17,7 @@ public class AppElement
     return this;
   }
 
-  public AppElement(String kind, XMLAttrs attrs)
+  public AppElement(String kind, XMLAttributes attrs)
   {
     this.kind = kind;
     this.attrs = attrs;

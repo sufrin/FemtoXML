@@ -2,7 +2,6 @@ package femtoXML;
 
 import java.io.LineNumberReader;
 import java.io.Reader;
-import java.io.StringReader;
 import java.util.Stack;
 /**
  * An <code>XMLScanner</code> is primed with an <code>XMLHandler</code>, and then can be used(and re-used) to read XML from a
@@ -41,11 +40,11 @@ public class XMLScanner implements XMLHandler.XMLLocator
     this.consumer = consumer;
   }
   
-  /** Expanding is true if entities are to be expanded: this method sets the current expandEntities state. */
+  /** <code>expandEntities</code> is true if entities are to be expanded: this method sets its state. */
   public void setExpandEntities(boolean expanding)
   { this.expandEntities = expanding; }
   
-  /** Returns the current expandEntities state: true if entities are being expanded. */
+  /** Returns the current <code>expandEntities state</code>: true if entities are being expanded. */
   public boolean getExpandEntities() 
   { return expandEntities; }
 
@@ -178,7 +177,7 @@ public class XMLScanner implements XMLHandler.XMLLocator
           throwSyntaxError("Unexpected token: " + token + " " + value);
         case POINTBRA: // <id id="..." ...
         {
-          XMLAttrs atts = consumer.newAttributes(expandEntities);
+          XMLAttributes atts = consumer.newAttributes(expandEntities);
           inElement = true;
           checkToken(Lex.IDENTIFIER);
           String tag = value;
@@ -216,8 +215,11 @@ public class XMLScanner implements XMLHandler.XMLLocator
   /** The current character */
   protected int     ch;
 
-  /** Expansion of the last entity read */
+  /** Expansion of the last character entity read */
   protected String  entity;
+  
+  /** Name of the last non-character entity read */
+  protected String entityName;
 
   /** True iff currently reading an element header < ... /> or < ... > */
   protected boolean inElement = false;
@@ -233,7 +235,7 @@ public class XMLScanner implements XMLHandler.XMLLocator
       }
       while (0 <= ch && ch <= ' ');
     }
-    lineNumber = reader.getLineNumber();
+    lineNumber = 1+reader.getLineNumber();
     value = "";
     if (ch == -1)
     {
@@ -255,7 +257,7 @@ public class XMLScanner implements XMLHandler.XMLLocator
       while (0 <= ch && ch != close)
       {
         if (expandEntities && ch == '&')
-          if (charEntity) b.append(entity); else { pushEntity(entity); }
+          if (isCharEntity) b.append(theCharEntity); else { pushEntity(entityName); }
         else
           b.append((char) ch);
         nextChar();
@@ -390,26 +392,20 @@ public class XMLScanner implements XMLHandler.XMLLocator
     {
       StringBuilder b = new StringBuilder();
       token = Lex.IDENTIFIER;
-      // leading & is a special case
+      // leading & is a special case because it was read by nextRawChar
       if (expandEntities && ch == '&')
       {
           token = Lex.WORD;
-          nextEnt();
-          if (charEntity)
-          { 
-            b.append(entity);
-          } 
-          else 
-          { pushEntity(entity); }//TODO
-          nextChar();
+          nextEntity();
       }
       while (ch > ' ' && ch != '<' && ch != '>'
              && !(inElement && (ch == '/' || ch == '=')))
       {
         if (expandEntities && ch=='&')
-          if (charEntity) b.append(entity); else { pushEntity(entity); } //TODO
+          if (isCharEntity) b.append(theCharEntity); else { pushEntity(entityName); }
         else
           b.append((char) ch);
+        // It's an identifier as long as it consists only of identifier characters
         if (!Character.isLetterOrDigit(ch) && ch != '_' && ch != ':') token = Lex.WORD;
         nextChar();
       }
@@ -420,19 +416,19 @@ public class XMLScanner implements XMLHandler.XMLLocator
   /** The stack of open entity-bodies */
   protected Stack<Reader> entities;
   
-  protected void pushEntity(String body)
-  {
-    entities.push(new StringReader(body));
+  protected void pushEntity(String entityName)
+  { Reader expansion = consumer.decodeEntity(entityName);
+    if (expansion == null) throwSyntaxError(String.format("Cannot find expansion of &%s;", entityName));
+    entities.push(expansion);
   }
 
-  /** Read the next character -- expandEntities character entities */
+  /** Read the next character; gobble the next entity if <code>expandingEntities</code> */
   protected void nextChar()
   {
     nextRawChar();
     if (expandEntities && ch == '&')
     {
-      nextEnt();
-      ch = '&';
+      nextEntity();
     }
   }
 
@@ -454,43 +450,25 @@ public class XMLScanner implements XMLHandler.XMLLocator
     }
   }
 
-  boolean charEntity;
+  boolean isCharEntity;
+  char    theCharEntity;
   
   /**
    * Read and expand the next entity; the variable 'entity' is set to the
    * expansion.
    */
-  protected void nextEnt()
+  protected void nextEntity()
   {
-    String ent = "";
-    charEntity = true;
+    entityName = "";
     nextRawChar();
     while (' ' < ch && ch != ';')
     {
-      ent = ent + ((char) ch);
+      entityName = entityName + ((char) ch);
       nextRawChar();
     }
-    if (ent.equals("amp"))
-      entity = "&";
-    else if (ent.equals("lt"))
-      entity = "<";
-    else if (ent.equals("gt"))
-      entity = ">";
-    else if (ent.equals("apos"))
-      entity = "'";
-    else if (ent.equals("quot"))
-      entity = "\"";
-    else if (ent.equals("nbsp"))
-      entity = " ";
-    else if (ent.matches("#[0-9]+"))
-      entity = ""+(char)Integer.parseInt(ent.substring(1));
-    else if (ent.matches("#[Xx][0-9a-fA-F]+"))
-      entity = ""+(char)Integer.parseInt(ent.substring(2), 16);
-    else
-    { charEntity = false;
-      entity = consumer.decodeEntity(ent);
-      if (entity == null) throwSyntaxError("Unknown entity: &" + ent + ";");
-    }
+    theCharEntity = consumer.decodeCharEntity(entityName);    
+    isCharEntity  = theCharEntity>0;
+    ch  = '&';
   }
 
   protected static boolean endComment(StringBuilder b)
@@ -518,40 +496,6 @@ public class XMLScanner implements XMLHandler.XMLLocator
            && b.substring(0, 7).equals("[CDATA[");
   }
 
-  /** Re-quote special characters within a string. */
-  public static String unQuote(String s, boolean quotespace)
-  {
-    int len = s.length();
-    StringBuilder quoted = null;
-    for (int i = 0; i < len; i++)
-    {
-      char c = s.charAt(i);
-      if ((c == ' ' && quotespace) || c == '&' || c == '>' || c == '<' || c == '"' || c == '\''
-          || (int) c >= 128)
-      {
-        quoted = new StringBuilder();
-        break;
-      }
-    }
-    if (quoted == null)
-      return s;
-    else
-    {
-      for (int i = 0; i < len; i++)
-      {
-        char c = s.charAt(i);
-        quoted
-              .append(( c == '&' ? "&amp;"
-                      : c == '>' ? "&gt;"
-                      : c == '<' ? "&lt;"
-                      : c == '"' ? "&quot;"
-                      : c == '\'' ? "&apos;"
-                      : (c == ' ' && quotespace) ? "&nbsp;"
-                      : (int) c > 128 ? ("&#" + (int) c + ";")
-                      : ("" + c)));
-      }
-      return quoted.toString();
-    }
-  }
+
 }
 

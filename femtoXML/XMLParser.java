@@ -1,5 +1,6 @@
 package femtoXML;
 
+import java.io.Reader;
 import java.util.*;
 
 /**
@@ -28,7 +29,7 @@ public class XMLParser<T> implements XMLHandler
   /** The stack of starting line-numbers of the unclosed elements */
   protected Stack<Integer>         lines = new Stack<Integer>();
 
-  public void startElement(String kind, XMLAttrs atts)
+  public void startElement(String kind, XMLAttributes atts)
   {
     stack.push(factory.newElement(kind, atts));
     kinds.push(kind);
@@ -108,13 +109,28 @@ public class XMLParser<T> implements XMLHandler
     }
   }
 
-  /** This procedure returns null and must be overridden in a subclass if entities other
-   * than the standard few built-in entities are to be expanded. */
+  /** This procedure returns null and must be overridden in a subclass if entities 
+   *  are to be expanded. */
    
-  public String decodeEntity(String entity)
+  public Reader decodeEntity(String entityName)
   {
     return null;
   }
+  
+  /** This procedure returns null and must be overridden in a subclass if character entities other
+   *  than the standard few built-in entities are to be expanded. */
+  public char decodeCharEntity(String entityName)
+  { char result = (char) 0;
+    if      ("amp".equals(entityName))  result = '&'; 
+    else if ("apos".equals(entityName)) result = '\'';    
+    else if ("gt".equals(entityName))   result = '>';
+    else if ("lt".equals(entityName))   result = '<';
+    else if ("quot".equals(entityName)) result = '"';
+    else if (entityName.matches("#[Xx][0-9]+")) result = (char) Integer.parseInt(entityName.substring(2), 16);
+    else if (entityName.matches("#[0-9]+"))     result = (char) Integer.parseInt(entityName.substring(1), 10);
+    return result;
+  }
+
 
   XMLLocator locator;
   
@@ -123,8 +139,8 @@ public class XMLParser<T> implements XMLHandler
     this.locator = locator;    
   }
 
-  public XMLAttrs newAttributes(boolean expandEntitites)
+  public XMLAttributes newAttributes(boolean expandEntitites)
   {
-    return new XMLAttributes(expandEntitites);
+    return new XMLAttrMap(expandEntitites);
   }
 }

@@ -2,7 +2,7 @@ package femtoXML;
 
 public interface XMLTreeFactory<Tree>
 {
-  XMLComposite<Tree> newElement(String kind, XMLAttrs atts);
+  XMLComposite<Tree> newElement(String kind, XMLAttributes atts);
 
   XMLComposite<Tree> newRoot();
 
