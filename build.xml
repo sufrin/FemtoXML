@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
      <!--
-             $Id: build.xml  2005-12-29 17:01:59Z sufrin $
+             $Id:$
      -->
 <project        name    ="FemtoXML"
                 default ="all">
@@ -68,6 +68,7 @@
                 <delete dir="${BUILD}" />
         </target>
 </project>
+
 
 
 
