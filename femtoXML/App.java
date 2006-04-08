@@ -1,6 +1,7 @@
 package femtoXML;
 
 import java.io.*;
+import java.util.Vector;
 /**
  * An exemplary femtoXML application that pretty-prints its input XML files onto the
  * standard output stream.
@@ -11,8 +12,13 @@ import java.io.*;
 public class App
 {
   public static void main(String[] args) throws Exception
-  {
-    XMLParser<AppTree> parser  = new XMLParser<AppTree>(new AppTreeFactory())
+  { boolean expandEntities = false;
+    Vector<String> files = new Vector<String>();
+    for (String arg:args)
+        if (arg.equals("-x")) expandEntities = true; 
+        else
+            files.add(arg);
+    XMLParser<AppTree> parser  = new XMLParser<AppTree>(new AppTreeFactory(expandEntities))
     {
       public String decodeEntity(String name)
       {  if (name.equals("foo"))
@@ -26,7 +32,8 @@ public class App
     };
     XMLScanner         scanner = new XMLScanner(parser);
     PrintWriter        out     = new PrintWriter(new OutputStreamWriter(System.out, "UTF-8"));
-    for (String arg : args)
+    scanner.setExpandEntities(expandEntities);
+    for (String arg : files)
     { scanner.read(new LineNumberReader(new InputStreamReader(new FileInputStream(arg), "UTF-8")), arg);
       AppElement root = (AppElement) parser.getTree();
       for (AppTree tree : root)

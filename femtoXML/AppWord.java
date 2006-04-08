@@ -5,13 +5,22 @@ import java.io.PrintWriter;
 public class AppWord implements AppTree
 {
   protected String text;
-  protected boolean cdata;
+  protected boolean cdata, expandEntities;
 
+  public AppWord(String text, boolean cdata, boolean expandEntities)
+  {
+    this.text = text;
+    this.cdata = cdata;
+    this.expandEntities = expandEntities;
+  }
+  
   public AppWord(String text, boolean cdata)
   {
     this.text = text;
     this.cdata = cdata;
+    this.expandEntities = true;
   }
+  
   
   /** Generates the human-readable form of the word text. */
   public String toString()
@@ -33,6 +42,7 @@ public class AppWord implements AppTree
       out.print("]]>");
     }
     else
+    if (expandEntities)
     for (int i=0; i<text.length(); i++)
     { 
       char c = text.charAt(i);
@@ -47,5 +57,7 @@ public class AppWord implements AppTree
         default:   if (c>128) out.format("&#x%X;", (int) c); else out.print(c);
       }
     }
+    else 
+      out.print(text);
   }
 }

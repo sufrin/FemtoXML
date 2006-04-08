@@ -29,6 +29,7 @@ public class XMLScanner implements XMLHandler.XMLLocator
 {
   protected XMLHandler           consumer;
   protected LineNumberReader     reader;
+  protected boolean             expandEntities = true;
   
   /** The line where the current symbol started */
   protected int lineNumber; 
@@ -48,6 +49,14 @@ public class XMLScanner implements XMLHandler.XMLLocator
   {
     this.consumer = consumer;
   }
+  
+  /** Expanding is true if entities are to be expanded: this method sets the current expandEntities state. */
+  public void setExpandEntities(boolean expanding)
+  { this.expandEntities = expanding; }
+  
+  /** Returns the current expandEntities state: true if entities are being expanded. */
+  public boolean getExpandEntities() 
+  { return expandEntities; }
 
   /** Return the current source line number */
   public int lineNumber()
@@ -178,7 +187,7 @@ public class XMLScanner implements XMLHandler.XMLLocator
           throwSyntaxError("Unexpected token: " + token + " " + value);
         case POINTBRA: // <id id="..." ...
         {
-          Map<String, String> atts = new Attributes();
+          Map<String, String> atts = new Attributes(expandEntities);
           inElement = true;
           checkToken(Lex.IDENTIFIER);
           String tag = value;
@@ -254,7 +263,7 @@ public class XMLScanner implements XMLHandler.XMLLocator
       nextChar();
       while (0 <= ch && ch != close)
       {
-        if (ch == '&')
+        if (expandEntities && ch == '&')
           if (charEntity) b.append(entity); else { pushEntity(entity); }
         else
           b.append((char) ch);
@@ -391,7 +400,7 @@ public class XMLScanner implements XMLHandler.XMLLocator
       StringBuilder b = new StringBuilder();
       token = Lex.IDENTIFIER;
       // leading & is a special case
-      if (ch == '&')
+      if (expandEntities && ch == '&')
       {
           token = Lex.WORD;
           nextEnt();
@@ -406,7 +415,7 @@ public class XMLScanner implements XMLHandler.XMLLocator
       while (ch > ' ' && ch != '<' && ch != '>'
              && !(inElement && (ch == '/' || ch == '=')))
       {
-        if (ch == '&')
+        if (expandEntities && ch=='&')
           if (charEntity) b.append(entity); else { pushEntity(entity); } //TODO
         else
           b.append((char) ch);
@@ -417,6 +426,7 @@ public class XMLScanner implements XMLHandler.XMLLocator
     }
   }
   
+  /** The stack of open entity-bodies */
   protected Stack<Reader> entities;
   
   protected void pushEntity(String body)
@@ -424,11 +434,11 @@ public class XMLScanner implements XMLHandler.XMLLocator
     entities.push(new StringReader(body));
   }
 
-  /** Read the next character -- expanding character entities */
+  /** Read the next character -- expandEntities character entities */
   protected void nextChar()
   {
     nextRawChar();
-    if (ch == '&')
+    if (expandEntities && ch == '&')
     {
       nextEnt();
       ch = '&';
@@ -576,10 +586,13 @@ public class XMLScanner implements XMLHandler.XMLLocator
     new XMLScanner(sax).read(new LineNumberReader(new InputStreamReader(System.in)));
   }
 
-  /** An implementation of Map that shows attributes in properly-quoted XML form. */
+  /** An implementation of Map that shows attributes in properly-quoted XML form if
+   *  expandEntities is true.
+   */
   @SuppressWarnings("serial")
   public static class Attributes extends LinkedHashMap<String, String>
-  {
+  { protected boolean expanding = true;
+    public Attributes(boolean expanding) { this.expanding = expanding; }
     public String toString()
     {
       StringBuilder b = new StringBuilder();
@@ -588,7 +601,10 @@ public class XMLScanner implements XMLHandler.XMLLocator
         b.append(" ");
         b.append(key);
         b.append("='");
-        b.append(unQuote(get(key), false));
+        if (expanding)
+          b.append(unQuote(get(key), false));
+        else
+          b.append(get(key));
         b.append("'");
       }
       ;
