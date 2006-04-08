@@ -1,10 +1,8 @@
 package femtoXML;
 
-import java.util.*;
-
 public interface XMLTreeFactory<Tree>
 {
-  XMLComposite<Tree> newElement(String kind, Map<String, String> atts);
+  XMLComposite<Tree> newElement(String kind, XMLAttrs atts);
 
   XMLComposite<Tree> newRoot();
 

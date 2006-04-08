@@ -27,7 +27,7 @@ public class AppPI implements AppTree
       out.print(" ");
       out.print("<?");
       out.print(text);
-      out.print("?>");
+      out.println("?>");
   }
 }
 

@@ -7,7 +7,7 @@ public class AppElement
        implements AppTree, XMLComposite<AppTree>,  Iterable<AppTree>
 {
   protected String              kind;
-  protected Map<String, String> attrs;
+  protected XMLAttrs            attrs;
   protected Vector<AppTree>     subtrees = new Vector<AppTree>();
 
   public AppTree close()
@@ -15,7 +15,7 @@ public class AppElement
     return this;
   }
 
-  public AppElement(String kind, Map<String, String> attrs)
+  public AppElement(String kind, XMLAttrs attrs)
   {
     this.kind = kind;
     this.attrs = attrs;

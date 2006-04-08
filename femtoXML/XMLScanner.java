@@ -4,8 +4,6 @@ import java.io.InputStreamReader;
 import java.io.LineNumberReader;
 import java.io.Reader;
 import java.io.StringReader;
-import java.util.LinkedHashMap;
-import java.util.Map;
 import java.util.Stack;
 /**
  * An <code>XMLScanner</code> is primed with an <code>XMLHandler</code>, and then can be used(and re-used) to read XML from a
@@ -144,9 +142,9 @@ public class XMLScanner implements XMLHandler.XMLLocator
     this.reader = reader;
     entities = new Stack<Reader>();
     ch = 0;
-    nextToken();
     consumer.setLocator(this);
     consumer.startDocument();
+    nextToken();
     readBody();
     consumer.endDocument();
     try
@@ -187,7 +185,8 @@ public class XMLScanner implements XMLHandler.XMLLocator
           throwSyntaxError("Unexpected token: " + token + " " + value);
         case POINTBRA: // <id id="..." ...
         {
-          Map<String, String> atts = new Attributes(expandEntities);
+          XMLAttrs atts = consumer.newAttributes();
+          // new XMLAttributes(expandEntities);
           inElement = true;
           checkToken(Lex.IDENTIFIER);
           String tag = value;
@@ -547,7 +546,7 @@ public class XMLScanner implements XMLHandler.XMLLocator
         pr("PI", "'" + chars + "'");
       };
 
-      public void startElement(String kind, Map<String, String> atts)
+      public void startElement(String kind, XMLAttrs atts)
       {
         pr("SE", kind + atts);
       };
@@ -581,35 +580,14 @@ public class XMLScanner implements XMLHandler.XMLLocator
       {
         // TODO Auto-generated method stub
         
-      };
+      }
+
+      public XMLAttrs newAttributes()
+      {
+        return new XMLAttributes();
+      }
     };
     new XMLScanner(sax).read(new LineNumberReader(new InputStreamReader(System.in)));
-  }
-
-  /** An implementation of Map that shows attributes in properly-quoted XML form if
-   *  expandEntities is true.
-   */
-  @SuppressWarnings("serial")
-  public static class Attributes extends LinkedHashMap<String, String>
-  { protected boolean expanding = true;
-    public Attributes(boolean expanding) { this.expanding = expanding; }
-    public String toString()
-    {
-      StringBuilder b = new StringBuilder();
-      for (String key : keySet())
-      {
-        b.append(" ");
-        b.append(key);
-        b.append("='");
-        if (expanding)
-          b.append(unQuote(get(key), false));
-        else
-          b.append(get(key));
-        b.append("'");
-      }
-      ;
-      return b.toString();
-    }
   }
 
   /** Re-quote special characters within a string. */
@@ -648,3 +626,4 @@ public class XMLScanner implements XMLHandler.XMLLocator
     }
   }
 }
+

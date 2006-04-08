@@ -28,7 +28,7 @@ public class XMLParser<T> implements XMLHandler
   /** The stack of starting line-numbers of the unclosed elements */
   protected Stack<Integer>         lines = new Stack<Integer>();
 
-  public void startElement(String kind, Map<String, String> atts)
+  public void startElement(String kind, XMLAttrs atts)
   {
     stack.push(factory.newElement(kind, atts));
     kinds.push(kind);
@@ -121,5 +121,10 @@ public class XMLParser<T> implements XMLHandler
   public void setLocator(XMLLocator locator)
   {
     this.locator = locator;    
+  }
+
+  public XMLAttrs newAttributes()
+  {
+    return new XMLAttributes();
   }
 }
