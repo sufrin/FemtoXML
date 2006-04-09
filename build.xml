@@ -1,15 +1,26 @@
 <?xml version="1.0"?>
      <!--
-             $Id:$
+             $Id$
      -->
 <project        name    ="FemtoXML"
-                default ="all">
+                default ="femtoprint.jar">
                 
         <property name="BUILD"  value="CLASS"/>
         <property name="TEST"   value="TEST"/>
         <property name="SRC"    value="."/>
+        <property name="DOC"    value="DOC"/>
         
-        <target name='all' depends='femtoprint.jar,femtoXML.jar'/>
+        <target name='all' depends='femtoprint.jar,femtoXML.jar,doc'/>
+        
+        <target name    = "doc" 
+                depends = "compile"
+                description = "Write the java documentation">
+                <javadoc  destdir="${DOC}"
+                          charset="UTF8"
+                          use="Yes">
+                  <fileset dir="${SRC}"/>
+                </javadoc>
+        </target>
         
         <target name        = "compile" 
                 description = "Compile all .java files below ${SRC}"
@@ -62,12 +73,15 @@
         
         <target name ="prepare">
                 <mkdir dir="${BUILD}"/>
+                <mkdir dir="${DOC}"/>
         </target>
         
         <target name ="clean" >
                 <delete dir="${BUILD}" />
+                <delete dir="${DOC}" />
         </target>
 </project>
+
 
 
 

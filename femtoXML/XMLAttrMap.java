@@ -47,7 +47,7 @@ public class XMLAttrMap extends LinkedHashMap<String, String> implements XMLAttr
   }
   
   /** Print in re-readable form on the given FormatWriter, using the given indent if 
-   *  the printed form is split across lines.
+   *  the printed form is split across lines. 
    */
   public void printTo(FormatWriter out, int indent)
   {  Set<String> keys = keySet();

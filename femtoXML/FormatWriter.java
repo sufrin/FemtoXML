@@ -3,7 +3,11 @@ package femtoXML;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.io.Writer;
-
+/**
+ * An extended PrintWriter that supports indented prettyprinting.
+ * @author sufrin
+ *
+ */
 public class FormatWriter extends PrintWriter
 {
   public FormatWriter(OutputStream out) { super(out, true); lnPending = false; chars = 0; }
@@ -12,6 +16,7 @@ public class FormatWriter extends PrintWriter
   /** There's a newline pending. */
   protected boolean lnPending;
   
+  /** Number of characters output on the current line */
   protected int chars;
   
   /** Get the number of characters output on the current line */
@@ -23,19 +28,22 @@ public class FormatWriter extends PrintWriter
     return chars + size < margin;
   }
   
-  int margin = 80;
+  /** The desired right margin */
+  protected int margin = 80;
   
+  /** Set the right margin */
   public void setMargin(int margin) { this.margin = margin; }
   
+  /** Return the right margin */
   public int getMargin() { return margin; }
   
-  /** Expand characters into character entities */
+  /** Clients must transform exotic characters into character entities */
   protected boolean charEntities = false;
   
-  /** Expanding characters into character entitities */
+  /** Should clients transform exotic characters (with codes >=128) into character entitities */
   public boolean getCharEntities() { return charEntities; }
   
-  /** Set whether characters are expanded as character entitities */
+  /** Should clients transform exotic characters (with codes >=128) into character entitities */
   public void setCharEntities(boolean useCharEntities) { this.charEntities = useCharEntities; }
   
   /** Flush the stream */
@@ -44,21 +52,23 @@ public class FormatWriter extends PrintWriter
     super.flush();
   }
 
-  /** generate a new line if there is one pending. */
-  public void pendingln()
+  /** Generate a new line if there is one pending. */
+  protected void pendingln()
   { if (lnPending)
     { super.println();
       chars = 0;
       lnPending = false;
     }
   }
-
+  
+  /** Force a newline and move to the given indentation */
   public void forceln(int indentation)
   {
     println();
     indent(indentation);
   }
   
+  /** Output any pending newline and move to the given indentation */
   public void indent(int indentation)
   {  pendingln();
      for (int i=0; i<indentation; i++) super.print(" ");
@@ -71,13 +81,13 @@ public class FormatWriter extends PrintWriter
      chars++;
   }
 
-  /** Mark the current line ended. */
+  /** Finish the current line and leave the newline pending. */
   public void println()
   {
      lnPending = true;
   }
 
-  /** Equivalent to <code>print(s); println()</code>. */
+  /** Print the given string and finish the current line. */
   public void println(String s)
   {
      super.print(s);

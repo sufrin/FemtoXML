@@ -25,7 +25,7 @@ public class XMLScanner implements XMLHandler.XMLLocator
   protected int lineNumber; 
 
   protected void throwSyntaxError(String error) 
-  { throw new XMLSyntaxError(error, description, lineNumber()); }
+  { throw new XMLSyntaxError(this, error); }
 
   public XMLScanner()
   {}
@@ -56,8 +56,16 @@ public class XMLScanner implements XMLHandler.XMLLocator
   
   /** Return the current source description */
   public String getDescription()
-  {
-     return description;
+  {  if (entities.isEmpty())
+        return description;
+     else
+     {
+       StringBuilder b = new StringBuilder();
+       b.append(description);
+       for (int i=0; i<entitynames.size(); i++)
+           b.append(String.format(" within &%s;", entitynames.get(i)));
+       return b.toString();
+     }
   }
   
   /** Human-readable string describing the source of the current input stream. */
@@ -133,6 +141,7 @@ public class XMLScanner implements XMLHandler.XMLLocator
        setDescription("<anonymous input stream>");
     this.reader = reader;
     entities = new Stack<Reader>();
+    entitynames = new Stack<String>();
     ch = 0;
     consumer.setLocator(this);
     consumer.startDocument();
@@ -419,10 +428,17 @@ public class XMLScanner implements XMLHandler.XMLLocator
   /** The stack of open entity-bodies */
   protected Stack<Reader> entities;
   
+  /** The stack of open entity names */
+  protected Stack<String> entitynames;
+  
   protected void pushEntity(String entityName)
   { Reader expansion = consumer.decodeEntity(entityName);
-    if (expansion == null) throwSyntaxError(String.format("Cannot find expansion of &%s;", entityName));
+    if (expansion == null) 
+        throwSyntaxError(String.format("Cannot find expansion of &%s;", entityName));
+    if (entitynames.contains(entityName))
+        throwSyntaxError(String.format("Recursion in expansion of &%s;", entityName));
     entities.push(expansion);
+    entitynames.push(entityName);
   }
 
   /** Read the next character; gobble the next entity if <code>expandingEntities</code> */
@@ -443,6 +459,7 @@ public class XMLScanner implements XMLHandler.XMLLocator
          { ch = entities.peek().read();
            if (ch>=0) return;
            entities.pop();
+           entitynames.pop();
          }
          ch = reader.read();
 

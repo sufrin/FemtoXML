@@ -3,22 +3,37 @@ package femtoXML.app;
 import femtoXML.FormatWriter;
 import femtoXML.XMLCharUtil;
 
+/**
+ * Represents a lump of unstructured text found within an XML element.
+ * @author sufrin
+ *
+ */
 public class AppWord implements AppTree
-{
+{ /** The text */
   protected String text;
-  protected boolean cdata, expandedEntities;
+  /** Was the text a CDATA? */
+  protected boolean cdata;
+  /** Did the text have character entitities expanded within it? */
+  protected boolean expandedEntities;
 
+  /** Construct a word */
   public AppWord(String text, boolean cdata, boolean expandEntities)
   {
     this.text = text;
     this.cdata = cdata;
     this.expandedEntities = expandEntities;
-    if (text.equals("")) System.err.println("EMPTY WORD");
   }
   
+  /** Construct a word (with <code>expandEntities</code> false) */
   public AppWord(String text, boolean cdata)
   {
     this(text, cdata, true);
+  }
+  
+  /** Construct a word (with <code>cdata</code> and <code>expandEntities</code> false) */
+  public AppWord(String text)
+  {
+    this(text, false, true);
   }
   
   

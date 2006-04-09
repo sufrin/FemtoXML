@@ -58,12 +58,11 @@ public class XMLParser<T> implements XMLHandler
     }
     else
       throw new XMLSyntaxError(locator,
-                               String
-                                     .format("Non-nested element: <%s>@%s...</%s>@%s",
-                                             tkind,
-                                             lines.peek(),
-                                             kind,
-                                             locator.lineNumber()));
+                                String.format("Improperly nested element: <%s>@%s...</%s>@%s",
+                                              tkind,
+                                              lines.peek(),
+                                              kind,
+                                              locator.lineNumber()));
   }
 
   protected T theTree = null;

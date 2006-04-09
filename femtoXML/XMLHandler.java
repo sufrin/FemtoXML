@@ -33,7 +33,6 @@ public interface XMLHandler
    * <code>
    * &lt;?XML ... ?&gt;
    * </code> declaration)
-   * 
    * has been scanned. We do not interpret the internal structure of a
    * processing instruction.
    */
@@ -41,14 +40,11 @@ public interface XMLHandler
 
   /**
    * Handle non-element text; <code>cdata</code> is true if the text is a
-   * 
-   * <pre>
+   * <code>
    * &lt;![CDATA[ ...]]&gt;
-   * </pre>
-   * 
-   * element.
+   * </code> element.
    */
-  public void wordCharacters(CharSequence text, boolean cdata);   // ...
+  public void wordCharacters(CharSequence text, boolean cdata); // ...
   
   /** Called just before document starts to be consumed */
   public void startDocument();
@@ -57,33 +53,49 @@ public interface XMLHandler
   public void endDocument();
   
   /**
-   * Called when a non-standard <code>&amp;entityName;</code> is scanned. Should return a <code>Reader</code>
-   * that will yield the characters of the expansion of the entity if it is known, and <code>null</code> otherwise.
+   * Called when a non-standard <code>&amp;entityName;</code> is scanned.
+   * Should return a <code>Reader</code> that will yield the characters of the
+   * expansion of the entity if it is known, and <code>null</code> otherwise.
    */
-  public Reader decodeEntity(String entityName);  // &entityname;
+  public Reader decodeEntity(String entityName); // &entityname;
   
   /**
-   * Called before decodeEntity when a non-standard <code>&amp;entityName;</code> is scanned. Should return a <code>Character</code>
-   * if it is known, and <code>null</code> otherwise.
+   * Called before decodeEntity when a non-standard
+   * <code>&amp;entityName;</code> is scanned. Should return a
+   * <code>Character</code> if it is known, and <code>null</code> otherwise.
    */
-  public char decodeCharEntity(String entityName); // &entityname; 
+  public char decodeCharEntity(String entityName); // &entityname;
   
-  /** Called by an <code>XMLScanner</code> before <code>startDocument</code> to give this handler access to the 
-   *  current location in the source text.
-   * @param loc -- a locator
+  /**
+   * Called by an <code>XMLScanner</code> before <code>startDocument</code>
+   * to give this handler access to the current location in the source text.
+   * 
+   * @param loc --
+   *          a locator
    */
   public void setLocator(XMLLocator loc);
   
+  /**
+   * 
+   * A locator is an indication of a position within a file.
+   *
+   */
   public static interface XMLLocator
-  {
+  {  
+     /**
+      * @return the current line number
+      */ 
      int   lineNumber();
-     String getDescription();
+     
+     /**
+       * @return a description of the current source (usually its path)
+       */
+    String getDescription();
   }
   
-  /** Called at the start of an element declaration.
-   * 
+  /** Called just after the opening  <code>&lt;name</code> of an element is scanned. 
    * @param expandEntities -- true if entities are bneing expanded by the scanner
-   * @return -- a new XMLAttributes object to store the entitities for this element
+   * @return -- a new <code>XMLAttributes</code> object to store the entitities for this element
    */
   public XMLAttributes newAttributes(boolean expandEntities);
 }
