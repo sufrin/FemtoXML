@@ -264,7 +264,7 @@ public class XMLScanner implements XMLHandler.XMLLocator
       int close = ch;
       StringBuilder b = new StringBuilder();
       nextChar();
-      while (0 <= ch && ch != close)
+      while (0 <= ch && !(ch == close && entities.isEmpty()))
       {
         if (expandEntities && ch == '&')
           if (isCharEntity) b.append(theCharEntity); else { pushEntity(entityName); }
@@ -357,10 +357,10 @@ public class XMLScanner implements XMLHandler.XMLLocator
               count++;
             else if (ch == '>') count--;
           }
-          if (count != 0)
-                         throwSyntaxError("<!DOCTYPE with runaway body ...");
+          if (count != 0)  throwSyntaxError("<!DOCTYPE with runaway body ...");
+          if (b.indexOf("DOCTYPE ")!=0) throwSyntaxError("<!DOCTYPE ... > expected.");
           token = Lex.DOCTYPE;
-          value = b.substring(0, b.length()-1);
+          value = b.substring(8, b.length());
           nextRawChar();
         }
         else
