@@ -40,6 +40,11 @@ public class AppTreeFactory implements XMLTreeFactory<AppTree>
     return new AppComment(data);
   }
 
+  public AppTree newDOCTYPE(String data)
+  {
+    return new AppDOCTYPE(data);
+  }
+
   public AppTree newPI(String data)
   {
     return new AppPI(data);
@@ -51,6 +56,11 @@ public class AppTreeFactory implements XMLTreeFactory<AppTree>
   }
   
   public boolean canPI()
+  {
+    return true;
+  }
+  
+  public boolean canDOCTYPE()
   {
     return true;
   }

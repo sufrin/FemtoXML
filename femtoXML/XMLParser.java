@@ -89,6 +89,12 @@ public class XMLParser<T> implements XMLHandler
     if (factory.canPI())
        stack.peek().addTree(factory.newPI(text.toString()));
   }
+  
+  public void DOCTYPECharacters(CharSequence text)
+  {
+    if (factory.canDOCTYPE())
+       stack.peek().addTree(factory.newDOCTYPE(text.toString()));
+  }
 
   public void startDocument()
   {

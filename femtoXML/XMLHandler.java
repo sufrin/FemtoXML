@@ -39,6 +39,12 @@ public interface XMLHandler
   public void PICharacters(CharSequence text); // <? ... ?>
 
   /**
+   * Called just after the closing bracket of the DOCTYPE declaration. We do not interpret the internal
+   * structure of the declaration.
+   */
+  public void DOCTYPECharacters(CharSequence text); // <? ... ?>
+
+  /**
    * Handle non-element text; <code>cdata</code> is true if the text is a
    * <code>
    * &lt;![CDATA[ ...]]&gt;

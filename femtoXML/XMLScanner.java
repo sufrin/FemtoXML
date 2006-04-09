@@ -163,6 +163,7 @@ public class XMLScanner implements XMLHandler.XMLLocator
       switch (token)
       {
         case DOCTYPE:
+          consumer.DOCTYPECharacters(value);
           break;
         case PROCESS:
           consumer.PICharacters(value);
@@ -347,10 +348,10 @@ public class XMLScanner implements XMLHandler.XMLLocator
                                 + b.toString() + ">");
         }
         else if (ch == 'D') // Assume <!DOCTYPE and read to matching closing >
-        {
+        { StringBuilder b = new StringBuilder();
           int count = 1;
           while (0 <= ch && count > 0)
-          {
+          { b.append((char) ch);
             nextRawChar();
             if (ch == '<')
               count++;
@@ -359,6 +360,7 @@ public class XMLScanner implements XMLHandler.XMLLocator
           if (count != 0)
                          throwSyntaxError("<!DOCTYPE with runaway body ...");
           token = Lex.DOCTYPE;
+          value = b.substring(0, b.length()-1);
           nextRawChar();
         }
         else
