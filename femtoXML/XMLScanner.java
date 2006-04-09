@@ -357,8 +357,7 @@ public class XMLScanner implements XMLHandler.XMLLocator
         {
           StringBuilder b = new StringBuilder();
           do
-          {
-            while (0 <= ch && ch != '>')
+          { while (0 <= ch && ch != '>')
             {
               b.append((char) ch);
               nextRawChar();
@@ -389,13 +388,13 @@ public class XMLScanner implements XMLHandler.XMLLocator
     }
     else
     // a new ``word'' lump begins
-    {
+    { 
       StringBuilder b = new StringBuilder();
       token = Lex.IDENTIFIER;
       // leading & is a special case because it was read by nextRawChar
       if (expandEntities && ch == '&')
       {
-          token = Lex.WORD;
+          // token = Lex.WORD;
           nextEntity();
       }
       while (ch > ' ' && ch != '<' && ch != '>'
@@ -409,7 +408,11 @@ public class XMLScanner implements XMLHandler.XMLLocator
         if (!Character.isLetterOrDigit(ch) && ch != '_' && ch != ':') token = Lex.WORD;
         nextChar();
       }
-      value = b.toString();
+      // If an entity expansion is a structure
+      if (b.length()==0)
+         nextToken();
+      else
+         value = b.toString();
     }
   }
   

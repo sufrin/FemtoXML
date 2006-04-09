@@ -1,6 +1,7 @@
 package femtoXML.app;
 
-import java.io.PrintWriter;
+import femtoXML.FormatWriter;
+
 
 public class AppPI implements AppTree
 {
@@ -21,13 +22,18 @@ public class AppPI implements AppTree
   /** Outputs the text of this PI. 
    *  
    */
-  public void printTo(PrintWriter out, int indent)
+  public void printTo(FormatWriter out, int indent)
   {
-    for (int i = 0; i < indent; i++)
-      out.print(" ");
+      out.indent(indent);
       out.print("<?");
       out.print(text);
       out.println("?>");
+  }
+
+
+  public boolean isWord()
+  {
+    return false;
   }
 }
 

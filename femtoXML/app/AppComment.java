@@ -1,14 +1,17 @@
 package femtoXML.app;
 
-import java.io.PrintWriter;
+import femtoXML.FormatWriter;
+
 
 public class AppComment implements AppTree
-{ protected String data;
-  public AppComment(String data) { this.data=data; }
+{ protected String[] lines;
+  public AppComment(String data)
+  { lines = data.split("[ \\t]*\\n[ \\t]*");
+  }
   
-  public void printTo(PrintWriter out, int indent)
-  { String [] lines = data.split("[ \\t]*\\n[ \\t]*");
-    for (int i = 0; i < indent; i++) out.print(" ");
+  public void printTo(FormatWriter out, int indent)
+  { 
+    out.indent(indent);
     if (lines.length==1) 
       out.println("<!--"+lines[0]+"-->");
     else
@@ -17,12 +20,17 @@ public class AppComment implements AppTree
       for (String line: lines)
       if (line.length()>0)
       {
-        for (int i = 0; i < indent+4; i++) out.print(" ");
+        out.indent(indent+4);
         out.println(line);
       }
-      for (int i = 0; i < indent; i++) out.print(" ");
+      out.indent(indent);
       out.println("-->");
     }
+  }
+
+  public boolean isWord()
+  {
+    return false;
   }
 }
 

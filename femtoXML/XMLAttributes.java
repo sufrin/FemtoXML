@@ -18,5 +18,5 @@ public interface XMLAttributes
    * there is more than one attribute, then start a new line for each, and use the
    * given indentation.
    */
-  void printTo(PrintWriter out, int indent);
+  void printTo(FormatWriter out, int indent);
 }

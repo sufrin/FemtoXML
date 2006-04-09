@@ -1,8 +1,10 @@
 package femtoXML.app;
 
-import java.io.PrintWriter;
+import femtoXML.FormatWriter;
+
 
 public interface AppTree
 {
-  void printTo(PrintWriter out, int indent);
+  void    printTo(FormatWriter out, int indent);
+  boolean isWord();
 }

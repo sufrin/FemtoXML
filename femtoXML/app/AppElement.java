@@ -1,7 +1,7 @@
 package femtoXML.app;
 
-import java.io.PrintWriter;
 import java.util.*;
+import femtoXML.FormatWriter;
 import femtoXML.XMLAttributes;
 import femtoXML.XMLComposite;
 
@@ -62,33 +62,40 @@ public class AppElement
     return s.toString();
   }
 
-  public void printTo(PrintWriter out, int indent)
+  public void printTo(FormatWriter out, int indent)
   {
-    for (int i = 0; i < indent; i++)
-      out.print(" "); // Indent to open bracket position
+    out.indent(indent);
     if (subtrees.size() == 0) // Can we abbreviate the tree?
     {  out.print(String.format("<%s", kind));
-       attrs.printTo(out, indent+2);
+       attrs.printTo(out, indent+4);
        out.print("/>");
     }
     else
     {
       out.print(String.format("<%s", kind));
-      attrs.printTo(out, indent+2);
-      out.print(">");
+      attrs.printTo(out, indent+4);
+      out.println(">");
       boolean wasWord = false; // Last printed tree was a Word
       for (AppTree t : subtrees)
-      {
-        boolean isWord = t instanceof AppWord;
-        boolean needNL = !wasWord || !isWord;
-        if (needNL) out.println();
-        t.printTo(out, needNL ? indent + 2 : 1);
-        wasWord = isWord;
+      {   boolean isWord = t.isWord();
+          if (isWord && wasWord && out.withinMargin(0)) 
+          {
+            out.print(' '); t.printTo(out, 0);
+          }
+          else
+          { t.printTo(out, indent + 2);
+            out.println();
+          }
+          wasWord = isWord;
       }
       out.println();
-      for (int i = 0; i < indent; i++)
-        out.print(" "); // Align close bracket with open bracket
-      out.print(String.format("</%s>", kind));
+      out.indent(indent);
+      out.println(String.format("</%s>", kind));
     }
+  }
+
+  public boolean isWord()
+  {
+    return false;
   }
 }

@@ -1,6 +1,6 @@
 package femtoXML;
 
-import java.io.PrintWriter;
+import femtoXML.FormatWriter;
 import java.io.StringWriter;
 import java.util.Hashtable;
 import java.util.Map;
@@ -32,20 +32,22 @@ public class XMLCharUtil
   public static String unQuote(String s)
   {
     StringWriter quoted = new StringWriter();
-    PrintWriter out = new PrintWriter(quoted);
+    FormatWriter out = new FormatWriter(quoted);
     print(out, s);
     out.flush();
     return quoted.toString();
   }
   
   /** Print the given string on the given writer, representing special characters by named entitities. */
-  public static void print(PrintWriter out, String s)
+  public static void print(FormatWriter out, String s)
   {
     for (int i=0; i<s.length(); i++) print(out, s.charAt(i));
   }
   
-  /** Print the given character on the given writer, representing special characters by named entitities.  */
-  public static void print(PrintWriter out, char c)
+  /** Print the given character on the given writer, representing special characters by named entitities
+   *  if the writer's isAscii property is set.  
+   */
+  public static void print(FormatWriter out, char c)
   { switch (c)
     {
       case '<':      out.print("&lt;");   break;
@@ -55,11 +57,16 @@ public class XMLCharUtil
       case '\'':     out.print("&apos;"); break;
       case '\u00A0': out.print("&nbsp;"); break;
       default:   
-        String name = fromChar.get(c);
-        if (name==null)
-          if (c>128) out.format("&#x%X;", (int) c); else out.print(c);
+        if (out.getCharEntities())
+        {
+          String name = fromChar.get(c);
+          if (name==null)
+            if (c>128) out.print(String.format("&#x%X;", (int) c)); else out.print(c);
+          else
+            out.print(String.format("&%s;", name));
+        }
         else
-          out.format("&%s;", name);
+          out.print(c);
     }
   }
   

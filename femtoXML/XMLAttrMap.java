@@ -1,6 +1,5 @@
 package femtoXML;
 
-import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.LinkedHashMap;
 import java.util.Set;
@@ -41,24 +40,23 @@ public class XMLAttrMap extends LinkedHashMap<String, String> implements XMLAttr
   public String toString()
   {
     StringWriter sw  = new StringWriter();
-    PrintWriter  out = new PrintWriter(sw);
+    FormatWriter out = new FormatWriter(sw);
     printTo(out, 0);
     out.flush();
     return sw.toString();
   }
   
-  /** Print in re-readable form on the given PrintWriter, using the given indent if 
+  /** Print in re-readable form on the given FormatWriter, using the given indent if 
    *  the printed form is split across lines.
    */
-  public void printTo(PrintWriter out, int indent)
+  public void printTo(FormatWriter out, int indent)
   {  Set<String> keys = keySet();
      boolean indenting = keys.size()>split && indent>0;
      for (String key: keys)
      { String val = get(key);
        char quote = val.indexOf('"')==-1 ? '"' : '\'';
        if (indenting) 
-       {  out.println();
-          for (int i=0; i<indent; i++) out.print(" ");
+       {  out.println(); out.indent(indent);
        }
        else 
           out.print(" ");
