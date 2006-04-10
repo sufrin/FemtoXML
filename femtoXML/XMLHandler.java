@@ -52,6 +52,15 @@ public interface XMLHandler
    */
   public void wordCharacters(CharSequence text, boolean cdata); // ...
   
+  /**
+   * Handle non-element spaces.
+   */
+  public void    spaceCharacters(CharSequence text); 
+  
+  /** Returns true if the handler wants to see spaces.
+   */
+  public boolean wantSpaces();
+  
   /** Called just before document starts to be consumed */
   public void startDocument();
   

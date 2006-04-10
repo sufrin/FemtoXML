@@ -147,4 +147,26 @@ public class XMLParser<T> implements XMLHandler
   {
     return new XMLAttrMap(expandEntitites);
   }
+
+  public void spaceCharacters(CharSequence text)
+  {
+    stack.peek().addTree(factory.newSpaces(text.toString()));    
+  }
+  
+  /**
+   * @param kind -- the kind of element that is currently being built
+   * @return true if this kind of element wants spaces to be recorded
+   */
+  public boolean wantSpaces(String kind)
+  {
+    return false;
+  }
+  
+  /** 
+   * @return <code>wantSpaces(<i>the current element kind</i>)</code>
+   */
+  final public boolean wantSpaces()
+  { String kind = kinds.peek();
+    return wantSpaces(kind);
+  }
 }

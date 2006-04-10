@@ -38,6 +38,11 @@ public class App
       {  String value = map.get(name);
          return new StringReader(value==null ? name : value);
       }
+      
+      public boolean wantSpaces(String elementKind)
+      {
+        return elementKind.equals("pre");
+      }
     };
     XMLScanner         scanner = new XMLScanner(parser);
     FormatWriter        out    = new FormatWriter(new OutputStreamWriter(System.out, "UTF-8"));

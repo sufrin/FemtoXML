@@ -239,13 +239,26 @@ public class XMLScanner implements XMLHandler.XMLLocator
   {
     if (0 <= ch && ch <= ' ')
     {
-      do
+      if (!inElement && consumer.wantSpaces())
       {
-        nextRawChar();
+        StringBuilder b = new StringBuilder();
+        do
+        { b.append((char)ch);
+          nextRawChar();
+        }
+        while (0 <= ch && ch <= ' ');
+        consumer.spaceCharacters(b);
       }
-      while (0 <= ch && ch <= ' ');
+      else
+      {
+        do
+        {
+          nextRawChar();
+        }
+        while (0 <= ch && ch <= ' ');
+      }
     }
-    lineNumber = 1+reader.getLineNumber();
+    lineNumber = 1 + reader.getLineNumber();
     value = "";
     if (ch == -1)
     {
@@ -267,7 +280,12 @@ public class XMLScanner implements XMLHandler.XMLLocator
       while (0 <= ch && !(ch == close && entities.isEmpty()))
       {
         if (expandEntities && ch == '&')
-          if (isCharEntity) b.append(theCharEntity); else { pushEntity(entityName); }
+          if (isCharEntity)
+            b.append(theCharEntity);
+          else
+          {
+            pushEntity(entityName);
+          }
         else
           b.append((char) ch);
         nextChar();
@@ -337,7 +355,7 @@ public class XMLScanner implements XMLHandler.XMLLocator
           while (0 <= ch && !endCDATA(b));
           if (ch < 0)
             throwSyntaxError("<![CDATA[ ... ]]> expected; found <!"
-                                + b.toString() + " at end of file");
+                             + b.toString() + " at end of file");
           else if (isCDATA(b))
           {
             value = b.substring(7, b.length() - 3);
@@ -345,20 +363,23 @@ public class XMLScanner implements XMLHandler.XMLLocator
           }
           else
             throwSyntaxError("<![CDATA[ ... ]]> expected; found <!"
-                                + b.toString() + ">");
+                             + b.toString() + ">");
         }
         else if (ch == 'D') // Assume <!DOCTYPE and read to matching closing >
-        { StringBuilder b = new StringBuilder();
+        {
+          StringBuilder b = new StringBuilder();
           int count = 1;
           while (0 <= ch && count > 0)
-          { b.append((char) ch);
+          {
+            b.append((char) ch);
             nextRawChar();
             if (ch == '<')
               count++;
             else if (ch == '>') count--;
           }
-          if (count != 0)  throwSyntaxError("<!DOCTYPE with runaway body ...");
-          if (b.indexOf("DOCTYPE ")!=0) throwSyntaxError("<!DOCTYPE ... > expected.");
+          if (count != 0) throwSyntaxError("<!DOCTYPE with runaway body ...");
+          if (b.indexOf("DOCTYPE ") != 0)
+                                         throwSyntaxError("<!DOCTYPE ... > expected.");
           token = Lex.DOCTYPE;
           value = b.substring(8, b.length());
           nextRawChar();
@@ -368,7 +389,8 @@ public class XMLScanner implements XMLHandler.XMLLocator
         {
           StringBuilder b = new StringBuilder();
           do
-          { while (0 <= ch && ch != '>')
+          {
+            while (0 <= ch && ch != '>')
             {
               b.append((char) ch);
               nextRawChar();
@@ -399,31 +421,38 @@ public class XMLScanner implements XMLHandler.XMLLocator
     }
     else
     // a new ``word'' lump begins
-    { 
+    {
       StringBuilder b = new StringBuilder();
       token = Lex.IDENTIFIER;
       // leading & is a special case because it was read by nextRawChar
       if (expandEntities && ch == '&')
       {
-          // token = Lex.WORD;
-          nextEntity();
+        // token = Lex.WORD;
+        nextEntity();
       }
       while (ch > ' ' && ch != '<' && ch != '>'
              && !(inElement && (ch == '/' || ch == '=')))
       {
-        if (expandEntities && ch=='&')
-          if (isCharEntity) b.append(theCharEntity); else { pushEntity(entityName); }
+        if (expandEntities && ch == '&')
+          if (isCharEntity)
+            b.append(theCharEntity);
+          else
+          {
+            pushEntity(entityName);
+          }
         else
           b.append((char) ch);
-        // It's an identifier as long as it consists only of identifier characters
-        if (!Character.isLetterOrDigit(ch) && ch != '_' && ch != ':') token = Lex.WORD;
+        // It's an identifier as long as it consists only of identifier
+        // characters
+        if (!Character.isLetterOrDigit(ch) && ch != '_' && ch != ':')
+                                                                     token = Lex.WORD;
         nextChar();
       }
       // If an entity expansion is a structure
-      if (b.length()==0)
-         nextToken();
+      if (b.length() == 0)
+        nextToken();
       else
-         value = b.toString();
+        value = b.toString();
     }
   }
   

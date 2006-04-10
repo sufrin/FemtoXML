@@ -70,7 +70,8 @@ public class FormatWriter extends PrintWriter
   
   /** Output any pending newline and move to the given indentation */
   public void indent(int indentation)
-  {  pendingln();
+  {  if (indentation<0) { return; }
+     pendingln();
      for (int i=0; i<indentation; i++) super.print(" ");
      chars = indentation;
   }

@@ -11,6 +11,8 @@ public class AppElement
   protected String              kind;
   protected XMLAttributes       attrs;
   protected Vector<AppTree>     subtrees = new Vector<AppTree>();
+  /** True if an AppSpaces node has been added */
+  protected boolean            hasSpaces = false;
 
   public AppTree close()
   {
@@ -26,6 +28,7 @@ public class AppElement
   public void addTree(AppTree t)
   {
     subtrees.add(t);
+    if (t instanceof AppSpaces) hasSpaces = true;
   }
 
   public String getKind()
@@ -69,6 +72,14 @@ public class AppElement
     {  out.print(String.format("<%s", kind));
        attrs.printTo(out, indent+4);
        out.print("/>");
+    }
+    else if (hasSpaces || indent<0)
+    {
+      out.print(String.format("<%s", kind));
+      attrs.printTo(out, -1);
+      out.print(">");
+      for (AppTree t : subtrees) t.printTo(out, -1);
+      out.println(String.format("</%s>", kind)); 
     }
     else
     {

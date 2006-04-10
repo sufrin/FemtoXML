@@ -64,5 +64,15 @@ public class AppTreeFactory implements XMLTreeFactory<AppTree>
   {
     return true;
   }
+
+  public AppTree newSpaces(String text)
+  {
+    return new AppSpaces(text);
+  }
+
+  public boolean wantSpaces(String elementKind)
+  {
+    return false;
+  }
 }
 

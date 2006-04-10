@@ -16,6 +16,9 @@ public interface XMLTreeFactory<Tree>
   
   /** Generate a tree node for the DOCTYPE whose body is the given text */
   Tree newDOCTYPE(String text);
+  
+  /** Generate a tree node to represent non-markup space */
+  Tree newSpaces(String text);
 
   /** Return true if newComment can legitimately be called  */
   boolean canComment();
@@ -25,4 +28,7 @@ public interface XMLTreeFactory<Tree>
   
   /** Return true if newDOCTYPE can legitimately be called  */
   boolean canDOCTYPE();
+  
+  /** Return true if the named element wants to record spaces */
+  boolean wantSpaces(String elementKind);
 }
