@@ -6,9 +6,12 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.Vector;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import femtoXML.FormatWriter;
 import femtoXML.XMLParser;
 import femtoXML.XMLScanner;
+import femtoXML.XMLTreeFactory;
 /**
  * An exemplary femtoXML application that pretty-prints its input XML files onto the
  * standard output stream.
@@ -37,7 +40,29 @@ public class App
         else
            files.add(arg);
     }
-    XMLParser<AppTree> parser  = new XMLParser<AppTree>(new AppTreeFactory(expandEntities))
+    
+    XMLTreeFactory<AppTree> factory = new AppTreeFactory(expandEntities)
+    {
+      Pattern entity = 
+        Pattern.compile("<!ENTITY[ ]+([A-Za-z0-9]+)[ ]+((\"([^\"]+)\")|(\'([^\']+)\'))[ ]*>", Pattern.MULTILINE);
+
+      public AppTree newDOCTYPE(String data)
+      {   int start = 0;
+          Matcher m = entity.matcher(data);
+          while (m.find(start))
+          { String name = m.group(1);
+            String value = m.group(4);
+            if (value==null) value = m.group(6);
+            map.put(name, value);
+            // System.err.printf("DECLARE %s=%s%n", name, value);
+            start = m.end();
+          }
+          
+        return new AppDOCTYPE(data);
+      }
+    };
+    
+    XMLParser<AppTree> parser  = new XMLParser<AppTree>(factory)
     {
       public Reader decodeEntity(String name)
       {  String value = map.get(name);
