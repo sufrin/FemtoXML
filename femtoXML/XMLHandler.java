@@ -50,7 +50,7 @@ public interface XMLHandler
    * &lt;![CDATA[ ...]]&gt;
    * </code> element.
    */
-  public void wordCharacters(CharSequence text, boolean cdata); // ...
+  public void contentCharacters(CharSequence text, boolean cdata); // ...
   
   /**
    * Handle non-element spaces.

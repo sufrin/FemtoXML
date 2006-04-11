@@ -4,7 +4,8 @@ import java.io.Reader;
 import java.util.*;
 
 /**
- * An <code>XMLParser&lt;T&gt;</code> is an <code>XMLHandler</code> that can be repeatedly used to generate application structures
+ * An <code>XMLParser&lt;T&gt;</code> is an <code>XMLHandler</code> that can be 
+ * repeatedly used to generate application structures
  * from XML documents.
  * 
  * @author sufrin
@@ -18,7 +19,8 @@ public class XMLParser<T> implements XMLHandler
 
   /**
    * Construct a parser.
-   * @param factory -- the factory that will map the individual XML elements into application substructures.
+   * @param factory -- the factory that will map the individual XML elements 
+   * into application substructures.
    */
   public XMLParser(XMLTreeFactory<T> factory)
   {
@@ -28,7 +30,9 @@ public class XMLParser<T> implements XMLHandler
   /** The stack of parse-tree nodes corresponding to unclosed elements. */
   protected Stack<XMLComposite<T>> stack = new Stack<XMLComposite<T>>();
   
-  /** The stack of names of unclosed elements. Invariant: <code>stack.size()==kinds.size()</code> */
+  /** The stack of names of unclosed elements. 
+      Invariant: <code>stack.size()==kinds.size()==lines.size()</code> 
+  */
   protected Stack<String>          kinds = new Stack<String>();
   
   /** The stack of starting line-numbers of the unclosed elements */
@@ -79,9 +83,9 @@ public class XMLParser<T> implements XMLHandler
        stack.peek().addTree(factory.newComment(text.toString()));
   }
 
-  public void wordCharacters(CharSequence text, boolean cdata)
+  public void contentCharacters(CharSequence text, boolean cdata)
   {
-    stack.peek().addTree(factory.newWord(text.toString(), cdata));
+    stack.peek().addTree(factory.newContent(text.toString(), cdata));
   }
 
   public void PICharacters(CharSequence text)
@@ -104,6 +108,7 @@ public class XMLParser<T> implements XMLHandler
     kinds.push("");
     lines.clear();
     lines.push(1);
+    theTree = null;
   }
 
   public void endDocument()
@@ -170,3 +175,4 @@ public class XMLParser<T> implements XMLHandler
     return wantSpaces(kind);
   }
 }
+

@@ -6,7 +6,7 @@ public interface XMLTreeFactory<Tree>
 
   XMLComposite<Tree> newRoot();
 
-  Tree newWord(String text, boolean cdata);
+  Tree newContent(String text, boolean cdata);
   
   /** Generate a tree node for the comment whose body is the given text */
   Tree newComment(String text);

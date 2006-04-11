@@ -4,7 +4,7 @@ import femtoXML.XMLAttributes;
 import femtoXML.XMLTreeFactory;
 
 /**
- * A <code>XMLTreeFactory</code> that builds <code>AppElement, AppComment, AppPI, AppWord</code> nodes as an XML file is parsed.
+ * A <code>XMLTreeFactory</code> that builds <code>AppElement, AppComment, AppPI, AppContent</code> nodes as an XML file is parsed.
  * @author sufrin
  */
 public class AppTreeFactory implements XMLTreeFactory<AppTree>
@@ -30,9 +30,9 @@ public class AppTreeFactory implements XMLTreeFactory<AppTree>
     return newElement("", null);
   }
 
-  public AppWord newWord(String name, boolean cdata)
+  public AppContent newContent(String name, boolean cdata)
   {
-    return new AppWord(name, cdata, expandedEntities);
+    return new AppContent(name, cdata, expandedEntities);
   }
 
   public AppTree newComment(String data)

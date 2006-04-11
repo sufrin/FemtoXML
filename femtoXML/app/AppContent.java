@@ -8,7 +8,7 @@ import femtoXML.XMLCharUtil;
  * @author sufrin
  *
  */
-public class AppWord implements AppTree
+public class AppContent implements AppTree
 { /** The text */
   protected String text;
   /** Was the text a CDATA? */
@@ -16,8 +16,8 @@ public class AppWord implements AppTree
   /** Did the text have character entitities expanded within it? */
   protected boolean expandedEntities;
 
-  /** Construct a word */
-  public AppWord(String text, boolean cdata, boolean expandEntities)
+  /** Construct content */
+  public AppContent(String text, boolean cdata, boolean expandEntities)
   {
     this.text = text;
     this.cdata = cdata;
@@ -25,13 +25,13 @@ public class AppWord implements AppTree
   }
   
   /** Construct a word (with <code>expandEntities</code> false) */
-  public AppWord(String text, boolean cdata)
+  public AppContent(String text, boolean cdata)
   {
     this(text, cdata, true);
   }
   
   /** Construct a word (with <code>cdata</code> and <code>expandEntities</code> false) */
-  public AppWord(String text)
+  public AppContent(String text)
   {
     this(text, false, true);
   }

@@ -19,7 +19,10 @@ public class XMLScanner implements XMLHandler.XMLLocator
 {
   protected XMLHandler           consumer;
   protected LineNumberReader     reader;
-  protected boolean             expandEntities = true;
+  protected boolean              expandEntities = true;
+  private final char    
+                QUOT = 0x22, 
+                APOS = 0x27;
   
   /** The line where the current symbol started */
   protected int lineNumber; 
@@ -102,7 +105,7 @@ public class XMLScanner implements XMLHandler.XMLLocator
     POINTKET(">"), 
     POINTBRASLASH( "</"), 
     SLASHPOINTKET("/>"), 
-    WORD("WORD"), 
+    CONTENT("CONTENT"), 
     IDENTIFIER("IDENTIFIER"), 
     CDATA("<![CDATA[ ..."), 
     SQUOTE("' or \""), 
@@ -169,11 +172,11 @@ public class XMLScanner implements XMLHandler.XMLLocator
           consumer.PICharacters(value);
           break;
         case IDENTIFIER:
-        case WORD:
-          consumer.wordCharacters(value, false);
+        case CONTENT:
+          consumer.contentCharacters(value, false);
           break;
         case CDATA:
-          consumer.wordCharacters(value, true);
+          consumer.contentCharacters(value, true);
           break;
         case POINTBRASLASH: // </ tag >
           checkToken(Lex.IDENTIFIER);
@@ -272,7 +275,7 @@ public class XMLScanner implements XMLHandler.XMLLocator
       value = "";
       nextRawChar();
     }
-    else if (inElement && (ch == '\'' || ch == '"'))
+    else if (inElement && (ch == APOS || ch == QUOT)) 
     {
       int close = ch;
       StringBuilder b = new StringBuilder();
@@ -420,16 +423,16 @@ public class XMLScanner implements XMLHandler.XMLLocator
       token = Lex.POINTKET;
     }
     else
-    // a new ``word'' lump begins
+    // a piece of text appears: it might be an identifier or more general content
     {
-      StringBuilder b = new StringBuilder();
-      token = Lex.IDENTIFIER;
       // leading & is a special case because it was read by nextRawChar
       if (expandEntities && ch == '&')
       {
-        // token = Lex.WORD;
         nextEntity();
+        if (!isCharEntity) { pushEntity(entityName); nextRawChar(); nextToken(); return; }
       }
+      StringBuilder b = new StringBuilder();
+      token = Lex.IDENTIFIER;
       while (ch > ' ' && ch != '<' && ch != '>'
              && !(inElement && (ch == '/' || ch == '=')))
       {
@@ -437,22 +440,15 @@ public class XMLScanner implements XMLHandler.XMLLocator
           if (isCharEntity)
             b.append(theCharEntity);
           else
-          {
             pushEntity(entityName);
-          }
         else
           b.append((char) ch);
         // It's an identifier as long as it consists only of identifier
         // characters
-        if (!Character.isLetterOrDigit(ch) && ch != '_' && ch != ':')
-                                                                     token = Lex.WORD;
+        if (!Character.isLetterOrDigit(ch) && ch != '_' && ch != ':') token = Lex.CONTENT;
         nextChar();
       }
-      // If an entity expansion is a structure
-      if (b.length() == 0)
-        nextToken();
-      else
-        value = b.toString();
+      value = b.toString();
     }
   }
   
@@ -472,7 +468,10 @@ public class XMLScanner implements XMLHandler.XMLLocator
     entitynames.push(entityName);
   }
 
-  /** Read the next character; gobble the next entity if <code>expandingEntities</code> */
+  /**
+   * Read the next character; gobble the next entity if
+   * <code>expandingEntities</code>
+   */
   protected void nextChar()
   {
     nextRawChar();
@@ -489,10 +488,11 @@ public class XMLScanner implements XMLHandler.XMLLocator
     {    while (!entities.isEmpty())
          { ch = entities.peek().read();
            if (ch>=0) return;
-           entities.pop();
+           entities.pop().close();
            entitynames.pop();
          }
          ch = reader.read();
+         if (ch<0) reader.close();
 
     }
     catch (Exception ex)
@@ -505,8 +505,10 @@ public class XMLScanner implements XMLHandler.XMLLocator
   char    theCharEntity;
   
   /**
-   * Read and expand the next entity; the variable 'entity' is set to the
-   * expansion.
+   * Read the next entity: <code>entityName</code> is set to the name. If the
+   * entity is a character entity, then <code>theCharEntity</code> is set to
+   * it, and <code>isCharEntity</code> is set true. The variable
+   * <code>ch</code> is always set to <code>'&'</code>.
    */
   protected void nextEntity()
   {
@@ -517,9 +519,9 @@ public class XMLScanner implements XMLHandler.XMLLocator
       entityName = entityName + ((char) ch);
       nextRawChar();
     }
-    theCharEntity = consumer.decodeCharEntity(entityName);    
-    isCharEntity  = theCharEntity>0;
-    ch  = '&';
+    theCharEntity = consumer.decodeCharEntity(entityName);
+    isCharEntity = theCharEntity > 0;
+    ch = '&';
   }
 
   protected static boolean endComment(StringBuilder b)
@@ -549,4 +551,5 @@ public class XMLScanner implements XMLHandler.XMLLocator
 
 
 }
+
 
