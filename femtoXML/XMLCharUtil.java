@@ -31,9 +31,19 @@ public class XMLCharUtil
 
   static
   {
-    newEntity("nbsp", '\u00A0');
+    newEntity("nbsp",   '\u00A0');
     newEntity("Aacute", '\u00C1');
     newEntity("aacute", '\u00E1');
+    newEntity("copy",   '\u00A9');
+    newEntity("reg",    '\u00AE');    
+    newEntity("pound",  '\u00A3');    
+    newEntity("sect",   '\u00A7');    
+    newEntity("para",   '\u00B6');    
+    newEntity("middot", '\u00B7');  
+    newEntity("laquo",  '\u00AB');  
+    newEntity("raquo",  '\u00BB');  
+    newEntity("ldquo",  '\u201C');  
+    newEntity("rdquo",  '\u201D');  
   }
 
   /** Re-quote special characters as entitities within the given string. */
@@ -111,7 +121,7 @@ public class XMLCharUtil
       return '<';
     else if ("quot".equals(entityName))
       return '"';
-    else if (entityName.matches("#[Xx][0-9]+"))
+    else if (entityName.matches("#[Xx][0-9a-fA-F]+"))
       return (char) Integer.parseInt(entityName.substring(2), 16);
     else if (entityName.matches("#[0-9]+"))
       return (char) Integer.parseInt(entityName.substring(1), 10);

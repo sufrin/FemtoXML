@@ -134,7 +134,7 @@ public class XMLParser<T> implements XMLHandler
     return null;
   }
   
-  /** This procedure uses XMLCharUtil.decodeCharEntity to decode cxharacter entity names.  */
+  /** This procedure uses XMLCharUtil.decodeCharEntity to decode character entity names.  */
   public char decodeCharEntity(String entityName)
   { 
     return XMLCharUtil.decodeCharEntity(entityName);

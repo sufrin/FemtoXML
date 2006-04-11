@@ -1,5 +1,6 @@
 package femtoXML.app;
 
+import femtoXML.XMLAttrMap;
 import femtoXML.XMLAttributes;
 import femtoXML.XMLTreeFactory;
 
@@ -27,7 +28,7 @@ public class AppTreeFactory implements XMLTreeFactory<AppTree>
 
   public AppElement newRoot()
   {
-    return newElement("", null);
+    return newElement("", new XMLAttrMap());
   }
 
   public AppContent newContent(String name, boolean cdata)

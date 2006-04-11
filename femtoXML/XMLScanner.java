@@ -94,8 +94,7 @@ public class XMLScanner implements XMLHandler.XMLLocator
   {
     nextToken();
     if (this.token != token)
-                            throwSyntaxError(token + " expected; found "
-                                                + this.token + " " + this.value);
+       throwSyntaxError(token + " expected; found " + this.token + " (" + this.value + ")");
   }
 
   private enum Lex
@@ -205,16 +204,13 @@ public class XMLScanner implements XMLHandler.XMLLocator
               nextToken();
             }
             else
-              throwSyntaxError("Found " + token + " when string expected in "
-                               + key + "=...");
+              throwSyntaxError("String expected after " + key + "= : found " + token + " ("+value+")");
           }
           consumer.startElement(tag, atts);
           if (token == Lex.SLASHPOINTKET) // />
             consumer.endElement(tag);
           else if (token != Lex.POINTKET)
-                                         // >
-                                         throwSyntaxError("> expected in start tag: found "
-                                                          + token);
+            throwSyntaxError("Attribute name or > or /> expected in start tag: found " + token + " (" + value + ")");
           inElement = false;
         }
       }
@@ -277,18 +273,18 @@ public class XMLScanner implements XMLHandler.XMLLocator
     }
     else if (inElement && (ch == APOS || ch == QUOT)) 
     {
-      int close = ch;
+      int closeQuote         = ch;
+      int entitynestinglevel = entities.size();
       StringBuilder b = new StringBuilder();
       nextChar();
-      while (0 <= ch && !(ch == close && entities.isEmpty()))
+      // closing quote must be at the same entity-nesting level as the opening
+      while (0 <= ch && !(ch == closeQuote && entities.size()==entitynestinglevel))
       {
         if (expandEntities && ch == '&')
           if (isCharEntity)
             b.append(theCharEntity);
-          else
-          {
-            pushEntity(entityName);
-          }
+          else          
+            pushEntity(entityName);          
         else
           b.append((char) ch);
         nextChar();
@@ -380,9 +376,10 @@ public class XMLScanner implements XMLHandler.XMLLocator
               count++;
             else if (ch == '>') count--;
           }
-          if (count != 0) throwSyntaxError("<!DOCTYPE with runaway body ...");
+          if (count != 0) 
+             throwSyntaxError("<!DOCTYPE with runaway body ...");
           if (b.indexOf("DOCTYPE ") != 0)
-                                         throwSyntaxError("<!DOCTYPE ... > expected.");
+             throwSyntaxError("<!DOCTYPE ... > expected.");
           token = Lex.DOCTYPE;
           value = b.substring(8, b.length());
           nextRawChar();
@@ -423,7 +420,7 @@ public class XMLScanner implements XMLHandler.XMLLocator
       token = Lex.POINTKET;
     }
     else
-    // a piece of text appears: it might be an identifier or more general content
+    // a piece of text appears: it might be content or an identifier
     {
       // leading & is a special case because it was read by nextRawChar
       if (expandEntities && ch == '&')
@@ -493,7 +490,6 @@ public class XMLScanner implements XMLHandler.XMLLocator
          }
          ch = reader.read();
          if (ch<0) reader.close();
-
     }
     catch (Exception ex)
     {

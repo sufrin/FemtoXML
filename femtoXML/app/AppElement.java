@@ -15,7 +15,8 @@ public class AppElement
   protected boolean            hasSpaces = false;
 
   public AppTree close()
-  {
+  { String xmlSpace = attrs.get("xml:space");
+    if (xmlSpace != null && xmlSpace.equalsIgnoreCase("preserve")) hasSpaces = true;
     return this;
   }
 

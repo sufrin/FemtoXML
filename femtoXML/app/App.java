@@ -2,7 +2,9 @@ package femtoXML.app;
 
 import java.io.*;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import java.util.Vector;
 import femtoXML.FormatWriter;
 import femtoXML.XMLParser;
@@ -20,6 +22,7 @@ public class App
   { boolean expandEntities = true, isAscii=false;
     Vector<String> files = new Vector<String>();
     final Map<String,String> map = new HashMap<String,String>();
+    final Set<String> spaces = new HashSet<String>();
     for (int i=0; i<args.length; i++)
     {   String arg = args[i];
         if (arg.equals("-p")) expandEntities = false; 
@@ -30,18 +33,20 @@ public class App
         else
         if (arg.equals("-e")) map.put(args[++i], args[++i]);
         else
-            files.add(arg);
+        if (arg.equals("-s")) spaces.add(args[++i]);
+        else
+           files.add(arg);
     }
     XMLParser<AppTree> parser  = new XMLParser<AppTree>(new AppTreeFactory(expandEntities))
     {
       public Reader decodeEntity(String name)
       {  String value = map.get(name);
-         return new StringReader(value==null ? name : value);
+         return new StringReader(value==null ? String.format("[[%s]]", name) : value);
       }
       
       public boolean wantSpaces(String elementKind)
       {
-        return elementKind.equals("pre");
+        return spaces.contains(elementKind);
       }
     };
     XMLScanner         scanner = new XMLScanner(parser);
