@@ -62,11 +62,11 @@ public class XMLParser<T> implements XMLHandler
     }
     else
       throw new XMLSyntaxError(locator,
-                                String.format("Improperly nested element: <%s>@%s...</%s>@%s",
-                                              tkind,
-                                              lines.peek(),
-                                              kind,
-                                              locator.lineNumber()));
+                               String.format("Improperly nested element: <%s>@%s...</%s>@%s",
+                                             tkind,
+                                             lines.peek(),
+                                             kind,
+                                             locator.lineNumber()));
   }
 
   protected T theTree = null;
@@ -125,8 +125,10 @@ public class XMLParser<T> implements XMLHandler
     }
   }
 
-  /** This procedure returns null and must be overridden in a subclass if non-character entities 
-   *  are to be expanded. When overridden it should return a reader that yields the expansion of the named entity.
+  /**
+   * This procedure returns null and must be overridden in a subclass if
+   * non-character entities are to be expanded. When overridden it should return
+   * a reader that yields the expansion of the named entity.
    */
    
   public Reader decodeEntity(String entityName)
@@ -134,7 +136,10 @@ public class XMLParser<T> implements XMLHandler
     return null;
   }
   
-  /** This procedure uses XMLCharUtil.decodeCharEntity to decode character entity names.  */
+  /**
+   * This procedure uses XMLCharUtil.decodeCharEntity to decode character entity
+   * names.
+   */
   public char decodeCharEntity(String entityName)
   { 
     return XMLCharUtil.decodeCharEntity(entityName);
