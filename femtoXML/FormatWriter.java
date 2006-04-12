@@ -29,7 +29,7 @@ public class FormatWriter extends PrintWriter
   }
   
   /** The desired right margin */
-  protected int margin = 80;
+  protected int margin = 60;
   
   /** Set the right margin */
   public void setMargin(int margin) { this.margin = margin; }

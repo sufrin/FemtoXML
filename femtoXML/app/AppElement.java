@@ -95,7 +95,7 @@ public class AppElement
       boolean wasWord = false; // Last printed tree was a Word
       for (AppTree t : subtrees)
       {   boolean isWord = t.isWord();
-          if (isWord && wasWord && out.withinMargin(0)) 
+          if (isWord && wasWord && out.withinMargin(t.toString().length())) 
           {
             out.print(' '); t.printTo(out, 0);
           }

@@ -115,17 +115,16 @@ public class App
     out.setCharEntities(isAscii);
     for (String arg : files)
     { try
-      {
-        scanner.read(new LineNumberReader(new InputStreamReader(new FileInputStream(arg), "UTF-8")), arg);
+      { scanner.read(new LineNumberReader(new InputStreamReader(new FileInputStream(arg), "UTF-8")), arg);
         AppElement root = (AppElement) parser.getTree();
         for (AppTree tree : root) tree.printTo(out, 0);
+        out.println();
+        out.flush();
       }
       catch (XMLSyntaxError ex)
       {
         System.err.printf("%s%n", ex.getMessage());
       }
-      out.println();
-      out.flush();
     }
   }
 }

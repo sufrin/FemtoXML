@@ -208,13 +208,14 @@ public class XMLScanner implements XMLHandler.XMLLocator
           break;
         case OPENENDTAG: // </ tag >
           checkToken(Lex.NAME);
+          String tagname = value;
           consumer.endElement(value);
           checkToken(Lex.CLOSETAG);
           elementLevel--;
           if (elementLevel<0)
              throwSyntaxError(String.format("Superfluous closing tag: </%s>", value));
           if (elementLevel<entityLevels.peek())
-             throwSyntaxError(String.format("Superfluous closing tag: </%s> in entity &%s;", value, entitynames.peek()));
+             throwSyntaxError(String.format("Superfluous closing tag: </%s> in entity &%s;", tagname, entitynames.peek()));
           break;
         case OPENTAG: // <id id="..." ...
         {
@@ -537,6 +538,14 @@ public class XMLScanner implements XMLHandler.XMLLocator
       nextEntity();
     }
   }
+  
+  /** We tack a space on the end of each entity 
+   *  expansion to ensure that the well-formedness 
+   *  machinery works; this variable is true
+   *  when we are prepared to substitute a
+   *  single space at the end of stream.
+   */
+  protected boolean tackSpace;
 
   /** Read the next raw character. */
   protected void nextRawChar()
@@ -544,7 +553,16 @@ public class XMLScanner implements XMLHandler.XMLLocator
     try
     {    while (!entities.isEmpty())
          { ch = entities.peek().read();
-           if (ch>=0) return;
+           if (ch>=0)
+           {  tackSpace = true;
+              return; 
+           }
+           else
+           if (tackSpace) 
+           { ch = ' ';
+             tackSpace = false;
+             return;
+           }
            entities.pop().close();
            String name  = entitynames.pop();
            int    level = entityLevels.pop();
