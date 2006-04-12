@@ -10,8 +10,11 @@ import java.io.Writer;
  */
 public class FormatWriter extends PrintWriter
 {
-  public FormatWriter(OutputStream out) { super(out, true); lnPending = false; chars = 0; }
-  public FormatWriter(Writer out)       { super(out, true); lnPending = false; chars = 0; }
+  public FormatWriter(OutputStream out) 
+  { super(out, true); lnPending = false; chars = 0; }
+  
+  public FormatWriter(Writer out)       
+  { super(out, true); lnPending = false; chars = 0; }
 
   /** There's a newline pending. */
   protected boolean lnPending;
@@ -22,7 +25,10 @@ public class FormatWriter extends PrintWriter
   /** Get the number of characters output on the current line */
   public int getChars() { return chars; }
   
-  /** Returns true if a string of the given size will fit within the current margin */
+  /**
+   * Returns true if a string of the given size will fit within the current
+   * margin
+   */
   public boolean withinMargin(int size)
   {
     return chars + size < margin;
@@ -40,10 +46,16 @@ public class FormatWriter extends PrintWriter
   /** Clients must transform exotic characters into character entities */
   protected boolean charEntities = false;
   
-  /** Should clients transform exotic characters (with codes >=128) into character entitities */
+  /**
+   * Should clients transform exotic characters (with codes >=128) into
+   * character entitities
+   */
   public boolean getCharEntities() { return charEntities; }
   
-  /** Should clients transform exotic characters (with codes >=128) into character entitities */
+  /**
+   * Should clients transform exotic characters (with codes >=128) into
+   * character entitities
+   */
   public void setCharEntities(boolean useCharEntities) { this.charEntities = useCharEntities; }
   
   /** Flush the stream */
