@@ -79,7 +79,7 @@ public class XMLParser<T> implements XMLHandler
 
   public void commentCharacters(CharSequence text)
   {
-    if (factory.canComment())
+    if (factory.wantComment())
        stack.peek().addTree(factory.newComment(text.toString()));
   }
 
@@ -90,13 +90,13 @@ public class XMLParser<T> implements XMLHandler
 
   public void PICharacters(CharSequence text)
   {
-    if (factory.canPI())
+    if (factory.wantPI())
        stack.peek().addTree(factory.newPI(text.toString()));
   }
   
   public void DOCTYPECharacters(CharSequence text)
   {
-    if (factory.canDOCTYPE())
+    if (factory.wantDOCTYPE())
        stack.peek().addTree(factory.newDOCTYPE(text.toString()));
   }
 
@@ -159,20 +159,37 @@ public class XMLParser<T> implements XMLHandler
   }
   
   /**
-   * @param kind -- the kind of element that is currently being built
-   * @return true if this kind of element wants spaces to be recorded
+   * Forwards this method to <code>factory</code>. To be discriminating about
+   * space-recording, override this with a method that inspects the topmost
+   * element on the stack to see if it wants spaces to be recorded.
    */
-  public boolean wantSpaces(String kind)
+  public boolean wantSpaces()
   {
-    return false;
+    return factory.wantSpaces();
   }
   
-  /** 
-   * @return <code>wantSpaces(<i>the current element kind</i>)</code>
+  /**
+   * Forwards this method to <code>factory</code>.
    */
-  final public boolean wantSpaces()
-  { String kind = kinds.peek();
-    return wantSpaces(kind);
+  public boolean wantComment()
+  {
+    return factory.wantComment();
+  }
+  
+  /**
+   * Forwards this method to <code>factory</code>.
+   */
+  public boolean wantPI()
+  {
+    return factory.wantPI();
+  }
+  
+  /**
+   * Forwards this method to <code>factory</code>.
+   */
+  public boolean wantDOCTYPE()
+  {
+    return factory.wantDOCTYPE();
   }
 }
 

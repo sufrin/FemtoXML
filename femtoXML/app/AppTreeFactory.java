@@ -51,17 +51,17 @@ public class AppTreeFactory implements XMLTreeFactory<AppTree>
     return new AppPI(data);
   }
 
-  public boolean canComment()
+  public boolean wantComment()
   {
     return true;
   }
   
-  public boolean canPI()
+  public boolean wantPI()
   {
     return true;
   }
   
-  public boolean canDOCTYPE()
+  public boolean wantDOCTYPE()
   {
     return true;
   }
@@ -71,7 +71,7 @@ public class AppTreeFactory implements XMLTreeFactory<AppTree>
     return new AppSpaces(text);
   }
 
-  public boolean wantSpaces(String elementKind)
+  public boolean wantSpaces()
   {
     return false;
   }

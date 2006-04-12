@@ -21,14 +21,14 @@ public interface XMLTreeFactory<Tree>
   Tree newSpaces(String text);
 
   /** Return true if newComment can legitimately be called  */
-  boolean canComment();
+  boolean wantComment();
   
   /** Return true if newPI can legitimately be called  */
-  boolean canPI();  
+  boolean wantPI();  
   
   /** Return true if newDOCTYPE can legitimately be called  */
-  boolean canDOCTYPE();
+  boolean wantDOCTYPE();
   
-  /** Return true if the named element wants to record spaces */
-  boolean wantSpaces(String elementKind);
+  /** Return true if the current element wants to record spaces */
+  boolean wantSpaces();
 }

@@ -61,6 +61,18 @@ public interface XMLHandler
    */
   public boolean wantSpaces();
   
+  /** Returns true if the handler wants to see comments.
+   */
+  public boolean wantComment();
+  
+  /** Returns true if the handler wants to see PI.
+   */
+  public boolean wantPI();
+  
+  /** Returns true if the handler wants to see DOCTYPE declaration.
+   */
+  public boolean wantDOCTYPE();
+  
   /** Called just before document starts to be consumed */
   public void startDocument();
   
