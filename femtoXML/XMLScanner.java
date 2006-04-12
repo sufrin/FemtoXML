@@ -325,6 +325,7 @@ public class XMLScanner implements XMLHandler.XMLLocator
           b.append((char) ch);
         nextChar();
       }
+      if (ch<0) throwSyntaxError(String.format("Runaway string: '%s'", b));
       token = Lex.QUOTE;
       value = b.toString();
       nextRawChar();

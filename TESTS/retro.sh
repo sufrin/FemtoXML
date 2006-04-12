@@ -125,5 +125,35 @@ test 'TEST 8 (well-formed nested entity; space perservation)'   <<END
 </doc>
 END
 
+test 'TEST 9 (entity in bad position)'<<END
+<test foo &eq; "bar"/>
+END
+
+test 'TEST 10 (entity in bad position)'<<END
+<test foo &eq "bar"/>
+END
+
+test 'TEST 11 (entity in bad position)'<<END
+<test &foo; = "bar"/>
+END
+
+test 'TEST 12 (entity in bad position)'<<END
+<!DOCTYPE test [<!ENTITY test 'name'>]>
+<&test; foo = "bar"/>
+END
+
+test 'TEST 13 (runaway entity name)'<<END
+<test foo &eq "bar"/>
+END
+
+test 'TEST 14 (runaway element tag)'<<END
+<test foo="bar"
+END
+
+test 'TEST 15 (runaway string)'<<END
+<test foo="bar
+END
+
+
 
 
