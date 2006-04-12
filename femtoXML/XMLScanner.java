@@ -23,7 +23,7 @@ public class XMLScanner implements XMLHandler.XMLLocator
   protected LineNumberReader     reader;
   protected boolean             expandEntities = true;
   protected int                  elementLevel;
-  private final char    
+  private static final char    
                 QUOT = 0x22, 
                 APOS = 0x27;
   

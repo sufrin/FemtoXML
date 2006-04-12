@@ -14,7 +14,10 @@ import java.util.Map;
  * 
  */
 public class XMLCharUtil
-{
+{ private static final char    
+  QUOT = 0x22, 
+  APOS = 0x27;
+
   static Map<String, Character> toChar   = new Hashtable<String, Character>();
 
   static Map<Character, String> fromChar = new Hashtable<Character, String>();
@@ -85,10 +88,10 @@ public class XMLCharUtil
       case '&':
         out.print("&amp;");
         break;
-      case '"':
+      case QUOT:
         out.print("&quot;");
         break;
-      case '\'':
+      case APOS:
         out.print("&apos;");
         break;
       default:
@@ -114,13 +117,13 @@ public class XMLCharUtil
     if ("amp".equals(entityName))
       return '&';
     else if ("apos".equals(entityName))
-      return '\'';
+      return APOS;
     else if ("gt".equals(entityName))
       return '>';
     else if ("lt".equals(entityName))
       return '<';
     else if ("quot".equals(entityName))
-      return '"';
+      return QUOT;
     else if (entityName.matches("#[Xx][0-9a-fA-F]+"))
       return (char) Integer.parseInt(entityName.substring(2), 16);
     else if (entityName.matches("#[0-9]+"))
