@@ -4,15 +4,19 @@ import femtoXML.FormatWriter;
 import femtoXML.XMLCharUtil;
 
 /**
- * Represents a lump of unstructured text found within an XML element.
+ * Represents non-space, non-markup, XML content.
+ * 
  * @author sufrin
- *
+ * 
  */
 public class AppContent implements AppTree
-{ /** The text */
-  protected String text;
+{
+  /** The text */
+  protected String  text;
+
   /** Was the text a CDATA? */
   protected boolean cdata;
+
   /** Did the text have character entitities expanded within it? */
   protected boolean expandedEntities;
 
@@ -23,26 +27,28 @@ public class AppContent implements AppTree
     this.cdata = cdata;
     this.expandedEntities = expandEntities;
   }
-  
+
   /** Construct a word (with <code>expandEntities</code> false) */
   public AppContent(String text, boolean cdata)
   {
     this(text, cdata, true);
   }
-  
-  /** Construct a word (with <code>cdata</code> and <code>expandEntities</code> false) */
+
+  /**
+   * Construct a word (with <code>cdata</code> and <code>expandEntities</code>
+   * false)
+   */
   public AppContent(String text)
   {
     this(text, false, true);
   }
-  
-  
+
   /** The literal form of the stored text. */
   public String toString()
   {
     return text;
   }
-  
+
   /**
    * Outputs the text of this word (at the given indentation from the left
    * margin, if indent>0) in valid XML form (so that it can be reinput).

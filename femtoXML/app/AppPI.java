@@ -2,7 +2,12 @@ package femtoXML.app;
 
 import femtoXML.FormatWriter;
 
-
+/**
+ * Represents a processing instruction. 
+ * The entire text of the PI is recorded.
+ * @author sufrin
+ *
+ */
 public class AppPI implements AppTree
 {
   protected String text;

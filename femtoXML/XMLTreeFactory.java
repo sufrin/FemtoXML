@@ -1,5 +1,12 @@
 package femtoXML;
 
+/**
+ * Interface between an XML Parser and the
+ * classes that generate parse tree nodes.
+ * @author sufrin
+ *
+ * @param <Tree>
+ */
 public interface XMLTreeFactory<Tree>
 {
   XMLComposite<Tree> newElement(String kind, XMLAttributes atts);

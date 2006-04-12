@@ -2,6 +2,11 @@ package femtoXML.app;
 
 import femtoXML.FormatWriter;
 
+/**
+ * Represents a <code>DOCTYPE</code> declaration.
+ * @author sufrin
+ *
+ */
 public class AppDOCTYPE implements AppTree
 {
   protected String text;

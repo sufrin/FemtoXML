@@ -121,7 +121,10 @@ public class XMLParser<T> implements XMLHandler
       case 0:
         throw new XMLSyntaxError(locator, String.format("Document has no elements."));
       default:
-        throw new XMLSyntaxError(locator, String.format("Premature end of document in unclosed <%s>@%d", kinds.peek(), lines.peek()));
+        throw new XMLSyntaxError(locator, 
+                                 String.format("Premature end of document in unclosed <%s>@%d", 
+                                               kinds.peek(), 
+                                               lines.peek()));
     }
   }
 

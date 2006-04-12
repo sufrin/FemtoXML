@@ -5,21 +5,31 @@ import femtoXML.FormatWriter;
 import femtoXML.XMLAttributes;
 import femtoXML.XMLComposite;
 
+/**
+ * Represents an XML element.
+ * @author sufrin
+ *
+ */
 public class AppElement 
-       implements AppTree, XMLComposite<AppTree>,  Iterable<AppTree>
+       implements AppTree, XMLComposite<AppTree>, Iterable<AppTree>
 {
-  protected String              kind;
-  protected XMLAttributes       attrs;
-  protected Vector<AppTree>     subtrees = new Vector<AppTree>();
+  protected String          kind;
+
+  protected XMLAttributes   attrs;
+
+  protected Vector<AppTree> subtrees = new Vector<AppTree>();
   
-  protected boolean            wantSpaces;
-  public    boolean            wantSpaces()
-  {     
+  /** True if this node is interested in spaces. */
+  protected boolean         wantSpaces;
+
+  /** True if this node is interested in spaces. */
+  public boolean wantSpaces()
+  {
     return wantSpaces;
   }
 
   public AppTree close()
-  { 
+  {
     return this;
   }
 
@@ -75,35 +85,40 @@ public class AppElement
   {
     out.indent(indent);
     if (subtrees.size() == 0) // Can we abbreviate the tree?
-    {  out.print(String.format("<%s", kind));
-       attrs.printTo(out, indent+4);
-       out.print("/>");
+    {
+      out.print(String.format("<%s", kind));
+      attrs.printTo(out, indent + 4);
+      out.print("/>");
     }
-    else if (wantSpaces || indent<0)
+    else if (wantSpaces || indent < 0)
     {
       out.print(String.format("<%s", kind));
       attrs.printTo(out, -1);
       out.print(">");
-      for (AppTree t : subtrees) t.printTo(out, -1);
-      out.println(String.format("</%s>", kind)); 
+      for (AppTree t : subtrees)
+        t.printTo(out, -1);
+      out.println(String.format("</%s>", kind));
     }
     else
     {
       out.print(String.format("<%s", kind));
-      attrs.printTo(out, indent+4);
+      attrs.printTo(out, indent + 4);
       out.println(">");
       boolean wasWord = false; // Last printed tree was a Word
       for (AppTree t : subtrees)
-      {   boolean isWord = t.isWord();
-          if (isWord && wasWord && out.withinMargin(t.toString().length())) 
-          { 
-            out.print(' '); t.printTo(out, 0); 
-          }
-          else
-          { t.printTo(out, indent + 2);
-            out.println();
-          }
-          wasWord = isWord;
+      {
+        boolean isWord = t.isWord();
+        if (isWord && wasWord && out.withinMargin(t.toString().length()))
+        {
+          out.print(' ');
+          t.printTo(out, 0);
+        }
+        else
+        {
+          t.printTo(out, indent + 2);
+          out.println();
+        }
+        wasWord = isWord;
       }
       out.println();
       out.indent(indent);

@@ -2,6 +2,12 @@ package femtoXML.app;
 
 import femtoXML.FormatWriter;
 
+/**
+ * Represents source space outside markup.
+ * @author sufrin
+ *
+ */
+
 public class AppSpaces implements AppTree
 {
   protected String text;

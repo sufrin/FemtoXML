@@ -3,7 +3,7 @@ package femtoXML.app;
 import femtoXML.FormatWriter;
 
 /**
- * Supertype of all XML tree nodes.
+ * Supertype of all tree nodes.
  * @author sufrin
  *
  */

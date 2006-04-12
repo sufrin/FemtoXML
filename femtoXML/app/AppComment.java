@@ -2,7 +2,11 @@ package femtoXML.app;
 
 import femtoXML.FormatWriter;
 
-
+/**
+ * Represents the text of a comment.
+ * @author sufrin
+ *
+ */
 public class AppComment implements AppTree
 { protected String data;
   
