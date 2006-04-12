@@ -555,7 +555,7 @@ public class XMLScanner implements XMLHandler.XMLLocator
     {    while (!entities.isEmpty())
          { ch = entities.peek().read();
            if (ch>=0)
-           {  tackSpace = true;
+           {  tackSpace = !inElement;
               return; 
            }
            else
@@ -596,6 +596,7 @@ public class XMLScanner implements XMLHandler.XMLLocator
   {
     entityName = "";
     nextRawChar();
+    if (ch=='#') { entityName = "#"; nextRawChar(); }
     while (Character.isLetterOrDigit(ch) || ch == '_' || ch == ':')
     {
       entityName = entityName + ((char) ch);

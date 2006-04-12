@@ -1,26 +1,51 @@
 #
 # Retrotesting
 #
+TESTS = "$@"
+
+function femto()
+{
+  java -jar CLASS/femtoprint.jar "$@"
+}
+
+function ------()
+{ echo "----------------------------------------------------------------"
+}
+
 function test()
+{ 
+  for m in "$@"
+  do
+      echo $m
+  done
+  femto /dev/stdin
+  ------
+}
+
+function pretty()
 { for m in "$@"
   do
       echo $m
   done
-  java -jar CLASS/femtoprint.jar /dev/stdin
-  echo ---------------------
+  femto -i /dev/stdin
+  ------
 }
 
+################################################################################
+
 test 'TEST 1'   <<END
-<?xml version="1.0" charset="UTF8"?>
 <!-- Should yield <tag arg="&arg;"/> -->
 <tag arg="&arg;"/>
 END
 
 test 'TEST 2'   <<END
-<?xml version="1.0" charset="UTF8"?>
-<!DOCTYPE nonsense [<!ENTITY arg "arg">]>
-<!-- Should yield <tag arg="arg"/> -->
-<tag arg="&arg;"/>
+<!DOCTYPE test [<!ENTITY arg "arg">]>
+<tag arg="&arg;&amp;">xx&amp;yy</tag>
+END
+
+test 'TEST 2A'   <<END
+<!DOCTYPE test [<!ENTITY arg "arg">]>
+<tag arg="&arg;&amp;">xx&#x3d;yy</tag>
 END
 
 test 'TEST 3'   <<END
@@ -125,11 +150,44 @@ test 'TEST 8 (well-formed nested entity; space perservation)'   <<END
 </doc>
 END
 
+pretty 'TEST 8A (prettyprint TEST 8)'   <<END
+<!DOCTYPE test 
+ [ <!ENTITY section   '<section>nested entity</section>'>
+   <!ENTITY verse     '<verse xml:space="preserve"> 
+        It&apos;s a long way to Tiperrary 
+        It&apos;s a long way to go!</verse>'>]>
+<doc>
+        &section;
+        <section>
+          &verse;
+        </section>
+        <section>
+          This is a long piece of text that should get
+          wrapped around with any luck. I am not sure
+          whether you think it is a good idea.  This is a
+          long piece of text that should get wrapped around
+          with any luck. I am not sure whether you think
+          it is a good idea.  This is a long piece of text
+          that should get wrapped around with any luck. I
+          am not sure whether you think it is a good idea.
+        </section>
+        <section xml:space="preserve">
+          This is a long piece of text that should get
+          wrapped around with any luck. I am not sure
+          whether you think it is a good idea.  This is a
+          long piece of text that should get wrapped around
+          with any luck. I am not sure whether you think
+          it is a good idea.  This is a long piece of text
+          that should get wrapped around with any luck. I
+          am not sure whether you think it is a good idea.</section>
+</doc>
+END
+
 test 'TEST 9 (entity in bad position)'<<END
 <test foo &eq; "bar"/>
 END
 
-test 'TEST 10 (entity in bad position)'<<END
+test 'TEST 10 (runaway entity in bad position)'<<END
 <test foo &eq "bar"/>
 END
 
@@ -154,6 +212,61 @@ test 'TEST 15 (runaway string)'<<END
 <test foo="bar
 END
 
+echo 'TEST 16 (prettyprint fixpoint of a large file)'
+femto -i TESTS/bigtest.xml >/tmp/a
+femto -i /tmp/a            >/tmp/b
+diff /tmp/a /tmp/b
+------
 
+echo 'TEST 17 (fixpoint of a large file)'
+femto  TESTS/bigtest.xml >/tmp/a
+femto  /tmp/a            >/tmp/b
+diff /tmp/a /tmp/b
+------
 
+echo 'TEST 18 (Suppressing comments, etc.)'
+femto -c -d -p /dev/stdin<<END
+<?xml version="1.0" ?>
+<!DOCTYPE  ignore 
+ [ <!ENTITY section   '<section>nested entity</section>'>
+   <!ENTITY verse     '<verse xml:space="preserve"> 
+        It&apos;s a long way to Tiperrary 
+        It&apos;s a long way to go!</verse>'>
+ ]>
+<start>
+ <!-- comment -->
+ <? PI ?>
+</start>
+END
+------
+
+echo 'TEST 19 (Suppressing all but doctype)'
+femto -c -p /dev/stdin<<END
+<?xml version="1.0"?>
+<!DOCTYPE  ignore 
+ [ <!ENTITY section   '<section>nested entity</section>'>
+   <!ENTITY verse     '<verse xml:space="preserve"> 
+        It&apos;s a long way to Tiperrary 
+        It&apos;s a long way to go!</verse>'>]>
+<start>
+ <!-- comment -->
+ <? PI ?>
+</start>
+END
+------
+
+echo 'TEST 20 (Suppressing doctype)'
+femto -d /dev/stdin<<END
+<?xml version="1.0"?>
+<!DOCTYPE  ignore 
+ [ <!ENTITY section   '<section>nested entity</section>'>
+   <!ENTITY verse     '<verse xml:space="preserve"> 
+        It&apos;s a long way to Tiperrary 
+        It&apos;s a long way to go!</verse>'>]>
+<start>
+ <!-- comment -->
+ <? PI ?>
+</start>
+END
+------
 

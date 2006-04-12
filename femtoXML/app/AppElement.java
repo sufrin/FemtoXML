@@ -96,8 +96,8 @@ public class AppElement
       for (AppTree t : subtrees)
       {   boolean isWord = t.isWord();
           if (isWord && wasWord && out.withinMargin(t.toString().length())) 
-          {
-            out.print(' '); t.printTo(out, 0);
+          { 
+            out.print(' '); t.printTo(out, 0); 
           }
           else
           { t.printTo(out, indent + 2);

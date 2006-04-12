@@ -88,10 +88,15 @@ public class FormatWriter extends PrintWriter
      lnPending = true;
   }
 
+  public void print(String s)
+  {
+    super.print(s);
+    chars+=s.length();
+  }
+
   /** Print the given string and finish the current line. */
   public void println(String s)
-  {
-     super.print(s);
+  {  super.print(s);
      println();
   }
 }
