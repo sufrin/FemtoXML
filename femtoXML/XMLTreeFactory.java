@@ -1,5 +1,7 @@
 package femtoXML;
 
+import femtoXML.XMLHandler.XMLLocator;
+
 /**
  * Interface between an XML Parser and the
  * classes that generate parse tree nodes.
@@ -38,4 +40,12 @@ public interface XMLTreeFactory<Tree>
   
   /** Return true if the current element wants to record spaces */
   boolean wantSpaces();
+  
+  /** Set the locator for the current document */
+  public void setLocator(XMLLocator locator);
+  
+  /** Return the locator for the current document */
+  public XMLLocator getLocator() ;
+  
+
 }

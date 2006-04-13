@@ -236,12 +236,13 @@ femto -c -d -p /dev/stdin<<END
 <start>
  <!-- comment -->
  <? PI ?>
+ &verse;
 </start>
 END
 ------
 
-echo 'TEST 19 (Suppressing all but doctype)'
-femto -c -p /dev/stdin<<END
+echo 'TEST 19 (Suppressing all but doctype, with literal content output)'
+femto -c -p -x /dev/stdin<<END
 <?xml version="1.0"?>
 <!DOCTYPE  ignore 
  [ <!ENTITY section   '<section>nested entity</section>'>
@@ -251,6 +252,7 @@ femto -c -p /dev/stdin<<END
 <start>
  <!-- comment -->
  <? PI ?>
+ &verse;
 </start>
 END
 ------
@@ -266,6 +268,7 @@ femto -d /dev/stdin<<END
 <start>
  <!-- comment -->
  <? PI ?>
+ &verse;
 </start>
 END
 ------

@@ -57,7 +57,7 @@ public class XMLParser<T> implements XMLHandler
     if (tkind.equals(kind))
     {
       T top = stack.pop().close();
-      stack.peek().addTree(top);
+      current().add(top);
       lines.pop();
     }
     else
@@ -68,6 +68,8 @@ public class XMLParser<T> implements XMLHandler
                                              kind,
                                              locator.lineNumber()));
   }
+  
+  protected final XMLComposite<T> current() { return stack.peek(); }
 
   protected T theTree = null;
   
@@ -80,24 +82,24 @@ public class XMLParser<T> implements XMLHandler
   public void commentCharacters(CharSequence text)
   {
     if (factory.wantComment())
-       stack.peek().addTree(factory.newComment(text.toString()));
+       current().add(factory.newComment(text.toString()));
   }
 
   public void contentCharacters(CharSequence text, boolean cdata)
   {
-    stack.peek().addTree(factory.newContent(text.toString(), cdata));
+    current().add(factory.newContent(text.toString(), cdata));
   }
 
   public void PICharacters(CharSequence text)
   {
     if (factory.wantPI())
-       stack.peek().addTree(factory.newPI(text.toString()));
+       current().add(factory.newPI(text.toString()));
   }
   
   public void DOCTYPECharacters(CharSequence text)
   {
     if (factory.wantDOCTYPE())
-       stack.peek().addTree(factory.newDOCTYPE(text.toString()));
+       current().add(factory.newDOCTYPE(text.toString()));
   }
 
   public void startDocument()
@@ -116,7 +118,7 @@ public class XMLParser<T> implements XMLHandler
     switch (stack.size())
     {
       case 1:
-        theTree = stack.peek().close();
+        theTree = current().close();
         break;
       case 0:
         throw new XMLSyntaxError(locator, String.format("Document has no elements."));
@@ -153,8 +155,12 @@ public class XMLParser<T> implements XMLHandler
   
   public void setLocator(XMLLocator locator)
   {
-    this.locator = locator;    
+    this.locator = locator; 
+    factory.setLocator(locator);
   }
+  
+  public XMLLocator getLocator() 
+  { return locator; }
 
   public XMLAttributes newAttributes(boolean expandEntitites)
   {
@@ -163,7 +169,7 @@ public class XMLParser<T> implements XMLHandler
 
   public void spaceCharacters(CharSequence text)
   {
-    stack.peek().addTree(factory.newSpaces(text.toString()));    
+    current().add(factory.newSpaces(text.toString()));    
   }
   
   /**

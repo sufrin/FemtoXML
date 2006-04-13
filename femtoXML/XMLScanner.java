@@ -533,7 +533,7 @@ public class XMLScanner implements XMLHandler.XMLLocator
    */
   protected void nextChar()
   {
-    nextRawChar();
+    do nextRawChar(); while (ch=='\r'); // Can't be bothered with the Apple ][ and old MacOS standard
     if (expandEntities && ch == '&')
     {
       nextEntity();
@@ -542,7 +542,7 @@ public class XMLScanner implements XMLHandler.XMLLocator
   
   /** We tack a space on the end of each entity 
    *  expansion to ensure that the well-formedness 
-   *  machinery works; this variable is true
+   *  check for entities works; this variable is true
    *  when we are prepared to substitute a
    *  single space at the end of stream.
    */

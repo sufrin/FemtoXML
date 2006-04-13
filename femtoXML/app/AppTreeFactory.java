@@ -3,6 +3,7 @@ package femtoXML.app;
 import femtoXML.XMLAttrMap;
 import femtoXML.XMLAttributes;
 import femtoXML.XMLTreeFactory;
+import femtoXML.XMLHandler.XMLLocator;
 
 /**
  * A <code>XMLTreeFactory</code> that builds <code>AppElement, AppComment, AppPI, AppContent</code> nodes as an XML file is parsed.
@@ -75,5 +76,16 @@ public class AppTreeFactory implements XMLTreeFactory<AppTree>
   {
     return false;
   }
+  
+  XMLLocator locator;
+  
+  public void setLocator(XMLLocator locator)
+  {
+    this.locator = locator; 
+  }
+  
+  public XMLLocator getLocator() 
+  { return locator; }
+
 }
 

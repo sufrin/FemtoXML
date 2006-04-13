@@ -41,10 +41,9 @@ public class AppElement
     wantSpaces = xmlSpace != null && xmlSpace.equalsIgnoreCase("preserve");
   }
 
-  public void addTree(AppTree t)
-  {
-    subtrees.add(t);
-    if (t instanceof AppSpaces) wantSpaces = true;
+  public void add(AppTree t)
+  { if (t!=null)
+       subtrees.add(t);
   }
 
   public String getKind()

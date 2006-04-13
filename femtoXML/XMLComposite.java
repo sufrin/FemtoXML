@@ -9,7 +9,7 @@ package femtoXML;
  */
 public interface XMLComposite<Tree>
 { /** Add an (inner) node to the composite. */
-  void addTree(Tree subtree);
+  void add(Tree subtree);
   
   /**
    * Transform an open composite into a closed one. This is used to signal to a
