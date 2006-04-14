@@ -281,6 +281,9 @@ public class XMLScanner implements XMLHandler.XMLLocator
 
   /** True iff currently reading an element header < ... /> or < ... > */
   protected boolean inElement = false;
+  
+  /** True iff currently reading a string  */
+  protected boolean inString = false;
 
   /** Read the next token */
   protected void nextToken()
@@ -327,6 +330,7 @@ public class XMLScanner implements XMLHandler.XMLLocator
       int entitynestinglevel = entities.size();
       StringBuilder b = new StringBuilder();
       nextChar();
+      inString = true;
       // closing quote must be at the same entity-nesting level as the opening
       while (0 <= ch
              && !(ch == closeQuote && entities.size() == entitynestinglevel))
@@ -340,6 +344,7 @@ public class XMLScanner implements XMLHandler.XMLLocator
           b.append((char) ch);
         nextChar();
       }
+      inString = false;
       if (ch < 0) throwSyntaxError(String.format("Runaway string: '%s'", b));
       token = Lex.QUOTE;
       value = b.toString();
@@ -583,7 +588,7 @@ public class XMLScanner implements XMLHandler.XMLLocator
     {    while (!entities.isEmpty())
          { ch = entities.peek().read();
            if (ch>=0)
-           {  tackSpace = !inElement;
+           {  tackSpace = !inString;
               return; 
            }
            else

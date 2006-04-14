@@ -1,0 +1,522 @@
+<?xml version="1.0" encoding="UTF8" ?>
+<!--
+java -jar CLASS/femtoprint.jar  \
+        -e anonentity           "<pig>This was a &nested; nonentity</pig>"        \
+        -e anothernonentity     "<poke/>"          \
+        -e nested "<nested arg=\"arg1\"/>"        \
+        -a      \
+        TESTS/bigtest.xml
+-->
+
+<interface> &anonentity;&foo; &foo;
+  <string id='title &foo;'>
+    GUI Builder Component Demo&extendDemo; foolish
+  </ string>
+  <actionlistener id='choosefile'>
+    actionPerformed(event) { System.err.println(event); }
+  </actionlistener>
+  <frame id='root' globalid='root' parent='true' title='@title' center='true'>
+    <tabbedpane placement='LEFT' borderinset='5'>
+      <panel name='Dynamic Interface Layout' layout='col' justify='0.5'>
+        <strut height='20'/>
+        <variable id='fontsize'/>
+        <variable id='textwidth'/>
+        <variable id='borderwidth'/>
+        <variable id='borderinset'/>
+        <variable id='borderoutset'/>
+        <buttongroup id='textcolour'/>
+        <buttongroup id='bordercolour'/>
+        <buttongroup id='borderstyle'/>
+        <buttongroup id='htext'/>
+        <int id='borderinset' value='4'/>
+        <horizontal>
+          <slider bordertitle='Text Width' id='textwidth' var='textwidth' max='700' min='50' major='100' minor='50' value='400'/>
+          <slider bordertitle='Text Size' id='fontsize' var='fontsize' max='4' min='-4' major='1'/>
+          <slider bordertitle='Line Border Width' id='borderwidth' var='borderwidth' value='2' max='50' min='0' major='5' snap='false'/>
+          <slider bordertitle='Border Inset' var='borderinset' value='2' max='50' min='0' major='5' snap='false'/>
+          <slider bordertitle='Border Outset' var='borderoutset' value='2' max='50' min='0' major='5' snap='false'/>
+        </horizontal>
+        <strut height='20'/>
+        <horizontal>
+          <glue/>
+          <row bordertitle='Border Style'>
+            <radiobutton selected='true' listener='' group='borderstyle' value='line'>
+              Line
+            </radiobutton>
+            <radiobutton listener='' group='borderstyle' value='flat'>
+              Flat
+            </radiobutton>
+            <radiobutton listener='' group='borderstyle' value='bevel'>
+              Bevel
+            </radiobutton>
+            <radiobutton listener='' group='borderstyle' value='etch'>
+              Etch
+            </radiobutton>
+          </row>
+          <glue/>
+          <row bordertitle='Text Colour'>
+            <radiobutton selected='true' listener='' group='textcolour' value='black'>
+              Black
+            </radiobutton>
+            <radiobutton listener='' group='textcolour' value='red'>
+              Red
+            </radiobutton>
+            <radiobutton listener='' group='textcolour' value='blue'>
+              Blue
+            </radiobutton>
+            <radiobutton listener='' group='textcolour' value='green'>
+              Green
+            </radiobutton>
+            <radiobutton listener='' group='textcolour' value='yellow'>
+              Yellow
+            </radiobutton>
+          </row>
+          <glue/>
+          <row bordertitle='Border Colour'>
+            <radiobutton selected='true' listener='' group='bordercolour' value='black'>
+              Black
+            </radiobutton>
+            <radiobutton listener='' group='bordercolour' value='red'>
+              Red
+            </radiobutton>
+            <radiobutton listener='' group='bordercolour' value='blue'>
+              Blue
+            </radiobutton>
+            <radiobutton listener='' group='bordercolour' value='green'>
+              Green
+            </radiobutton>
+            <radiobutton listener='' group='bordercolour' value='yellow'>
+              Yellow
+            </radiobutton>
+          </row>
+          <glue/>
+        </horizontal>
+        <strut height='20'/>
+        <horizontal>
+          <glue/>
+          <row bordertitle='Column Justification'>
+            <radiobutton selected='true' listener='' group='htext' value='0.0'>
+              Left
+            </radiobutton>
+            <radiobutton listener='' group='htext' value='0.5'>
+              Centre
+            </radiobutton>
+            <radiobutton listener='' group='htext' value='1.0'>
+              Right
+            </radiobutton>
+          </row>
+          <glue/>
+        </horizontal>
+        <strut height='20'/>
+        <dynamicinterface>
+          <col justify='%{htext}' borderstyle='line'>
+            <strut width='750'/>
+            <label borderinset='%{borderinset}' borderoutset='%{borderoutset}' borderstyle='%{borderstyle}' bordercolor='%{bordercolour}' borderwidth='%{borderwidth}'>
+              <center width='%{textwidth}'>
+                <font size='+%{fontsize}' color='%{textcolour}'>
+                  This is a label that is monitoring the value of the sliders and buttons by changing its font size, and colour dynamically. Its width and borders are specified by the sliders and buttons.
+                </font>
+              </center>
+            </label>
+            <label borderinset='%{borderinset}&#x3c;' borderoutset='%{borderoutset}' borderstyle='%{borderstyle}' bordercolor='%{bordercolour}' borderwidth='%{borderwidth}'>
+              This is a &#x3C; &#x345; label whose borders are specified by the sliders and buttons.
+            </label>
+          </col>
+        </dynamicinterface>
+        <strut height='20'/>
+        <variablemonitor fg='blue' bordertitle='Source Text' borderinset='20' font='monospaced'>
+          <pre> 
+            <![CDATA[ ∃ ∀
+<col justify="%{htext}" borderstyle="line">
+<strut width="750"/>
+ <label borderinset="%{borderinset}" borderoutset="%{borderoutset}" borderstyle="%{borderstyle}" 
+        bordercolor="%{bordercolour}" borderwidth="%{borderwidth}">
+   <center width="%{textwidth}">
+       <font size="+%{fontsize}" color="%{textcolour}">
+       ...
+   </center>
+ </label>
+ <label borderinset="%{borderinset}" borderoutset="%{borderoutset}" borderstyle="%{borderstyle}" 
+        bordercolor="%{bordercolour}" borderwidth="%{borderwidth}">
+    ...
+ </label>
+</col>]]>
+          </pre>
+        </variablemonitor>
+        <glue/>
+      </panel>
+      <center name='Split Pane'>
+        <splitpane>
+          <textarea editable='false' rows='10' name='top'>
+            <![CDATA[
+                <center name="Split Pane">
+                  <splitpane>
+                    <textarea rows="10" name="top">
+                    </textarea>
+                    <textarea name="bottom">
+                    </textarea>
+                  </splitpane>
+                </center>]]>
+          </textarea>
+          <textarea name='bottom'/>
+        </splitpane>
+      </center>
+      <center name='Combo boxes'>
+        <col justify='0.5'>
+          <variable id='boxvalue'>
+            "f"
+          </variable>
+          <combobox bordertitle='Combo Box' editable='true' labels='a b c d e f' var='boxvalue' listener=''/>
+          <strut height='20'/>
+          <variablemonitor bordertitle='Variable Monitor'>
+            The combobox value is: %{boxvalue}
+          </variablemonitor>
+          <strut height='20'/>
+          <button listener='{boxvalue.set(&quot;google&quot;);}'>
+            Set the combobox value to "Google"
+          </button>
+        </col>
+      </center>
+      <panel name='Sliders and Coupled Widgets' layout='col' justify='0.5'>
+        <glue/>
+        <buttongroup id='fontsize'/>
+        <variable id='textwidth'/>
+        <col bordertitle='Sliders'>
+          <slider id='textwidth' var='textwidth' max='700' min='50' major='100' minor='50' value='400'/>
+          <slider id='fontsize' var='fontsize' max='4' min='-4' major='1'/>
+        </col>
+        <glue/>
+        <col stretch='true' borderinset='10' borderoutset='10' bordertitle='Coupled Variable Monitors'>
+          <variablemonitor halign='CENTER'>
+            The current width is: %{textwidth}
+          </variablemonitor>
+          <variablemonitor halign='CENTER'>
+            The current font size is: %{+%00%-%fontsize}
+          </variablemonitor>
+        </col>
+        <glue/>
+        <row bordertitle='Coupled Radio Buttons'>
+          <actionlistener id='listener'>
+            actionPerformed(event) { System.err.println("Width changed by radio button"); }
+          </actionlistener>
+          <radiobutton group='fontsize' intvalue='-4'>
+            -4
+          </radiobutton>
+          <radiobutton group='fontsize' intvalue='-3'>
+            -3
+          </radiobutton>
+          <radiobutton group='fontsize' intvalue='-2'>
+            -2
+          </radiobutton>
+          <radiobutton group='fontsize' intvalue='-1'>
+            -1
+          </radiobutton>
+          <radiobutton group='fontsize' intvalue='0'>
+            0
+          </radiobutton>
+          <radiobutton group='fontsize' intvalue='1'>
+            1
+          </radiobutton>
+          <radiobutton group='fontsize' intvalue='2'>
+            2
+          </radiobutton>
+          <radiobutton group='fontsize' intvalue='3'>
+            3
+          </radiobutton>
+          <radiobutton group='fontsize' intvalue='4'>
+            4
+          </radiobutton>
+        </row>
+        <glue/>
+        <row stretch='true' bordertitle='Coupled Variable Monitors'>
+          <strut height='400'/>
+          <col justify='0.5'>
+            <strut width='600'/>
+            <variablemonitor borderstyle='line'>
+              <center width='%{textwidth}'>
+                <font size='+%{fontsize}' color='blue'>
+                  This is a piece of html text that is monitoring the value of the sliders by changing its font size and width dynamically.
+                </font>
+              </center>
+              <center width='%{textwidth}'>
+                <font size='+%{fontsize}' color='red'>
+                  Though this was not what variable monitors were originally intended for, it illustrates a benign effect of the law of unintended consequences.
+                </font>
+              </center>
+            </variablemonitor>
+            <glue/>
+          </col>
+        </row>
+        <glue/>
+      </panel>
+      <include file='sep.xml'/>
+      <include file='rowsandcols.xml'/>
+      <panel name='Source of Rows and Cols' layout='border'>
+        <string id='code'>
+          <![CDATA[    <define id="thecol">
+             <col bordertitle="$title" justify="$justify" >
+             <label>A very wide label</label>
+             <glue/>
+             <label>A wide label</label>
+             <glue/>
+             <label>A label</label>
+             </col>
+          </define>]]>
+        </string>
+        <col borderinset='10' justify='0.5' borderstyle='etch'>
+          <glue/>
+          <textarea font='Monospaced 18' editable='false' rows='9' borderstyle='line' text='@code'/>
+          <glue/>
+        </col>
+      </panel>
+      <panel name='Some text components' layout='col'>
+        <col stretch='true' borderstyle='bevel' borderraised='true' borderoutset='20'>
+          <strut width='500'/>
+          <horizontal bordertitle='Labelled, Stretched Text Field (with a listener)' borderoutset='5' borderinset='5'>
+            <label maxwidth='100'>
+              Name:
+            </label>
+            <textfield/>
+          </horizontal>
+          <row bordertitle='Labelled Text Field (no listener)' borderoutset='5' borderinset='5'>
+            <label maxwidth='100'>
+              Name:
+            </label>
+            <textfield listener=''/>
+          </row>
+          <col stretch='true' bordertitle='Text Area' borderoutset='5' borderinset='5'>
+            <textarea borderstyle='line'/>
+          </col>
+        </col>
+      </panel>
+      <filechooser id='choose' listener='@choosefile' dir='.' name='File Chooser' parent='true'>
+        <filefilter match='.*\.xml'>
+          XML files
+        </filefilter>
+        <filefilter match='.*\.java'>
+          Java files
+        </filefilter>
+        <filefilter match='.*\.class'>
+          Class files
+        </filefilter>
+        <filefilter match='.*\.tex'>
+          Tex files
+        </filefilter>
+        <filefilter match='.*\.gif'>
+          Gif files
+        </filefilter>
+        <filefilter match='.*\.jpg'>
+          Jpeg files
+        </filefilter>
+        <filefilter match='.*\.png'>
+          Png files
+        </filefilter>
+        <filefilter match='.*\.(png|jpg|gif)'>
+          Graphic files
+        </filefilter>
+        <col justify='0.5' borderinset='15' bordertitle='Preview' borderoutset='10'>
+          <glue/>
+          <filechooserimagepreviewer width='200' height='200'/>
+          <glue/>
+        </col>
+      </filechooser>
+      <variable id='var1'>
+        0
+      </variable>
+      <variable id='var2'>
+        1
+      </variable>
+      <buttongroup id='gr'/>
+      <actionlistener id='inc'>
+        actionPerformed(event) { var2.set(var2.get()+1); }
+      </actionlistener>
+      <actionlistener id='dec'>
+        actionPerformed(event) { var2.set(var2.get()-1); }
+      </actionlistener>
+      <col name='Variables' justify='0.5'>
+        <glue/>
+        <row>
+          <radiobutton group='gr' icon='png/gtk-go-up.png' value='up' listener='inc'/>
+          <radiobutton group='gr' icon='png/gtk-go-down.png' value='down' listener='dec'/>
+          <variablemonitor>
+            <font size='+2'>
+              Value of var2 is %{var2}, and var1 is %{var1}
+            </font>
+          </variablemonitor>
+          <Button icon='png/gtk-go-up.png' listener='{var1.set(var1.get()+1);}'/>
+        </row>
+        <glue/>
+      </col>
+      <resourcegenerator kind='Barchart' javaclass='GUIBuilder.BarChart$Generator'/>
+      <center name='Barcharts'>
+        <tabbedpane placement='right'>
+          <center name='Barchart: plain'>
+            <barchart width='800' height='400' borderoutset='10' borderinset='0' borderstyle='etched' xcaption='' ycaption='' xmult='1' fill='green blue red yellow' negfill='red yellow green blue red yellow' magnitude='true' font='monospaced-18' labelfont='monospaced-12' testarray='true' overlaycolor='yellow.200' axiscolor='red' xlabels='A B C D E F G H I J' labelcolor='black.155'/>
+          </center>
+          <center name='Barchart: list'>
+            <barchart width='800' height='400' borderoutset='10' borderinset='0' borderstyle='etched' xcaption='' ycaption='' fill='green blue red yellow' negfill='red yellow green blue red yellow' magnitude='true' font='monospaced-18' labelfont='monospaced-12' testlist='true' xmult='1' xlabelformat='%%' labelcolor='black'/>
+          </center>
+          <center name='Barchart: above'>
+            <barchart width='800' height='400' borderoutset='10' borderinset='0' borderstyle='etched' xcaption='' ycaption='' fill='green blue red yellow' negfill='red yellow green blue red yellow' magnitude='true' font='monospaced-18' labelfont='monospaced-12' testabove='true' labelcolor='black'/>
+          </center>
+          <center name='Barchart: beside'>
+            <barchart width='800' height='400' borderoutset='10' borderinset='0' borderstyle='etched' xcaption='' ycaption='' fill='green blue red yellow' negfill='red yellow green blue red yellow' magnitude='true' font='monospaced-18' labelfont='monospaced-12' labelcolor='black' testbeside='true'/>
+          </center>
+          <center name='Barchart: ab'>
+            <barchart width='800' height='400' borderoutset='10' borderinset='0' borderstyle='etched' xcaption='' ycaption='' fill='green blue red yellow' negfill='red yellow green blue red yellow' magnitude='true' font='monospaced-18' labelfont='monospaced-12' labelcolor='black' testab='true'/>
+          </center>
+          <center name='Barchart: a'>
+            <barchart width='800' height='400' borderoutset='10' borderinset='0' borderstyle='etched' xcaption='' ycaption='' fill='green blue red yellow' negfill='red yellow green blue red yellow' magnitude='true' font='monospaced-18' labelfont='monospaced-12' labelcolor='black' testa='true'/>
+          </center>
+          <center name='Barchart: b'>
+            <barchart width='800' height='400' borderoutset='10' borderinset='0' borderstyle='etched' xcaption='' ycaption='' fill='green blue red yellow' negfill='red yellow green blue red yellow' magnitude='true' font='monospaced-18' labelfont='monospaced-12' labelcolor='black' testb='true'/>
+          </center>
+          <center name='Barchart: all'>
+            <barchart width='800' height='400' borderoutset='10' borderinset='0' borderstyle='etched' xcaption='' ycaption='' fill='green blue red yellow' negfill='red yellow green blue red yellow' magnitude='true' font='monospaced-18' labelfont='monospaced-12' labelcolor='black' testall='true'/>
+          </center>
+          <center name='Bar Charts'>
+            <bool id='testall' value='true'/>
+            <col>
+              <font id='font' value='monospaced-4'/>
+              <barchart width='800' height='300' borderoutset='0' borderinset='0' borderstyle='flat' xcaption='' ycaption='' fg='green' factor='0.5' spread='false' fill='green blue red yellow' negfill='red yellow green blue ' font='monospaced-18' labelcolor='red' labelfont='monospaced-12'/>
+              <barchart width='800' height='300' borderoutset='0' borderinset='0' borderstyle='flat' xcaption='' ycaption='' fg='green' fill='green blue red yellow' negfill='red yellow green blue red yellow' factor='0.5' spread='true' font='monospaced-18' labelfont='monospaced-12' labelcolor='green'/>
+              <barchart width='800' height='300' borderoutset='0' borderinset='0' borderstyle='flat' fill='green blue red yellow' negfill='red yellow green blue red yellow' xcaption='' ycaption='' fg='green' factor='0.8' spread='true' font='monospaced-18' labelcolor='blue' labelfont='monospaced-12'/>
+            </col>
+          </center>
+        </tabbedpane>
+      </center>
+      <center name='Multicolour Legend'>
+        <col justify='0.5' borderstyle='etched' borderinset='5' borderoutset='5' bordertitle='Legend'>
+          <panel layout='grid' rows='3' cols='3'>
+            <orientation id='htext' value='right'/>
+            <label/>
+            <label>
+              Gambled
+            </label>
+            <label>
+              Played Safe
+            </label>
+            <label halign='right'>
+              Correct
+            </label>
+            <button bg='green'/>
+            <button bg='pink'/>
+            <label halign='right'>
+              Wrong
+            </label>
+            <button bg='red'/>
+            <button bg='green'/>
+          </panel>
+        </col>
+      </center>
+      <col name='Look and Feel' borderstyle='etch' borderoutset='10' borderinset='10' bordertitle='Look and Feel'>
+        <glue/>
+        <horizontal bordertitle='Look and Feel' borderinset='5'>
+          <include resource='plaf.xml'/>
+        </horizontal>
+        <glue/>
+        <horizontal bordertitle='Metal Themes' borderinset='5'>
+          <metaltheme id='standard'/>
+          <button label='Standard' listener='standard'/>
+          <metaltheme id='yellowish' secondary1='green' secondary2='yellow' secondary3='orange' black='blue' usertextfont='Monospaced 10' menufont='Monospaced 10' systemfont='Monospaced 10' root='root'/>
+          <button label='Yellowish' listener='yellowish'/>
+          <metaltheme id='red' secondary1='white' secondary2='pink' secondary3='red' black='white' white='black' primaryhighlight='white' controlhighlight='white' usertextfont='Monospaced 10' menufont='Monospaced 10' systemfont='Monospaced 10' root='root'/>
+          <button label='Reddish' listener='red'/>
+          <metaltheme id='khaki' primary1='#87,87,47' primary2='#159,151,111' primary3='#199,183,143' secondary1='#111,111,111' secondary2='#159,159,159' secondary3='#231,215,183' black='gray' usertextfont='Monospaced 10' menufont='Monospaced 10' systemfont='Monospaced 10' root='root'/>
+          <button label='Khaki' listener='khaki'/>
+          <metaltheme id='contrast' primary1='#0,0,0' primary2='#204,204,204' primary3='#255,255,255' secondary1='#111,111,111' secondary2='#204,204,204' secondary3='#255,255,255' primaryhighlight='black' controlhighlight='black' black='black' white='white' usertextfont='Dialog PLAIN 20' menufont='Dialog PLAIN 20' systemfont='Dialog PLAIN 20' root='root'/>
+          <button bg='green' label='High Contrast' listener='contrast'/>
+        </horizontal>
+        <glue/>
+        <horizontal bordertitle='Dynamic Dialogues' borderinset='5'>
+          <string id='title' value='Dynamic Dialogue Sampler'/>
+          <informationmessage id='info'>
+            <p width='200'>
+              This is what an information message looks like
+            </p>
+          </informationmessage>
+          <button label='Information' listener='info'/>
+          <errormessage id='info'>
+            <p width='200'>
+              This is what an error message looks like
+            </p>
+          </errormessage>
+          <button label='Error' listener='info'/>
+          <warningmessage id='info'>
+            <p width='200'>
+              This is what an warning message looks like
+            </p>
+          </warningmessage>
+          <button label='Warning' listener='info'/>
+          <questionmessage id='info'>
+            <p width='200'>
+              This is what an question message looks like
+            </p>
+          </questionmessage>
+          <button label='Question' listener='info'/>
+          <message id='info'>
+            <p width='200'>
+              This is what a plain message looks like
+            </p>
+          </message>
+          <button label='Plain' listener='info'/>
+          <message id='info' icon='png/alert-big.png'>
+            <p width='200'>
+              This is what a message with a custom icon looks like
+            </p>
+          </message>
+          <button label='Custom Icon' listener='info'/>
+          <message id='info' icon='png/alert-big.png'>
+            <p width='200'>
+              This is what a message with
+              <font size='+1'>
+                mixed size
+              </font>
+              <font color='red' size='+1'>
+                and
+                <font color='blue'>
+                  colour
+                </font>
+                looks like
+              </font>
+            </p>
+          </message>
+          <button label='Custom Size' listener='info'/>
+        </horizontal>
+        <glue/>
+        <horizontal bordertitle='Menus' borderinset='5' borderstyle='etch'>
+          <menubar>
+            <menu label='One Menu' borderstyle='etch'>
+              <menuitem>
+                With nothing
+              </menuitem>
+              <menuitem>
+                really on
+              </menuitem>
+              <menuitem>
+                it
+              </menuitem>
+            </menu>
+            <menu label='Another Menu' borderstyle='etch'>
+              <menuitem>
+                With nothing
+              </menuitem>
+              <menuitem>
+                really on
+              </menuitem>
+              <menuitem>
+                it
+              </menuitem>
+            </menu>
+          </menubar>
+        </horizontal>
+        <glue/>
+      </col>
+    </tabbedpane>
+  </frame>
+</interface>
+
+
+
+
+

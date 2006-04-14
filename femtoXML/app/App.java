@@ -36,7 +36,10 @@ public class App
            wantDOCTYPE=true, 
            logDOCTYPE=false, 
            wantComment=true, 
-           wantPI=true; 
+           wantPI=true,
+           wantENC=false; 
+  
+  String enc = "UTF-8";
     
   public void run(String[] args) throws Exception
   {
@@ -55,25 +58,33 @@ public class App
                               "-c         -- ignore comments%n"+
                               "-i         -- indent the source text without expanding entities%n"+
                               "-x         -- do not re-encode characters in content on output (to simplify some markup tests)%n"+
+                              "-enc enc   -- output encoding is enc (default is UTF-8)%n"+
                               ""); 
         else
-        if (arg.equals("-a")) isAscii = true;
+        if (arg.equals("-a"))   isAscii = true;
         else
-        if (arg.equals("-i")) { expandEntities = false; literalOutput = true; }
+        if (arg.equals("-i"))   { expandEntities = false; literalOutput = true; }
         else
-        if (arg.equals("-x")) { literalOutput = true; }
+        if (arg.equals("-x"))   { literalOutput = true; }
         else
-        if (arg.equals("-e")) map.put(args[++i], args[++i]);
+        if (arg.equals("-enc")) { enc=args[++i]; wantENC = true; }
         else
-        if (arg.equals("-s")) spaces.add(args[++i]);
+        if (arg.equals("-e"))   map.put(args[++i], args[++i]);
         else
-        if (arg.equals("-d")) wantDOCTYPE=false;
+        if (arg.equals("-s"))   spaces.add(args[++i]);
         else
-        if (arg.equals("+D")) logDOCTYPE=true;
+        if (arg.equals("-d"))   wantDOCTYPE=false;
         else
-        if (arg.equals("-c")) wantComment=false;
+        if (arg.equals("+D"))   logDOCTYPE=true;
         else
-        if (arg.equals("-p")) wantPI=false;
+        if (arg.startsWith("-D"))
+        { String [] argt = arg.substring(2).split("=", 2);
+          if (argt.length==2) System.setProperty(argt[0], argt[1]);  else System.err.println(arg+"?");        
+        }
+        else
+        if (arg.equals("-c"))   wantComment=false;
+        else
+        if (arg.equals("-p"))   wantPI=false;
         else
            files.add(arg);
     }
@@ -153,7 +164,11 @@ public class App
             String dtd2 = d.group(11);
             if (dtd1==null) dtd1 = d.group(8);
             if (dtd2==null) dtd2 = d.group(13);
-            System.err.printf("DTD %s %s %s %s%n", nameDTD, systemDTD, dtd1, dtd2);
+            if (logDOCTYPE)
+               System.err.printf("DTD %s %s %s %s%n", nameDTD, 
+                                 systemDTD==null?"":systemDTD, 
+                                 dtd1==null?"":dtd1, 
+                                 dtd2==null?"":dtd2);
           }
           else
             throw new XMLSyntaxError(getLocator(), "DOCTYPE declaration malformed");
@@ -226,12 +241,16 @@ public class App
     };
     
     XMLScanner         scanner = new XMLScanner(parser);
-    FormatWriter        out    = new FormatWriter(new OutputStreamWriter(System.out, "UTF-8"));
+    FormatWriter        out    = new FormatWriter(new OutputStreamWriter(System.out, enc));
     scanner.setExpandEntities(expandEntities);
     out.setCharEntities(isAscii);
     for (String arg : files)
     { try
       { scanner.read(new LineNumberReader(new XMLInputReader(new FileInputStream(arg))), arg);
+        if (wantENC)
+        {
+          out.println(String.format("<?xml version='1.1' encoding='%s'?>%n", enc));
+        }
         AppElement root = (AppElement) parser.getTree();
         for (AppTree tree : root) tree.printTo(out, 0);
         out.println();

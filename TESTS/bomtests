@@ -1,0 +1,5 @@
+for f in TESTS/bomtest*.xml
+do
+  echo $f
+  femto -DfemtoXML.XMLInputReader.level=fine $f >/dev/null
+done

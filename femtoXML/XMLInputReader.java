@@ -1,10 +1,10 @@
 package femtoXML;
 
 import java.io.BufferedInputStream;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.PushbackInputStream;
 import java.io.Reader;
 import java.io.UnsupportedEncodingException;
 import java.util.regex.Matcher;
@@ -19,8 +19,14 @@ import java.util.regex.Pattern;
 final public class XMLInputReader extends Reader
 { final InputStreamReader   rawstream;
   final BufferedInputStream pushback;
-  String                    encoding =  "UTF-8";
-  final static int        bufsize  = 1024;
+  String                    encoding  =  "UTF-8";
+  final static int        bufsize   = 1024;
+  final static int        lookahead = 128;
+  String   prop = System.getProperty("femtoXML.XMLInputReader.level");
+  String   level = prop==null?"info":prop;
+  boolean debug = "fine".equalsIgnoreCase(level);
+  boolean info  = debug || "info".equalsIgnoreCase(level);  
+  boolean none  = "none".equalsIgnoreCase(level);
   
   public String getEncoding()
   { return encoding; }
@@ -87,19 +93,19 @@ final public class XMLInputReader extends Reader
   }
   
   protected void setEncoding() throws IOException
-  { pushback.mark(bufsize);
-    byte[] bytes = new byte[bufsize];
-    int count = pushback.read(bytes, 0, bufsize);
+  { pushback.mark(lookahead);
+    byte[] bytes = new byte[lookahead];
+    int count = pushback.read(bytes, 0, lookahead);
     if (count<4)
     {
-      System.err.printf("Warning: file to short to deduce encoding: UTF-8 assumed%n");
+      if (!none) System.err.printf("Warning: file to short to deduce encoding: UTF-8 assumed%n");
       return;
     }
     pushback.reset();
     int bom = findBOM(bytes, boms);
     if (bom>=0)
     { boolean needsmore = needmore[bom]; 
-      System.err.printf("BOM => %s%s%n", kinds[bom], needsmore?" (needs more information)":"");  
+      if (debug) System.err.printf("[BOM suggests %s%s]%n", kinds[bom], needsmore?" (inspecting <?xml ... ?> declaration)":"");  
       pushback.skip(boms[bom].length);   // The inputstreamreader does this anyway ...
       if (!needsmore)
       {
@@ -111,29 +117,31 @@ final public class XMLInputReader extends Reader
     { bom = findBOM(bytes, decls);
       if (bom>=0)  
       {  encoding = kinds[bom];
-         System.err.printf("DECL %s from %02x%02x%02x%02x%n", kinds[bom],  bytes[0],bytes[1],bytes[2],bytes[3]);
+         if (debug) System.err.printf("[<?xml ... ?> suggests %s (%02x%02x%02x%02x) (inspecting its body)]%n", kinds[bom],  bytes[0],bytes[1],bytes[2],bytes[3]);
       }
       else
       {  encoding = "UTF-8";
-         System.err.printf("Warning: no <?xml declaration or byte-order-mark: UTF-8 assumed%n");
+         if (!none) System.err.printf("[Warning: no <?xml declaration or byte-order-mark: UTF-8 assumed]%n");
          return;
       }
     }
     // Now we need to look at the declaration
-    pushback.mark(100);
-    InputStreamReader peek = new InputStreamReader(pushback, encoding);  
+    InputStreamReader peek = new InputStreamReader(new ByteArrayInputStream(bytes), encoding);  
     StringBuilder b = new StringBuilder();
     int ch;
-    while ((ch=peek.read())>=0 && ch!='>') b.append((char)ch);
-    if (ch<0) throw new RuntimeException("XMLInputReader expecting a valid XML encoding declaration, read:"+b.toString());
+    while ((ch=peek.read())>0 && ch!='>') b.append((char)ch);
+    if (ch<=0) throw new RuntimeException("XMLInputReader expecting a valid <?xml ... encoding=...?>  declaration, read:"+b.toString());
     Pattern enc = Pattern.compile("encoding\\s*=\\s*('[^']*'|\"[^\"]*\")");
     Matcher mat = enc.matcher(b);
     if (mat.find())
     {
       encoding = mat.group(1);
       encoding = encoding.substring(1, encoding.length()-1);
-      System.err.printf("XML encoding is %s%n", encoding);
-      pushback.reset();
+      if (info) System.err.printf("[Declared XML encoding is %s]%n", encoding);
+    }
+    else
+    {
+      if (!none) System.err.printf("[Warning: no <?xml encoding=...?> declaration; using input encoding %s]%n", encoding);
     }
     
   }

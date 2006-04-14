@@ -1,0 +1,44 @@
+<?xml version="1.0"?>
+<!--
+        A test of the expansion of named entities.
+        This is the most complex aspect of the XML standard.
+-->
+<!DOCTYPE foo PUBLIC "/sufrin.org.uk/experimental.dtd"
+ [<!ENTITY footling "barfly">
+  <!ENTITY poffle   '&apos;poffle'>
+  <!ENTITY nested   'poffle=&poffle;'>
+  <!ENTITY tree     'tree <foo>
+  </foo>endtree'>
+ ]
+>
+<test > &nested; &tree;
+        &Aacute;ccents are swell. 
+        <!-- App should always render as "&Aacute;ccents are swell." -->
+        Áccents are better.  
+        <!-- App should render as "&Aacute;ccents are better." -->
+        
+        <!-- App -p should render as "Áccents are better." -->
+        
+        &foo;
+        
+        <args arg1="&quot;" arg2='&apos;' arg3="&arg3;" arg4=""/>
+        <pre xml:space="preserve"> 
+        This is a
+          pre-formatted and somewhat extra<o/>rdinarily
+        organised <i>element.</i> &laquo;Copyright &copy; Bernard Sufrin&reg;&raquo;
+        
+        
+        <!-- two lines above-->I hope<?PI 
+        here?>
+        you make
+        <!--
+        Multi
+                line
+        comment
+        -->
+        it.
+        </pre>
+</test>
+
+
+

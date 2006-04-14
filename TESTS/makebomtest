@@ -1,0 +1,8 @@
+#
+# Make a file in a given encoding, with a byte-order mark if appropriate
+#
+java -jar ~/bin/encoder.jar -I ISO-8859-1 /dev/stdin -O $1 bomtest-$1.xml <<END
+<?xml version="1.0" encoding="$1"?>
+<test>
+ This is an XML file encoded as $1.
+</test>

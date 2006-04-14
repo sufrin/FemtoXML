@@ -43,6 +43,7 @@ function litcontent()
 ################################################################################
 
 test 'DTD 1 (Entity declaration scanning)' <<END
+<?xml encoding="UTF-8"?>
 <!DOCTYPE test
  [
   <!ENTITY sys SYSTEM '1'>
@@ -56,14 +57,17 @@ test 'DTD 1 (Entity declaration scanning)' <<END
 END
 
 test 'DTD 2 (Malformed system entity declaration)' <<END
+<?xml encoding="UTF-8"?>
 <!DOCTYPE test [<!ENTITY sys SYSTEM '1' 'a'>]>
 END
 
 test 'DTD 3A (Malformed public entity declaration)' <<END
+<?xml encoding="UTF-8"?>
 <!DOCTYPE test [<!ENTITY sys PUBLIC '1'>]>
 END
 
 test 'DTD 3B (Parameter entity substitution)' <<END
+<?xml encoding="UTF-8"?>
 <!DOCTYPE test SYSTEM 'xyzzy' 
   [<!ENTITY % p "PEE">
    <!ENTITY % q "CUL">
@@ -74,6 +78,7 @@ test 'DTD 3B (Parameter entity substitution)' <<END
 END
 
 test 'DTD 4A (From W3C Website: http://www.w3.org/TR/REC-xml/#dt-repltext)' <<END
+<?xml encoding="UTF-8"?>
 <!DOCTYPE test
 [<!ENTITY % pub    "&#xc9;ditions Gallimard" >
  <!ENTITY   rights "All rights reserved" >
@@ -84,6 +89,7 @@ test 'DTD 4A (From W3C Website: http://www.w3.org/TR/REC-xml/#dt-repltext)' <<EN
 END
 
 litcontent 'DTD 4B (expanding within entities)' << END
+<?xml encoding="UTF-8"?>
 <!DOCTYPE test
 [
  <!ENTITY amp1 "&amp;amp;" >
@@ -93,6 +99,7 @@ litcontent 'DTD 4B (expanding within entities)' << END
 END
 
 litcontent 'DTD 4C (From W3C Website: http://www.w3.org/TR/REC-xml/#sec-entexpand)' <<END
+<?xml encoding="UTF-8"?>
 <!DOCTYPE test
 [
  <!ENTITY example "<p>An ampersand (&#38;#38;) may be escaped

@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<!--
+        A test of nested entities
+
+java -jar CLASS/femtoprint.jar -e a "expand a" TESTS/nest.xml
+
+java -jar CLASS/femtoprint.jar  -e a "expand &b; " \
+                                -e b "<expandedb/>" TESTS/nest.xml
+
+java -jar CLASS/femtoprint.jar  -e a "expand &b; " \
+                                -e b "<expandedb c='3'/>" TESTS/nest.xml
+
+java -jar CLASS/femtoprint.jar  -e a   "expand &bee; " \
+                                -e bee "<expandedb c='&duh;'/>" \
+                                -e duh "<duh a='3'/>"  TESTS/nest.xml
+
+java -jar CLASS/femtoprint.jar  -e a   "expand &bee; " \
+                                -e bee "<expandedb c='&duh;&nestedapos;'/>" \
+                                -e nestedapos "'" \
+                                -e duh "<duh a='[&nestedapos;]'/>"  TESTS/nest.xml
+
+-->
+<test a="&a;">
+
+</test>
+
+
