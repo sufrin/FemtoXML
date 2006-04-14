@@ -39,7 +39,7 @@ public class App
            wantPI=true,
            wantENC=false; 
   
-  String enc = "UTF-8";
+  String enc = "UTF-8", ienc = null;
     
   public void run(String[] args) throws Exception
   {
@@ -58,8 +58,9 @@ public class App
                               "-c         -- ignore comments%n"+
                               "-i         -- indent the source text without expanding entities%n"+
                               "-x         -- do not re-encode characters in content on output (to simplify some markup tests)%n"+
-                              "-enc enc   -- output encoding is enc (default is UTF-8)%n"+
-                              ""); 
+                              "-enc  enc  -- output encoding is enc (default is UTF-8)%n"+
+                              "-ienc enc  -- input encoding is enc (the program deduces the encoding otherwise)%n"+
+                              "($Revision:)%n"); 
         else
         if (arg.equals("-a"))   isAscii = true;
         else
@@ -68,6 +69,8 @@ public class App
         if (arg.equals("-x"))   { literalOutput = true; }
         else
         if (arg.equals("-enc")) { enc=args[++i]; wantENC = true; }
+        else
+        if (arg.equals("-ienc"))ienc=args[++i]; 
         else
         if (arg.equals("-e"))   map.put(args[++i], args[++i]);
         else
@@ -246,7 +249,7 @@ public class App
     out.setCharEntities(isAscii);
     for (String arg : files)
     { try
-      { scanner.read(new LineNumberReader(new XMLInputReader(new FileInputStream(arg))), arg);
+      { scanner.read(new LineNumberReader(new XMLInputReader(new FileInputStream(arg), ienc)), arg);
         if (wantENC)
         {
           out.println(String.format("<?xml version='1.1' encoding='%s'?>%n", enc));
