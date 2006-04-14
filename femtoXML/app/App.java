@@ -60,7 +60,7 @@ public class App
                               "-x         -- do not re-encode characters in content on output (to simplify some markup tests)%n"+
                               "-enc  enc  -- output encoding is enc (default is UTF-8)%n"+
                               "-ienc enc  -- input encoding is enc (the program deduces the encoding otherwise)%n"+
-                              "($Revision:)%n"); 
+                              "($Revision$)%n"); 
         else
         if (arg.equals("-a"))   isAscii = true;
         else
