@@ -31,9 +31,10 @@ final public class XMLInputReader extends Reader
   public String getEncoding()
   { return encoding; }
 
-  public XMLInputReader(InputStream rawstream) throws UnsupportedEncodingException, IOException
-  { pushback       = new BufferedInputStream(rawstream, bufsize);
-    setEncoding();
+  public XMLInputReader(InputStream rawstream, String forceEncoding) throws UnsupportedEncodingException, IOException
+  { pushback        = new BufferedInputStream(rawstream, bufsize);
+    encoding = forceEncoding;
+    if (encoding==null) setEncoding();
     this.rawstream = new InputStreamReader(pushback, encoding);
   }
   
@@ -42,9 +43,9 @@ final public class XMLInputReader extends Reader
   , {(byte)0xFF, (byte)0xFE, (byte)0x00, (byte)0x00}//ucs-4le
   , {(byte)0x00, (byte)0x00, (byte)0xFF, (byte)0xFE}//ucs-4 (2143)
   , {(byte)0xFE, (byte)0xFF, (byte)0x00, (byte)0x00}//ucs-4 (3412)
-  , {(byte)0xFE, (byte)0xFF}//utf-16be
-  , {(byte)0xFF, (byte)0xFE}//utf-16le
-  , {(byte)0xEF, (byte)0xBB, (byte)0xBF}//utf-8
+  , {(byte)0xFE, (byte)0xFF}                         //utf-16be
+  , {(byte)0xFF, (byte)0xFE}                         //utf-16le
+  , {(byte)0xEF, (byte)0xBB, (byte)0xBF}             //utf-8
   };
   
   static byte[][] decls =
@@ -125,6 +126,8 @@ final public class XMLInputReader extends Reader
          return;
       }
     }
+    if (encoding.equals("EBCDIC"))
+       throw new RuntimeException("XMLInputReader cannot deduce the exact encoding of an EBCDIC file. Please set input encoding explicitly");
     // Now we need to look at the declaration
     InputStreamReader peek = new InputStreamReader(new ByteArrayInputStream(bytes), encoding);  
     StringBuilder b = new StringBuilder();
