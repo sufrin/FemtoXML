@@ -18,7 +18,7 @@ import femtoXML.XMLTreeFactory;
  * An exemplary femtoXML application that pretty-prints its input XML files onto the
  * standard output stream.
  * 
- * @author sufrin
+ * @author sufrin $Revision$
  *
  */
 public class App
