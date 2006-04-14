@@ -15,6 +15,7 @@ import java.util.Stack;
  * processing has to be performed further up the analysis chain</li>
  * </ul>
  * 
+ * @revision $Revision$
  * <p>
  */
 public class XMLScanner implements XMLHandler.XMLLocator
@@ -80,7 +81,9 @@ public class XMLScanner implements XMLHandler.XMLLocator
      }
   }
   
-  /** Human-readable string describing the source of the current input stream. */
+  /** Human-readable string describing the source of the current input 
+   *  stream. 
+   */
   protected String description;
   
   /**
@@ -106,7 +109,9 @@ public class XMLScanner implements XMLHandler.XMLLocator
   {
     nextToken();
     if (this.token != token)
-       throwSyntaxError(token + " expected; found " + this.token + " (" + this.value + ")");
+       throwSyntaxError
+       (token + " expected; found " + this.token + 
+        " (" + this.value + ")");
   }
   
   /** Lexeme representation  */
@@ -213,9 +218,12 @@ public class XMLScanner implements XMLHandler.XMLLocator
           checkToken(Lex.CLOSETAG);
           elementLevel--;
           if (elementLevel<0)
-             throwSyntaxError(String.format("Superfluous closing tag: </%s>", value));
+             throwSyntaxError
+             (String.format("Superfluous closing tag: </%s>", value));
           if (elementLevel<entityLevels.peek())
-             throwSyntaxError(String.format("Superfluous closing tag: </%s> in entity &%s;", tagname, entitynames.peek()));
+             throwSyntaxError
+             (String.format("Superfluous closing tag: </%s> in entity &%s;",
+                            tagname, entitynames.peek()));
           break;
         case OPENTAG: // <id id="..." ...
         {
@@ -223,7 +231,8 @@ public class XMLScanner implements XMLHandler.XMLLocator
           inElement = true;
           nextToken();
           if (token != Lex.NAME)
-            throwSyntaxError(String.format("Element name expected; found %s %s", token, value));
+            throwSyntaxError
+            (String.format("Element name expected; found %s %s",token,value));
           String tag = value;
           nextToken();
           while (token == Lex.NAME)
@@ -236,13 +245,17 @@ public class XMLScanner implements XMLHandler.XMLLocator
               nextToken();
             }
             else
-              throwSyntaxError("String expected after " + key + "= : found " + token + " ("+value+")");
+              throwSyntaxError
+              ("String expected after " + key + "= : found " + 
+               token + " ("+value+")");
           }
           consumer.startElement(tag, atts);
           if (token == Lex.FINISHELEMENT) // />
             consumer.endElement(tag);
           else if (token != Lex.CLOSETAG)
-            throwSyntaxError("Attribute name or > or /> expected in start tag: found " + token + " (" + value + ")");
+            throwSyntaxError
+            ("Attribute name or > or /> expected in start tag: found " + 
+              token + " (" + value + ")");
           inElement = false;
           elementLevel++;
         }
@@ -278,7 +291,8 @@ public class XMLScanner implements XMLHandler.XMLLocator
       {
         StringBuilder b = new StringBuilder();
         do
-        { b.append((char)ch);
+        {
+          b.append((char) ch);
           nextRawChar();
         }
         while (0 <= ch && ch <= ' ');
@@ -307,25 +321,26 @@ public class XMLScanner implements XMLHandler.XMLLocator
       value = "";
       nextRawChar();
     }
-    else if (inElement && (ch == APOS || ch == QUOT)) 
+    else if (inElement && (ch == APOS || ch == QUOT))
     {
-      int closeQuote         = ch;
+      int closeQuote = ch;
       int entitynestinglevel = entities.size();
       StringBuilder b = new StringBuilder();
       nextChar();
       // closing quote must be at the same entity-nesting level as the opening
-      while (0 <= ch && !(ch == closeQuote && entities.size()==entitynestinglevel))
+      while (0 <= ch
+             && !(ch == closeQuote && entities.size() == entitynestinglevel))
       {
         if (expandEntities && ch == '&')
           if (isCharEntity)
             b.append(theCharEntity);
-          else          
-            pushEntity(entityName);          
+          else
+            pushEntity(entityName);
         else
           b.append((char) ch);
         nextChar();
       }
-      if (ch<0) throwSyntaxError(String.format("Runaway string: '%s'", b));
+      if (ch < 0) throwSyntaxError(String.format("Runaway string: '%s'", b));
       token = Lex.QUOTE;
       value = b.toString();
       nextRawChar();
@@ -350,7 +365,8 @@ public class XMLScanner implements XMLHandler.XMLLocator
         token = Lex.OPENENDTAG;
       }
       else if (ch == '?')
-      { boolean want = consumer.wantPI();
+      {
+        boolean want = consumer.wantPI();
         nextRawChar();
         int lastch = ch;
         StringBuilder b = new StringBuilder();
@@ -373,7 +389,7 @@ public class XMLScanner implements XMLHandler.XMLLocator
       {
         nextRawChar();
         if (ch == '[') // Assume <![CDATA and read to closing ]]>
-        { 
+        {
           StringBuilder b = new StringBuilder();
           do
           {
@@ -402,42 +418,43 @@ public class XMLScanner implements XMLHandler.XMLLocator
                              + b.toString() + ">");
         }
         else if (ch == 'D') // Assume <!DOCTYPE and read to matching closing >
-        { boolean want = consumer.wantDOCTYPE();
+        {
+          boolean want = consumer.wantDOCTYPE();
           doctypeMatcher.reset();
           StringBuilder b = want ? new StringBuilder() : null;
           int count = 1;
           while (0 <= ch && count > 0)
-          { doctypeMatcher.append((char) ch);
+          {
+            doctypeMatcher.append((char) ch);
             if (want) b.append((char) ch);
             nextRawChar();
             if (ch == '<')
               count++;
-            else 
-            if (ch == '>') 
-              count--;
+            else if (ch == '>') count--;
           }
-          if (count != 0) 
-             throwSyntaxError("<!DOCTYPE with runaway body ...");
-          if (!doctypeMatcher.match())
-             throwSyntaxError("<!DOCTYPE ... > expected.");
+          if (count != 0) throwSyntaxError("<!DOCTYPE with runaway body ...");
+          if (!doctypeMatcher.match()) throwSyntaxError("<!DOCTYPE ... > expected.");
           token = Lex.DOCTYPE;
           value = want ? b.substring(8, b.length()) : "... skipped doctype ...";
           nextRawChar();
         }
         else
         // Assume <!-- comment -->
-        { boolean want = consumer.wantComment();
+        {
+          boolean want = consumer.wantComment();
           commentMatcher.reset();
           StringBuilder b = want ? new StringBuilder() : null;
           do
           {
             while (0 <= ch && ch != '>')
-            { commentMatcher.append((char)ch);
+            {
+              commentMatcher.append((char) ch);
               if (want) b.append((char) ch);
               nextRawChar();
             }
             if (ch > 0)
-            { commentMatcher.append((char)ch);
+            {
+              commentMatcher.append((char) ch);
               if (want) b.append((char) ch);
               nextRawChar();
             }
@@ -445,7 +462,9 @@ public class XMLScanner implements XMLHandler.XMLLocator
           while (0 <= ch && !commentMatcher.match());
           if (commentMatcher.match())
           {
-            value = want ? b.substring(2, b.length() - 3) : "... skipped comment ...";
+            value = want 
+                    ? b.substring(2, b.length() - 3)
+                    : "... skipped comment ...";
             token = Lex.COMMENT;
           }
           else
@@ -461,23 +480,30 @@ public class XMLScanner implements XMLHandler.XMLLocator
       token = Lex.CLOSETAG;
     }
     else
-    // a piece of text appears that could be content -- but if it looks like an identifier then
-    // we say it's that, and treat it as content only when out of element tag context.
+    /*
+     * a piece of text appears that could be content -- but if it looks like an
+     * identifier then we say it's that, and treat it as content only when out
+     * of element tag context.
+     */     
     {
       // leading & is a special case because it was read by nextRawChar
-      if (inElement && ch=='&') 
-      {   nextEntity();
-          throwSyntaxError(String.format ("Entity reference &%s; out of place in element tag", entityName));
+      if (inElement && ch == '&')
+      {
+        nextEntity();
+        throwSyntaxError(String
+                               .format("Entity reference &%s; out of place in element tag",
+                                       entityName));
       }
       if (expandEntities && ch == '&')
       {
         nextEntity();
-        if (!isCharEntity) 
-        { pushEntity(entityName); 
-          nextRawChar(); 
+        if (!isCharEntity)
+        {
+          pushEntity(entityName);
+          nextRawChar();
           nextToken();
         }
-        else 
+        else
           nextContent();
       }
       else
@@ -489,8 +515,10 @@ public class XMLScanner implements XMLHandler.XMLLocator
   {
     StringBuilder b = new StringBuilder();
     token = Lex.NAME;
-    while (ch > ' ' && ch != '<' && ch != '>'
-           && !(inElement && (ch == '/' || ch == '=')))
+    while (ch > ' ' && 
+           ch != '<' && 
+           ch != '>' && 
+           !(inElement && (ch == '/' || ch == '=')))
     {
       if (expandEntities && ch == '&')
         if (isCharEntity)
@@ -602,7 +630,8 @@ public class XMLScanner implements XMLHandler.XMLLocator
       entityName = entityName + ((char) ch);
       nextRawChar();
     }
-    if (ch!=';') throwSyntaxError(String.format("Runaway entity name &%s (should end in ';')", entityName));
+    if (ch!=';') 
+       throwSyntaxError(String.format("Runaway entity name &%s (should end in ';')", entityName));
     theCharEntity = consumer.decodeCharEntity(entityName);
     isCharEntity = theCharEntity > 0;
     ch = '&';
@@ -642,11 +671,11 @@ public class XMLScanner implements XMLHandler.XMLLocator
       length = 0;
     }
 
-    char[] front, back;
+    final char[] front, back;
 
     int    length;
 
-    public void reset()
+    final public void reset()
     {
       length = 0;
       for (int i = 0; i < front.length; i++)
@@ -655,7 +684,7 @@ public class XMLScanner implements XMLHandler.XMLLocator
         back[i] = '\000';
     }
 
-    public void append(char c)
+    final public void append(char c)
     {
       if (length < front.length) front[length++] = c;
       for (int i = 1; i < back.length; i++)
@@ -666,7 +695,7 @@ public class XMLScanner implements XMLHandler.XMLLocator
     public abstract boolean match();
   }
   
-  static Matcher commentMatcher = new Matcher(2, 3)
+  final static Matcher commentMatcher = new Matcher(2, 3)
   {
     public boolean match()
     {
@@ -674,7 +703,7 @@ public class XMLScanner implements XMLHandler.XMLLocator
     }
   };
   
-  static Matcher doctypeMatcher = new Matcher(8, 0)
+  final static Matcher doctypeMatcher = new Matcher(8, 0)
   {
     public boolean match()
     {

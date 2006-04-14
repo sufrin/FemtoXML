@@ -10,6 +10,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import femtoXML.FormatWriter;
 import femtoXML.XMLCharUtil;
+import femtoXML.XMLInputReader;
 import femtoXML.XMLParser;
 import femtoXML.XMLScanner;
 import femtoXML.XMLSyntaxError;
@@ -18,7 +19,8 @@ import femtoXML.XMLTreeFactory;
  * An exemplary femtoXML application that pretty-prints its input XML files onto the
  * standard output stream.
  * 
- * @author sufrin $Revision$
+ * @author sufrin 
+ * @revision $Revision$
  *
  */
 public class App
@@ -92,7 +94,7 @@ public class App
         Pattern.compile("%([A-Za-z0-9:_]+);", Pattern.MULTILINE);
       
       Pattern dtd =
-        Pattern.compile("\\s*([A-Za-z0-9:_]+)\\s*((PUBLIC|SYSTEM)\\s*((\"([^\"]*)\")|(\'([^\']*)\'))\\s*((\"([^\"]+)\")|(\'([^\']+)\'))?)?\\s*\\[(.*)\\]\\s*", Pattern.DOTALL);
+        Pattern.compile("\\s*([A-Za-z0-9:_]+)\\s*((PUBLIC|SYSTEM)\\s*((\"([^\"]*)\")|(\'([^\']*)\'))\\s*((\"([^\"]+)\")|(\'([^\']+)\'))?)?\\s*(\\[(.*)\\])?\\s*", Pattern.DOTALL);
       
       
       // http://www.w3.org/TR/REC-xml/#sec-entexpand suggests that only &#...; are expanded during entity definition
@@ -156,11 +158,13 @@ public class App
           else
             throw new XMLSyntaxError(getLocator(), "DOCTYPE declaration malformed");
           
-          processInternalDTD(d.group(14));
+          String internal = d.group(15);
+          if (internal!=null) 
+             processDTD(internal);
           return new AppDOCTYPE(data);
       }
       
-      public void processInternalDTD(String data)
+      public void processDTD(String data)
       {
           int start = 0;
           Matcher m = entity.matcher(data);
@@ -227,7 +231,7 @@ public class App
     out.setCharEntities(isAscii);
     for (String arg : files)
     { try
-      { scanner.read(new LineNumberReader(new InputStreamReader(new FileInputStream(arg), "UTF-8")), arg);
+      { scanner.read(new LineNumberReader(new XMLInputReader(new FileInputStream(arg))), arg);
         AppElement root = (AppElement) parser.getTree();
         for (AppTree tree : root) tree.printTo(out, 0);
         out.println();
