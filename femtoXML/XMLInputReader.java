@@ -126,8 +126,10 @@ final public class XMLInputReader extends Reader
          return;
       }
     }
+    // Choose an arbitrary EBCDIC-compatible set and see what we can do with that
     if (encoding.equals("EBCDIC"))
-       throw new RuntimeException("XMLInputReader cannot deduce the exact encoding of an EBCDIC file. Please set input encoding explicitly");
+       encoding = "IBM420";
+       //throw new RuntimeException("XMLInputReader cannot deduce the exact encoding of an EBCDIC file. Please set input encoding explicitly");
     // Now we need to look at the declaration
     InputStreamReader peek = new InputStreamReader(new ByteArrayInputStream(bytes), encoding);  
     StringBuilder b = new StringBuilder();
