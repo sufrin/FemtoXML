@@ -117,7 +117,7 @@ final public class XMLInputReader extends Reader
     { bom = findBOM(bytes, decls);
       if (bom>=0)  
       {  encoding = kinds[bom];
-         if (debug) System.err.printf("[<?xml ... ?> suggests %s (%02x%02x%02x%02x) (inspecting its body)]%n", kinds[bom],  bytes[0],bytes[1],bytes[2],bytes[3]);
+         if (debug) System.err.printf("[<?xml ... ?> suggests %s-compatible (%02x%02x%02x%02x) (inspecting its body)]%n", kinds[bom],  bytes[0],bytes[1],bytes[2],bytes[3]);
       }
       else
       {  encoding = "UTF-8";
