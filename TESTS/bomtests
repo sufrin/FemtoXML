@@ -1,5 +1,6 @@
 for f in TESTS/bomtest*.xml
 do
   echo $f
-  femto -DfemtoXML.XMLInputReader.level=fine $f >/dev/null
+  femto -enc ISO-8859-1 -DfemtoXML.XMLInputReader.level=fine $f 
 done
+
