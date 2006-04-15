@@ -9,6 +9,8 @@ import java.util.Vector;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import femtoXML.FormatWriter;
+import femtoXML.XMLAttrMap;
+import femtoXML.XMLAttributes;
 import femtoXML.XMLCharUtil;
 import femtoXML.XMLInputReader;
 import femtoXML.XMLParser;
@@ -37,9 +39,12 @@ public class App
            logDOCTYPE=false, 
            wantComment=true, 
            wantPI=true,
-           wantENC=false; 
+           wantENC=false,
+           alignParam = true; 
   
   String enc = "UTF-8", ienc = null;
+  
+  int splitParam = 2;
     
   public void run(String[] args) throws Exception
   {
@@ -60,9 +65,15 @@ public class App
                               "-x         -- do not re-encode characters in content on output (to simplify some markup tests)%n"+
                               "-enc  enc  -- output encoding is enc (default is UTF-8)%n"+
                               "-ienc enc  -- input encoding is enc (the program deduces the encoding otherwise)%n"+
+                              "-aa        -- don't bother aligning attribute values in tags%n"+
+                              "-as <int>  -- show atributes on separate lines of there are more than <int> of them (default 2)%n"+
                               "($Revision$)%n"); 
         else
         if (arg.equals("-a"))   isAscii = true;
+        else
+        if (arg.equals("-aa"))   alignParam = false;
+        else
+        if (arg.equals("-as"))   splitParam = Integer.parseInt(args[++i]);
         else
         if (arg.equals("-i"))   { expandEntities = false; literalOutput = true; }
         else
@@ -240,7 +251,16 @@ public class App
       public boolean wantSpaces()
       {
         return stack.peek().wantSpaces();
-      }     
+      }  
+      
+      @Override
+      public XMLAttributes newAttributes(boolean expandEntitites)
+      { XMLAttrMap  map = new XMLAttrMap(expandEntitites);
+        map.setSplit(splitParam);
+        map.setAlign(alignParam);
+        return map;
+      }
+
     };
     
     XMLScanner         scanner = new XMLScanner(parser);

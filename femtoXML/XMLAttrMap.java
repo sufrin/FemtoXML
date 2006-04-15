@@ -69,6 +69,11 @@ public class XMLAttrMap extends LinkedHashMap<String, String> implements
     out.flush();
     return sw.toString();
   }
+  
+  protected boolean align = true;
+  
+  public XMLAttributes setAlign(boolean align) 
+  { this.align = align; return this; }
 
   /**
    * Print in re-readable form on the given FormatWriter, using the given indent
@@ -78,6 +83,8 @@ public class XMLAttrMap extends LinkedHashMap<String, String> implements
   {
     Set<String> keys = keySet();
     boolean indenting = keys.size() > split && indent > 0;
+    int w = 0;
+    if (indenting && align) for (String key : keys) w = Math.max(w, key.length());
     for (String key : keys)
     {
       String val = get(key);
@@ -90,7 +97,8 @@ public class XMLAttrMap extends LinkedHashMap<String, String> implements
       else
         out.print(" ");
       out.print(key);
-      out.print("=");
+      if (indenting && align) for (int i=key.length(); i<w; i++) out.print(" ");
+      out.print(" = ");
       out.print(quote);
       if (expandedEntities)
         XMLCharUtil.print(out, val);

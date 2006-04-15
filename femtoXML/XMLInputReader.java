@@ -106,7 +106,7 @@ final public class XMLInputReader extends Reader
   /** Is there an encoding with the given name? */
   protected boolean hasEncoding(String charsetName)
   { try
-    { Charset s = Charset.forName(charsetName);
+    { Charset.forName(charsetName);
       return true;
     }
     catch (Exception ex)
