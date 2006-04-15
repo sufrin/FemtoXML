@@ -7,6 +7,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.UnsupportedEncodingException;
+import java.nio.charset.Charset;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 /**
@@ -38,7 +39,8 @@ final public class XMLInputReader extends Reader
     this.rawstream = new InputStreamReader(pushback, encoding);
   }
   
-  static byte[][] boms =
+  /** stock byte-order marks */
+  final static byte[][] boms =
   { {(byte)0x00, (byte)0x00, (byte)0xFE, (byte)0xFF}//ucs-4be
   , {(byte)0xFF, (byte)0xFE, (byte)0x00, (byte)0x00}//ucs-4le
   , {(byte)0x00, (byte)0x00, (byte)0xFF, (byte)0xFE}//ucs-4 (2143)
@@ -48,7 +50,8 @@ final public class XMLInputReader extends Reader
   , {(byte)0xEF, (byte)0xBB, (byte)0xBF}             //utf-8
   };
   
-  static byte[][] decls =
+  /** stock bytes representing the sequence  < ? x m in different encodings */
+  final static byte[][] decls =
   { {(byte)0x00, (byte)0x00, (byte)0x00, (byte)0x3c}//ucs-4be
   , {(byte)0x3c, (byte)0x00, (byte)0x00, (byte)0x00}//ucs-4le
   , {(byte)0x00, (byte)0x00, (byte)0x3c, (byte)0x00}//ucs-4 (2143)
@@ -59,7 +62,8 @@ final public class XMLInputReader extends Reader
   , {(byte)0x4c, (byte)0x6f, (byte)0xa7, (byte)0x94}//ebcdic 
   };
   
-  static String[] kinds =
+  /** names of encodings in the same order as boms/decls */
+  final static String[] kinds =
   { "UCS-4BE"
   , "UCS-4LE"
   , "UCS-4(2143)"
@@ -70,7 +74,10 @@ final public class XMLInputReader extends Reader
   , "EBCDIC"
   };
   
-  static boolean[] needmore =
+  /** needmore[i] is true when kinds[i] names an encoding
+      that needs to decode a declaration */
+
+  final static boolean[] needmore =
   { true  //"UCS-4BE"
   , true  //"UCS-4LE"
   , true  //"UCS-4(2143)"
@@ -80,19 +87,52 @@ final public class XMLInputReader extends Reader
   , false //"UTF-8"    
   };
   
-  protected int findBOM(byte[] bytes, byte[][] boms)
+  /** Find the index of a prefix of <code>bytes</code>
+      among the list of byte sequences.
+  */
+  protected int firstIndex(byte[] bytes, byte[][] bytess)
   {
     outer:
-    for (int bom=0; bom<boms.length; bom++)
+    for (int index=0; index<bytess.length; index++)
     {
-      byte[] mark = boms[bom];
-      for (int i=0; i<mark.length; i++) 
-          if (mark[i]!=bytes[i]) continue outer;
-      return bom;
+      byte[] subject = bytess[index];
+      for (int i=0; i<subject.length; i++) 
+          if (subject[i]!=bytes[i]) continue outer;
+      return index;
     }
     return -1;
   }
   
+  /** Is there an encoding with the given name? */
+  protected boolean hasEncoding(String charsetName)
+  { try
+    { Charset s = Charset.forName(charsetName);
+      return true;
+    }
+    catch (Exception ex)
+    { 
+      return false;
+    }
+  }
+  
+  /** List of EBCDIC-based encodings */
+  static final String[] EBCDICS =
+  { "IBM500",  "IBM037",  "IBM819",
+    "IBM850",  "IBM875",  "IBM924",
+    "IBM1140", "IBM1141", "IBM1142",
+    "IBM1143", "IBM1144", "IBM1145",
+    "IBM1146", "IBM1147", "IBM1148",
+    "IBM1149", "IBM1026", "IBM1047"
+  };
+  
+  /** Find an installed EBCDIC-based encoding */
+  protected String EBCDIC()
+  { for (String name : EBCDICS)
+        if (hasEncoding(name)) return name;
+    return null;
+  }
+  
+  /** Inspect an XML data stream and try to establish the encoding it uses */
   protected void setEncoding() throws IOException
   { pushback.mark(lookahead);
     byte[] bytes = new byte[lookahead];
@@ -103,7 +143,7 @@ final public class XMLInputReader extends Reader
       return;
     }
     pushback.reset();
-    int bom = findBOM(bytes, boms);
+    int bom = firstIndex(bytes, boms);
     if (bom>=0)
     { boolean needsmore = needmore[bom]; 
       if (debug) System.err.printf("[BOM suggests %s%s]%n", kinds[bom], needsmore?" (inspecting <?xml ... ?> declaration)":"");  
@@ -115,7 +155,7 @@ final public class XMLInputReader extends Reader
       }
     }
     else
-    { bom = findBOM(bytes, decls);
+    { bom = firstIndex(bytes, decls);
       if (bom>=0)  
       {  encoding = kinds[bom];
          if (debug) System.err.printf("[<?xml ... ?> suggests %s-compatible (%02x%02x%02x%02x) (inspecting its body)]%n", kinds[bom],  bytes[0],bytes[1],bytes[2],bytes[3]);
@@ -128,8 +168,11 @@ final public class XMLInputReader extends Reader
     }
     // Choose an arbitrary EBCDIC-compatible set and see what we can do with that
     if (encoding.equals("EBCDIC"))
-       encoding = "IBM420";
-       //throw new RuntimeException("XMLInputReader cannot deduce the exact encoding of an EBCDIC file. Please set input encoding explicitly");
+    {
+       encoding = EBCDIC();
+       if (encoding==null)
+          throw new RuntimeException("XMLInputReader cannot deduce the exact encoding of an EBCDIC file. Please set input encoding explicitly");
+    }
     // Now we need to look at the declaration
     InputStreamReader peek = new InputStreamReader(new ByteArrayInputStream(bytes), encoding);  
     StringBuilder b = new StringBuilder();
@@ -163,3 +206,4 @@ final public class XMLInputReader extends Reader
     rawstream.close();
   }
 }
+
