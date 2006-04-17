@@ -287,18 +287,18 @@ public class XMLScanner implements XMLHandler.XMLLocator
 
   /** Read the next token */
   protected void nextToken()
-  {
-    if (0 <= ch && ch <= ' ')
+  { 
+    if (ch==0 || Character.isSpaceChar(ch))
     {
       if (!inElement && consumer.wantSpaces())
       {
         StringBuilder b = new StringBuilder();
         do
         {
-          b.append((char) ch);
+          if (ch!=0) b.append((char) ch);
           nextRawChar();
         }
-        while (0 <= ch && ch <= ' ');
+        while (ch==0 || Character.isSpaceChar(ch));
         consumer.spaceCharacters(b);
       }
       else
@@ -307,7 +307,7 @@ public class XMLScanner implements XMLHandler.XMLLocator
         {
           nextRawChar();
         }
-        while (0 <= ch && ch <= ' ');
+        while (ch == 0 || Character.isSpaceChar(ch));
       }
     }
     lineNumber = reader.getLineNumber();
@@ -594,7 +594,7 @@ public class XMLScanner implements XMLHandler.XMLLocator
            }
            else
            if (tackSpace) 
-           { ch = ' ';
+           { ch = 0;
              tackSpace = false;
              return;
            }
