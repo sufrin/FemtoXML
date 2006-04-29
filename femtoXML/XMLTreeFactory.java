@@ -3,10 +3,11 @@ package femtoXML;
 import femtoXML.XMLHandler.XMLLocator;
 
 /**
- * Interface between an XML Parser and the
- * classes that generate parse tree nodes.
- * @author sufrin
- *
+ * Interface between an XML Parser and the classes that generate parse tree
+ * nodes.
+ * 
+ * @author sufrin ($Revision$)
+ * 
  * @param <Tree>
  */
 public interface XMLTreeFactory<Tree>

@@ -131,7 +131,7 @@ public class XMLParser<T> implements XMLHandler
   }
 
   /**
-   * This procedure returns null and must be overridden in a subclass if
+   * Default returns null and must be overridden in a subclass if
    * non-character entities are to be expanded. When overridden it should return
    * a reader that yields the expansion of the named entity.
    */
@@ -142,7 +142,7 @@ public class XMLParser<T> implements XMLHandler
   }
   
   /**
-   * This procedure uses XMLCharUtil.decodeCharEntity to decode character entity
+   * Default uses <code>XMLCharUtil.decodeCharEntity</code> to decode character entity
    * names.
    */
   public char decodeCharEntity(String entityName)
@@ -161,7 +161,11 @@ public class XMLParser<T> implements XMLHandler
   
   public XMLLocator getLocator() 
   { return locator; }
-
+  
+  /**
+   * Default returns an
+   * <code>XMLAttrMap</code> with <code>expandEntities</code> set appropriiately.
+   */
   public XMLAttributes newAttributes(boolean expandEntitites)
   {
     return new XMLAttrMap().setExpandedEntities(expandEntitites);
@@ -173,9 +177,10 @@ public class XMLParser<T> implements XMLHandler
   }
   
   /**
-   * Forwards this method to <code>factory</code>. To be discriminating about
-   * space-recording, override this with a method that inspects the topmost
-   * element on the stack to see if it wants spaces to be recorded.
+   * Default delegates to <code>factory</code>. To be discriminating about
+   * space-recording, either override this with a method that inspects the topmost
+   * element on the stack to see if it wants spaces to be recorded or supply a
+   * factory that does likewise.
    */
   public boolean wantSpaces()
   {
@@ -183,7 +188,7 @@ public class XMLParser<T> implements XMLHandler
   }
   
   /**
-   * Forwards this method to <code>factory</code>.
+   * Default delegates to <code>factory</code>.
    */
   public boolean wantComment()
   {
@@ -191,7 +196,7 @@ public class XMLParser<T> implements XMLHandler
   }
   
   /**
-   * Forwards this method to <code>factory</code>.
+   * Default delegates to <code>factory</code>.
    */
   public boolean wantPI()
   {
@@ -199,7 +204,7 @@ public class XMLParser<T> implements XMLHandler
   }
   
   /**
-   * Forwards this method to <code>factory</code>.
+   * Default delegates to <code>factory</code>.
    */
   public boolean wantDOCTYPE()
   {

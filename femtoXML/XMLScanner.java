@@ -4,25 +4,35 @@ import java.io.LineNumberReader;
 import java.io.Reader;
 import java.util.Stack;
 /**
- * An <code>XMLScanner</code> is primed with an <code>XMLHandler</code>,
- * and then can be used(and re-used) to read XML from a
- * <code>java.io.LineNumberReader</code>. There are almost no limitations on
- * the form of the XML it will read, <b>but</b>:
+ * An <code>XMLScanner</code> is primed with an application-specific
+ * <code>XMLHandler</code>, and then can be used (repeatedly) to read XML
+ * from (successive) <code>java.io.LineNumberReader</code>s.
+ * 
+ * <p>
+ * There are almost no limitations on the form of the XML it will read, <b>but</b>:
  * <ul>
  * <li>No attempt is made to recover from XML parsing errors.</li>
- * <li>DOCTYPE declarations are ignored</li>
+ * <li>DOCTYPE declarations and processing instructions are not properly
+ * parsed; instead their text is extracted from the document if it is
+ * superficially well-formed, and forwarded to the XMLHandler for further
+ * analysis. <p>This cavalier approach means that diagnosis of syntax errors in
+ * DOCTYPE declarations is not done properly, and that certain kinds of DOCTYPE
+ * error will be discovered  later in the document than they would
+ * otherwise be. </p></li>
  * <li>Namespace prefixes are incorporated into entity names so namespace
  * processing has to be performed further up the analysis chain</li>
  * </ul>
+ * </p>
  * 
- * @revision $Revision$
- * <p>
+ * @author sufrin ($Revision$)
+ * @date $Date:$
+ *           
  */
 public class XMLScanner implements XMLHandler.XMLLocator
 {
   protected XMLHandler           consumer;
   protected LineNumberReader     reader;
-  protected boolean             expandEntities = true;
+  protected boolean              expandEntities = true;
   protected int                  elementLevel;
   private static final char    
                 QUOT = 0x22, 
