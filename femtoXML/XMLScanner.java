@@ -25,7 +25,6 @@ import java.util.Stack;
  * </p>
  * 
  * @author sufrin ($Revision$)
- * @date $Date:$
  *           
  */
 public class XMLScanner implements XMLHandler.XMLLocator
