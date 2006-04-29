@@ -4,7 +4,7 @@ import femtoXML.FormatWriter;
 
 /**
  * Represents source space outside markup.
- * @author sufrin
+ * @author sufrin ($Revision$)
  *
  */
 

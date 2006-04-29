@@ -10,7 +10,7 @@ import java.util.Map;
  * translation to and from character entity names, and output of strings with or
  * without translation of special characters to character entitities.
  * 
- * @author sufrin
+ * @author sufrin ($Revision$)
  * 
  */
 public class XMLCharUtil

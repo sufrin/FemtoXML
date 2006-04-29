@@ -5,7 +5,7 @@ import femtoXML.FormatWriter;
 /**
  * Represents a processing instruction. 
  * The entire text of the PI is recorded.
- * @author sufrin
+ * @author sufrin ($Revision$)
  *
  */
 public class AppPI implements AppTree

@@ -18,20 +18,24 @@ import femtoXML.XMLScanner;
 import femtoXML.XMLSyntaxError;
 import femtoXML.XMLTreeFactory;
 /**
- * Example of a <code>femtoXML</code> application. Its main useful function is to pretty-print its input XML files onto the
- * standard output stream, but it can also transcode files, expand internal entities, etc. etc.
+ * Example of a <code>femtoXML</code> application. Its main useful function is
+ * to pretty-print its input XML files onto the standard output stream, but it
+ * can also transcode files, expand internal entities, etc. etc.
  * <p>
- * The femtoXML API has been simplified to the point where common tasks can be accomplished straightforwardly. On
- * the face of it this might be though to compromise the versatility of the API, but this application demonstrates 
- * that by appropriate use of inheritance one can achieve specialised effects. An extreme example of this is the
- * subclassing of the <code>AppTreeFactory</code>, used below: it provides an <i>ad-hoc</i> means of analysis
- * of DTDs that supports the definition of internal entities. Note the sharing of <code>map</code> between
- * the tree factory, the command-line interpreter, and the <code>XMLParser.decodeEntity</code> method of
- * the parser that is passed to the <code>XMLScanner</code> constructed later.
+ * The femtoXML API has been simplified to the point where common tasks can be
+ * accomplished straightforwardly. On the face of it this might be though to
+ * compromise the versatility of the API, but this application demonstrates that
+ * by appropriate use of inheritance one can achieve specialised effects. An
+ * extreme example of this is the subclassing of the <code>AppTreeFactory</code>,
+ * used below: it provides an <i>ad-hoc</i> means of analysis of DTDs that
+ * supports the definition of internal entities. Note the sharing of
+ * <code>map</code> between the tree factory, the command-line interpreter,
+ * and the <code>XMLParser.decodeEntity</code> method of the parser that is
+ * passed to the <code>XMLScanner</code> constructed later.
  * </p>
  * 
  * @author sufrin ($Revision$)
- *
+ * 
  */
 public class App
 {
