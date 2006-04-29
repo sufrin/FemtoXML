@@ -7,6 +7,8 @@ import java.util.Set;
 /**
  * An implementation of <code>XMLAttributes</code> that prints the attributes
  * of entitities in re-readable form.
+ * 
+ * @author sufrin ($Revision$)
  */
 @SuppressWarnings("serial")
 public class XMLAttrMap extends LinkedHashMap<String, String> implements

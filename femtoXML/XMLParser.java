@@ -8,7 +8,7 @@ import java.util.*;
  * repeatedly used to generate application structures
  * from XML documents.
  * 
- * @author sufrin
+ * @author sufrin ($Revision$)
  *
  * @param <T> -- The type of application tree that will be constructed.
  */

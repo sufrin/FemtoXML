@@ -3,7 +3,7 @@ package femtoXML;
 /**
  * Represents the attributes of an XML element.
  * 
- * @author sufrin
+ * @author sufrin ($Revision$)
  * 
  */
 public interface XMLAttributes
