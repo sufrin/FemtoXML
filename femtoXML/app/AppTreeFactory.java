@@ -15,6 +15,7 @@ public class AppTreeFactory implements XMLTreeFactory<AppTree>
   protected boolean expandedEntities = true;
   
   /** Construct an AppTreeFactory
+   * 
    * @param expandedEntitities -- true if entities will have been expanded before the tree nodes are built
    */
   public AppTreeFactory(boolean expandedEntities) { this.expandedEntities = expandedEntities; }
