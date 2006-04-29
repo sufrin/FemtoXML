@@ -6,7 +6,7 @@ import femtoXML.XMLCharUtil;
 /**
  * Represents non-space, non-markup, XML content.
  * 
- * @author sufrin
+ * @author sufrin ($Revision$)
  * 
  */
 public class AppContent implements AppTree
@@ -21,11 +21,11 @@ public class AppContent implements AppTree
   protected boolean expandedEntities;
 
   /** Construct content */
-  public AppContent(String text, boolean cdata, boolean expandEntities)
+  public AppContent(String text, boolean cdata, boolean expandedEntities)
   {
     this.text = text;
     this.cdata = cdata;
-    this.expandedEntities = expandEntities;
+    this.expandedEntities = expandedEntities;
   }
 
   /** Construct a word (with <code>expandEntities</code> false) */
@@ -50,11 +50,26 @@ public class AppContent implements AppTree
   }
 
   /**
-   * Outputs the text of this word (at the given indentation from the left
-   * margin, if indent>0) in valid XML form (so that it can be reinput).
-   * Non-ASCII characters are transformed into character entitities, unless this
-   * is a CDATA word or one for which entities have not been expanded on input.
-   */
+	 * Outputs the text of this content (at the given indentation from the left
+	 * margin, if indent>0).
+	 * 
+	 * <p>
+	 * If this is CDATA content then the text is output literally as it was
+	 * input (so that it can be reinput).
+	 * </p>
+	 * 
+	 * <p>
+	 * If <code>expandedEntities</code> is true, then it is output in valid
+	 * XML form (so that it can be reinput) using <code>XMLCharUtil.print</code>
+	 * (which substitutes for all character entities defined within
+	 * <code>XMLCharUtil</code> if substitution is enabled for the
+	 * <code>out</code> stream).
+	 * </p>
+	 * 
+	 * <p>
+	 * Otherwise it is output exactly as it was input.
+	 * </p>
+	 */
   public void printTo(FormatWriter out, int indent)
   {
     if (indent > 0) out.indent(indent);

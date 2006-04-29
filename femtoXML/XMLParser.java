@@ -164,7 +164,7 @@ public class XMLParser<T> implements XMLHandler
 
   public XMLAttributes newAttributes(boolean expandEntitites)
   {
-    return new XMLAttrMap(expandEntitites);
+    return new XMLAttrMap().setExpandedEntities(expandEntitites);
   }
 
   public void spaceCharacters(CharSequence text)

@@ -30,8 +30,7 @@ import femtoXML.XMLTreeFactory;
  * the parser that is passed to the <code>XMLScanner</code> constructed later.
  * </p>
  * 
- * @author sufrin 
- * @revision $Revision$
+ * @author sufrin ($Revision$)
  *
  */
 public class App
@@ -81,7 +80,7 @@ public class App
     Pattern entity = 
       Pattern.compile("<!ENTITY\\s+([%]{0,1})\\s*([A-Za-z0-9:_]+)\\s+(PUBLIC|SYSTEM|)\\s*((\"([^\"]*)\")|(\'([^\']*)\'))\\s*((\"([^\"]+)\")|(\'([^\']+)\'))?\\s*>", Pattern.MULTILINE);
     
-    Pattern pref =
+    Pattern paramref =
       Pattern.compile("%([A-Za-z0-9:_]+);", Pattern.MULTILINE);
     
     Pattern dtd =
@@ -90,14 +89,15 @@ public class App
     
     // http://www.w3.org/TR/REC-xml/#sec-entexpand suggests that only &#...; are expanded during entity definition
     // (this doesn't seem completely right to me, but standards is standards!)
-    Pattern cref = 
+    Pattern charref = 
       Pattern.compile("&(#[A-Fa-f0-9:_]+);", Pattern.MULTILINE);
     
     final Map<String,String> pmap = new HashMap<String,String>();
     
-    String cSubst(String value)
+    /** Expand character references in <code>value</code> */
+    String expandCharRefs(String value)
     { int           start = 0;
-      Matcher       m = cref.matcher(value);
+      Matcher       m = charref.matcher(value);
       StringBuilder b = new StringBuilder();
       while (m.find(start))
       { String pid = m.group(1);
@@ -110,9 +110,9 @@ public class App
       return b.toString();
     }
     
-    String pSubst(String value)
+    String expandParamRefs(String value)
     { int           start = 0;
-      Matcher       m = pref.matcher(value);
+      Matcher       m = paramref.matcher(value);
       StringBuilder b = new StringBuilder();
       while (m.find(start))
       { String pid = m.group(1);
@@ -181,7 +181,7 @@ public class App
           if (isPublic  && value2==null) errors.append(String.format("Malformed PUBLIC entity declaration %s%n", m.group(0)));
           // For the moment we will only look at internal entities
           if (!isSystem)
-          {  value = pSubst(cSubst(value)); // XML standard is weird
+          {  value = expandParamRefs(expandCharRefs(value)); // XML standard is weird
              (isPE ? pmap : map).put(name, value);
           }
           else
@@ -228,9 +228,10 @@ public class App
     
     @Override
     public XMLAttributes newAttributes(boolean expandEntitites)
-    { XMLAttrMap  map = new XMLAttrMap(expandEntitites);
-      map.setSplit(splitParam);
-      map.setAlign(alignParam);
+    { XMLAttrMap  map = new XMLAttrMap()
+    	                       .setExpandedEntities(expandEntitites)
+                           .setSplit(splitParam)
+                           .setAlign(alignParam);
       return map;
     }
 

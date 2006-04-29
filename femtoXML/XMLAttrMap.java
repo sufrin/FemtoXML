@@ -14,6 +14,15 @@ public class XMLAttrMap extends LinkedHashMap<String, String> implements
 {
   /** True if entitities were expanded in attribute values when they were read. */
   protected boolean expandedEntities;
+  
+  /** True if entitities were expanded in attribute values when they were read. */
+  public boolean getExpandedEntities() { return expandedEntities; }
+  
+  public XMLAttrMap setExpandedEntities(boolean expandedEntities)
+  {
+	  this.expandedEntities = expandedEntities;
+	  return this;
+  }
 
   /**
    * Largest number of key=value pairs before this is split across several lines
@@ -25,7 +34,7 @@ public class XMLAttrMap extends LinkedHashMap<String, String> implements
    * Set the largest number of key=value pairs before this will be split across
    * several lines when printed
    */
-  public XMLAttributes setSplit(int split)
+  public XMLAttrMap setSplit(int split)
   {
     this.split = split;
     return this;
@@ -45,20 +54,10 @@ public class XMLAttrMap extends LinkedHashMap<String, String> implements
     return super.get(key);
   }
 
-  /**
-   * 
-   * @param expandEntities --
-   *          true if entities were expanded within values.
-   */
-  public XMLAttrMap(boolean expandEntities)
-  {
-    this.expandedEntities = expandEntities;
-  }
-
-  /** this(true) */
+ 
+  /** Construct an XMLAttrMap with default properties */
   public XMLAttrMap()
   {
-    this(true);
   }
 
   public String toString()
@@ -72,7 +71,7 @@ public class XMLAttrMap extends LinkedHashMap<String, String> implements
   
   protected boolean align = true;
   
-  public XMLAttributes setAlign(boolean align) 
+  public XMLAttrMap setAlign(boolean align) 
   { this.align = align; return this; }
 
   /**
