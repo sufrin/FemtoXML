@@ -135,6 +135,12 @@ public class App
     {
       return new AppContent(data, cdata, !literalOutput);
     }
+    
+    @Override
+    public AppElement newElement(String kind, XMLAttributes atts)
+    { // System.err.println(kind);
+      return super.newElement(kind, atts);
+    }
    
     @Override
     public AppTree newDOCTYPE(String data)
@@ -233,7 +239,7 @@ public class App
     @Override
     public XMLAttributes newAttributes(boolean expandEntitites)
     { XMLAttrMap  map = new XMLAttrMap()
-    	                       .setExpandedEntities(expandEntitites)
+                               .setExpandedEntities(expandEntitites)
                            .setSplit(splitParam)
                            .setAlign(alignParam);
       return map;
@@ -304,7 +310,9 @@ public class App
     out.setCharEntities(isAscii);
     for (String arg : files)
     { try
-      { scanner.read(new LineNumberReader(new XMLInputReader(new FileInputStream(arg), ienc)), arg);
+      { System.err.println("START");
+        scanner.read(new LineNumberReader(new XMLInputReader(new FileInputStream(arg), ienc)), arg);
+        System.err.println("PARSED");        
         if (wantENC)
         {
           out.println(String.format("<?xml version='1.1' encoding='%s'?>%n", enc));
@@ -321,3 +329,5 @@ public class App
     }
   }
 }
+
+
