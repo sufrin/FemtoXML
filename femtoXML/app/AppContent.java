@@ -9,7 +9,7 @@ import femtoXML.XMLCharUtil;
  * @author sufrin ($Revision$)
  * 
  */
-public class AppContent implements AppTree
+public class AppContent extends AppChild implements AppTree
 {
   /** The text */
   protected String  text;
@@ -92,4 +92,5 @@ public class AppContent implements AppTree
   {
     return !cdata;
   }
+
 }

@@ -543,7 +543,6 @@ public class XMLScanner implements XMLHandler.XMLLocator
         b.append((char) ch);
       // It's an identifier as long as it consists only of identifier
       // characters
-      System.err.printf("%c=%x ", (char) ch, ch);
       if (!Character.isLetterOrDigit(ch) && ch != '-' && ch != '.' && ch != '_' && ch != ':' && ch!= '?') token = Lex.CONTENT;
       nextChar();
     }
@@ -728,6 +727,7 @@ public class XMLScanner implements XMLHandler.XMLLocator
   };
 
 }
+
 
 
 

@@ -7,7 +7,7 @@ import femtoXML.FormatWriter;
  * @author sufrin
  *
  */
-public class AppDOCTYPE implements AppTree
+public class AppDOCTYPE extends AppChild implements AppTree
 {
   protected String text;
 
@@ -39,4 +39,5 @@ public class AppDOCTYPE implements AppTree
   {
     return false;
   }
+
 }

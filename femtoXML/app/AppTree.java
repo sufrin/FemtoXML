@@ -20,4 +20,14 @@ public interface AppTree
    * @return true if this node is a lump of text with no internal structure.
    */
   boolean isWord();
+  
+  /**
+   * Set the parent of this node
+   */
+  void setParent(AppElement parent);
+  
+  /**
+   * @return the parent of this node
+   */
+  AppElement getParent();
 }

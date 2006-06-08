@@ -10,7 +10,7 @@ import femtoXML.XMLComposite;
  * @author sufrin
  *
  */
-public class AppElement 
+public class AppElement extends AppChild
        implements AppTree, XMLComposite<AppTree>, Iterable<AppTree>
 {
   protected String          kind;
@@ -43,7 +43,9 @@ public class AppElement
 
   public void add(AppTree t)
   { if (t!=null)
-       subtrees.add(t);
+    { subtrees.add(t);
+      t.setParent(this); 
+    }
   }
 
   public String getKind()

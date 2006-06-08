@@ -310,9 +310,9 @@ public class App
     out.setCharEntities(isAscii);
     for (String arg : files)
     { try
-      { System.err.println("START");
+      { 
         scanner.read(new LineNumberReader(new XMLInputReader(new FileInputStream(arg), ienc)), arg);
-        System.err.println("PARSED");        
+               
         if (wantENC)
         {
           out.println(String.format("<?xml version='1.1' encoding='%s'?>%n", enc));
@@ -329,6 +329,7 @@ public class App
     }
   }
 }
+
 
 
 

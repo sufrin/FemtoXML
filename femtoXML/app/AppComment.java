@@ -7,7 +7,7 @@ import femtoXML.FormatWriter;
  * @author sufrin
  *
  */
-public class AppComment implements AppTree
+public class AppComment extends AppChild implements AppTree
 { protected String data;
   
   public AppComment(String data)
@@ -44,5 +44,6 @@ public class AppComment implements AppTree
   {
     return false;
   }
+
 }
 

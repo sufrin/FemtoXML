@@ -37,12 +37,18 @@ public class XMLParser<T> implements XMLHandler
   
   /** The stack of starting line-numbers of the unclosed elements */
   protected Stack<Integer>         lines = new Stack<Integer>();
+  
+  /**
+   *  The stack of XMLAttributes corresponding to unclosed elements
+   */
+  protected Stack<XMLAttributes> attrs = new Stack<XMLAttributes>();
 
   public void startElement(String kind, XMLAttributes atts)
   {
     stack.push(factory.newElement(kind, atts));
     kinds.push(kind);
     lines.push(locator.lineNumber());
+    attrs.push(atts);
   }
 
   /**
@@ -59,6 +65,7 @@ public class XMLParser<T> implements XMLHandler
       T top = stack.pop().close();
       current().add(top);
       lines.pop();
+      attrs.pop();
     }
     else
       throw new XMLSyntaxError(locator,
@@ -110,7 +117,23 @@ public class XMLParser<T> implements XMLHandler
     kinds.push("");
     lines.clear();
     lines.push(1);
+    attrs.clear();
+    attrs.push(rootAttributes());
     theTree = null;
+  }
+  
+  public XMLAttributes rootAttributes()
+  {
+    return new XMLAttributes()
+    { 
+      public String get(String key) { return null; }
+      
+      public String put(String key, String value) { return ""; }
+      
+      public void printTo(FormatWriter out, int indent) { out.println(toString()); }
+      
+      public String toString() { return ""; }
+    };
   }
 
   public void endDocument()
