@@ -198,7 +198,7 @@ public class XMLScanner implements XMLHandler.XMLLocator
   protected void readBody()
   {
     while (token != Lex.ENDSTREAM)
-    {
+    { // System.err.println(token);
       switch (token)
       {
         case COMMENT: // <!-- ... -->
@@ -296,8 +296,8 @@ public class XMLScanner implements XMLHandler.XMLLocator
 
   /** Read the next token */
   protected void nextToken()
-  { 
-    if (ch==0 || Character.isSpaceChar(ch))
+  { // System.err.printf("'%c'",ch);
+    if (ch==0 || Character.isWhitespace(ch))
     {
       if (!inElement && consumer.wantSpaces())
       {
@@ -543,7 +543,7 @@ public class XMLScanner implements XMLHandler.XMLLocator
         b.append((char) ch);
       // It's an identifier as long as it consists only of identifier
       // characters
-      //System.err.printf("%c=%x ", (char) ch, ch);
+      System.err.printf("%c=%x ", (char) ch, ch);
       if (!Character.isLetterOrDigit(ch) && ch != '-' && ch != '.' && ch != '_' && ch != ':' && ch!= '?') token = Lex.CONTENT;
       nextChar();
     }
@@ -728,5 +728,6 @@ public class XMLScanner implements XMLHandler.XMLLocator
   };
 
 }
+
 
 
