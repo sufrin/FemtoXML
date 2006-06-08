@@ -253,7 +253,7 @@ public class App
     Vector<String> files = new Vector<String>();
     for (int i=0; i<args.length; i++)
     {   String arg = args[i];
-        if (arg.equals("-h")) 
+        if (arg.startsWith("-h")) 
             System.err.printf("-p         -- ignore <? processing instructions%n"+
                               "-e key val -- expand &key; as val%n"+
                               "-a         -- encode Unicode characters >= 128 as entities%n"+
@@ -329,5 +329,6 @@ public class App
     }
   }
 }
+
 
 
