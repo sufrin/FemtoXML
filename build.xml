@@ -5,7 +5,7 @@
 <project name="FemtoXML" default="femtoprint.jar">
   <property name="BUILD" value="CLASS"/>
   <property name="TEST" value="TEST"/>
-  <property name="SRC" value="."/>
+  <property name="SRC" value="./femtoXML"/>
   <property name="DOC" value="DOC"/>
   <!-- ********************************************************* -->
   <target name="all" depends="femtoprint.jar,femtoXML.jar,doc"/>
@@ -17,8 +17,12 @@
     <javadoc
         destdir="${DOC}"
         charset="UTF8"
-        use="Yes">
-      <fileset dir="${SRC}"/>
+        use="Yes"
+        >
+        <fileset dir="${SRC}" defaultexcludes="yes"> 
+          <include name="**/*.java"/> 
+        </fileset> 
+       
     </javadoc>
   </target>
   <!-- ********************************************************* -->
@@ -84,5 +88,6 @@
     <delete dir="${DOC}"/>
   </target>
 </project>
+
 
 

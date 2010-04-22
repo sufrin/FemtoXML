@@ -53,7 +53,8 @@ public class App
            wantComment=true, 
            wantPI=true,
            wantENC=false,
-           alignParam = true; 
+           alignParam = true,
+           testPath = false; 
   
   /** Command-line switch state*/
   String enc = "UTF-8", ienc = null;
@@ -266,7 +267,8 @@ public class App
                               "-enc  enc  -- output encoding is enc (default is UTF-8)%n"+
                               "-ienc enc  -- input encoding is enc (the program deduces the encoding otherwise)%n"+
                               "-aa        -- don't bother aligning attribute values in tags%n"+
-                              "-as <int>  -- show atributes on separate lines of there are more than <int> of them (default 2)%n"+
+                              "-as <int>  -- show attributes on separate lines of there are more than <int> of them (default 2)%n"+
+                              "-TP        -- test the path iterators features%n"+
                               "($Revision$)%n"); 
         else
         if (arg.equals("-a"))   isAscii = true;
@@ -274,6 +276,8 @@ public class App
         if (arg.equals("-aa"))   alignParam = false;
         else
         if (arg.equals("-as"))   splitParam = Integer.parseInt(args[++i]);
+        else
+        if (arg.equals("-TP"))   testPath = true;
         else
         if (arg.equals("-i"))   { expandEntities = false; literalOutput = true; }
         else
@@ -318,7 +322,10 @@ public class App
           out.println(String.format("<?xml version='1.1' encoding='%s'?>%n", enc));
         }
         AppElement root = (AppElement) parser.getTree();
-        for (AppTree tree : root) tree.printTo(out, 0);
+        if (testPath)
+           testPathFeatures(root);
+        else
+           for (AppTree tree : root) tree.printTo(out, 0);
         out.println();
         out.flush();
       }
@@ -328,7 +335,12 @@ public class App
       }
     }
   }
+  
+  public void testPathFeatures(AppTree t)
+  { 
+  }
 }
+
 
 
 

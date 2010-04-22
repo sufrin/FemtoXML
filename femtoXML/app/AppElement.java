@@ -58,6 +58,7 @@ public class AppElement extends AppChild
     return subtrees.iterator();
   }
 
+
   public String toString()
   {
     return String.format("<%s%s>%s</%s>",
@@ -132,3 +133,4 @@ public class AppElement extends AppChild
     return false;
   }
 }
+
