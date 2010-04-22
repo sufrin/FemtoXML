@@ -336,9 +336,56 @@ public class App
     }
   }
   
+  /////////////////////////// PATH FEATURES TESTBED /////////////////////////
+  
+  /** Returns an iterator that yields the path back to the root (as Trees) */
+  
+  public AppIterator<AppTree> toRoot(final AppTree here)
+  { return new AppIterator<AppTree>()
+    { AppTree cursor = here;
+      public boolean hasNext()
+      { return cursor !=null; 
+      } 
+      public AppTree next()
+      { AppTree result = cursor;
+        cursor = cursor.getParent();
+        return result;
+      }
+    };
+  }
+  
+  /** Returns an iterator that yields the path back to the root (as the names of elements) 
+      with "-" for a leaf.
+  */
+  public AppIterator<String> pathToRoot(final AppTree here)
+  { return new AppIterator<String>()
+    { AppTree cursor = here;
+      public boolean hasNext()
+      { return cursor !=null; 
+      } 
+      public String next()
+      { String result = 
+         (cursor instanceof AppElement) ? ((AppElement) cursor).getKind() : "-";
+        cursor = cursor.getParent();
+        return result;
+      }
+    };
+  }
+  
+  /*
+     Complete prefix traversal showing paths back to the root.
+  */
   public void testPathFeatures(AppTree t)
   { 
+    if (t instanceof AppElement)
+    {
+       for (String s: pathToRoot(t)) System.out.print(s+"/");
+           System.out.println();       
+       for (AppTree st: (AppElement) t) testPathFeatures(st);
+    }
   }
+  
+  
 }
 
 
