@@ -308,7 +308,7 @@ public class XMLScanner implements XMLHandler.XMLLocator
           if (ch!=0) b.append((char) ch);
           nextRawChar();
         }
-        while (ch==0 || Character.isSpaceChar(ch));
+        while (ch==0 || Character.isWhitespace(ch));
         consumer.spaceCharacters(b);
       }
       else
@@ -317,7 +317,7 @@ public class XMLScanner implements XMLHandler.XMLLocator
         {
           nextRawChar();
         }
-        while (ch == 0 || Character.isSpaceChar(ch));
+        while (ch == 0 || Character.isWhitespace(ch));
       }
     }
     lineNumber = reader.getLineNumber();
@@ -524,6 +524,7 @@ public class XMLScanner implements XMLHandler.XMLLocator
       else
         nextContent();
     }
+    //System.err.printf("%s '%s'\n", token, value); //**
   }
   
   protected void nextContent()
