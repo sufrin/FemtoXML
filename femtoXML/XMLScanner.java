@@ -247,6 +247,7 @@ public class XMLScanner implements XMLHandler.XMLLocator
           while (token == Lex.NAME)
           {
             String key = value;
+            //System.err.printf("%s %s\n", key, token);
             skipToken(Lex.EQUALS);
             if (token == Lex.QUOTE)
             {
