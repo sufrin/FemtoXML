@@ -372,17 +372,76 @@ public class App
     };
   }
   
+  /** Returns a prefix order depth-first iterator */ 
+  public AppIterator<AppTree> prefixIterator(final AppTree here)
+  { return new AppIterator<AppTree>()
+    { /** Acts as a stack */
+      AppIterator<AppTree> agenda = new AppIterator.Unit<AppTree>(here);
+      
+      public boolean hasNext()
+      { return agenda.hasNext(); }
+      
+      public AppTree next()
+      { assert(hasNext());
+        AppTree result = agenda.next();
+        // Push the subtrees onto the stack
+        if (result.isElement())
+           agenda = new AppIterator.Cat<AppTree>(result.iterator(), agenda);
+        return result;
+      }
+    };
+  }
+  
+  /** Returns a breadth-first order iterator */  
+  public AppIterator<AppTree> breadthIterator(final AppTree here)
+  { return new AppIterator<AppTree>()
+    { /** Acts as a queue */
+      AppIterator<AppTree> agenda = new AppIterator.Unit<AppTree>(here);
+      
+      public boolean hasNext()
+      { return agenda.hasNext(); }
+      
+      public AppTree next()
+      { assert(hasNext());
+        AppTree result = agenda.next();
+        // Queue the subtrees 
+        if (result.isElement())
+           agenda = new AppIterator.Cat<AppTree>(agenda, result.iterator());
+        return result;
+      }
+    };
+  }
+  
   /*
-     Complete prefix traversal showing paths back to the root.
+     Various traversals -- showing paths back to the root.
   */
   public void testPathFeatures(AppTree t)
+  { testRecursive(t);
+    System.out.println("-------------------------");
+    for (AppTree node : prefixIterator(t))
+    {
+        System.out.printf("%20s    ", (node.isElement() ? "<"+((AppElement) node).getKind() : node.toString()));
+        for (String s: pathToRoot(node)) System.out.print(s+"/");
+        System.out.println();       
+    }
+    System.out.println("-------------------------");
+    for (AppTree node : breadthIterator(t))
+    {
+        System.out.printf("%20s    ", (node.isElement() ? "<"+((AppElement) node).getKind() : node.toString()));
+        for (String s: pathToRoot(node)) System.out.print(s+"/");
+        System.out.println();       
+    }
+  }
+  
+  public void testRecursive(AppTree t)
   { 
-    if (t instanceof AppElement)
+    if (t.isElement())
     {
        for (String s: pathToRoot(t)) System.out.print(s+"/");
            System.out.println();       
-       for (AppTree st: (AppElement) t) testPathFeatures(st);
-    }
+       for (AppTree subtree: t) testRecursive(subtree);
+    }    
+    
   }
   
   

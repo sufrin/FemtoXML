@@ -8,7 +8,7 @@ import femtoXML.FormatWriter;
  * @author sufrin ($Revision$)
  *
  */
-public class AppPI extends AppChild implements AppTree
+public class AppPI extends AppTreeImp implements AppTree
 {
   protected String text;
 

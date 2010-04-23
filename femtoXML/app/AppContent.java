@@ -9,7 +9,7 @@ import femtoXML.XMLCharUtil;
  * @author sufrin ($Revision$)
  * 
  */
-public class AppContent extends AppChild implements AppTree
+public class AppContent extends AppTreeImp implements AppTree
 {
   /** The text */
   protected String  text;

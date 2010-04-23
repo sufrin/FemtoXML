@@ -10,7 +10,7 @@ import femtoXML.XMLComposite;
  * @author sufrin
  *
  */
-public class AppElement extends AppChild
+public class AppElement extends AppTreeImp
        implements AppTree, XMLComposite<AppTree>, Iterable<AppTree>
 {
   protected String          kind;
@@ -53,9 +53,9 @@ public class AppElement extends AppChild
     return kind;
   }
 
-  public Iterator<AppTree> iterator()
+  public AppIterator<AppTree> iterator()
   {
-    return subtrees.iterator();
+    return AppIterator.appIterator(subtrees);
   }
 
 
@@ -131,6 +131,11 @@ public class AppElement extends AppChild
   public boolean isWord()
   {
     return false;
+  }
+  
+  public boolean isElement()
+  {
+    return true;
   }
 }
 

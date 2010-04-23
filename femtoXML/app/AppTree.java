@@ -7,7 +7,7 @@ import femtoXML.FormatWriter;
  * @author sufrin
  *
  */
-public interface AppTree
+public interface AppTree extends Iterable<AppTree>
 {
   /**
    * Write this tree node on the given writer at the given indentation in a form
@@ -30,4 +30,15 @@ public interface AppTree
    * @return the parent of this node
    */
   AppElement getParent();
+  
+  /**
+   * @return the subtrees of this node if there are any 
+   */
+  AppIterator<AppTree> iterator();
+  
+  /**
+   * @return true if it's an element
+   */
+  boolean isElement();
 }
+
