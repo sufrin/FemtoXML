@@ -7,6 +7,7 @@ import femtoXML.XMLHandler.XMLLocator;
 
 /**
  * A <code>XMLTreeFactory</code> that builds <code>AppElement, AppComment, AppPI, AppContent</code> nodes as an XML file is parsed.
+ * All optional features (pis, comments, doctypes) are recorded in the tree.
  * @author sufrin
  */
 public class AppTreeFactory implements XMLTreeFactory<AppTree>
