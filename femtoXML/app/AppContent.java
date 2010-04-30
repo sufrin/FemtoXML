@@ -88,6 +88,12 @@ public class AppContent extends AppTreeImp implements AppTree
     }
   }
 
+ 
+  public boolean isContent()
+  {
+    return true;
+  }
+  
   public boolean isWord()
   {
     return !cdata;

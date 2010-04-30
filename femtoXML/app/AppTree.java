@@ -17,9 +17,14 @@ public interface AppTree extends Iterable<AppTree>
   void printTo(FormatWriter out, int indent);
   
   /**
-   * @return true if this node is a lump of text with no internal structure.
+   * @return true if this node is content but not CDATA content.
    */
   boolean isWord();
+  
+  /**
+   * @return true if this node is a lump of text with no internal structure.
+   */
+  boolean isContent();
   
   /**
    * Set the parent of this node

@@ -15,8 +15,13 @@ public abstract class AppIterator<T> implements Iterator<T>, Iterable<T>
   /** Hint that resources tied up in the iterator may be discarded */
   public void close() { }
   
-  /** Interface tofacny for loops */
+  /** Interface to fancy for loops */
   public Iterator<T> iterator() { return this; }
+  
+  public AppIterator<T> drop(int n) 
+  {   for (int i=0; i<n; hasNext(), i++) next();
+	  return this;
+  }
 
   /** Catenate this iterator to another */
   public AppIterator<T> cat(Iterator<T> other) { return new Cat<T>(this, other); } 

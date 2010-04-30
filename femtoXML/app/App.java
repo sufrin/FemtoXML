@@ -12,6 +12,8 @@ import femtoXML.XMLInputReader;
 import femtoXML.XMLParser;
 import femtoXML.XMLScanner;
 import femtoXML.XMLSyntaxError;
+import static femtoXML.app.AppPred.*;
+
 /**
  * Example of a <code>femtoXML</code> application. Its main useful function is
  * to pretty-print its input XML files onto the standard output stream, but it
@@ -187,9 +189,15 @@ public class App
   
      
   /*
-     Various traversals -- showing paths back to the root.
+     Various traversals
   */
-  public void testPathFeatures(AppTree t)
+  public void testPathFeatures(AppTree t) throws UnsupportedEncodingException
+  {      FormatWriter       out     = new FormatWriter(new OutputStreamWriter(System.out, enc));
+         for (AppTree node : t.prefixIterator().filter(isElement().and(below(isElementMatching("label"), 1)))) { node.printTo(out, 0); out.println(); }
+         out.flush();
+  }
+  
+  public void testPathFeaturesBasic(AppTree t)
   { testRecursive(t);
     System.out.println("-------------------------");
     for (AppTree node : t.prefixIterator())
