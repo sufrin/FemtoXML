@@ -32,13 +32,35 @@ public interface AppTree extends Iterable<AppTree>
   AppElement getParent();
   
   /**
-   * @return the subtrees of this node if there are any 
+   * @return all the subtrees of this node if there are any (depth first prefix order) 
+   */
+  AppIterator<AppTree> prefixIterator();
+  
+  /**
+   * @return all the subtrees of this node if there are any (breadth first order)
+   */
+  AppIterator<AppTree> breadthIterator();
+  
+  /**
+   * @return the immediate subtrees of this node if there are any 
    */
   AppIterator<AppTree> iterator();
+  
+  /**
+   * @return the path back to the root 
+   */
+  AppIterator<AppTree> pathToRoot();
+
   
   /**
    * @return true if it's an element
    */
   boolean isElement();
+  
+  /**
+   * @return the element name if it is an element
+   * 
+   */
+   String elementName();
 }
 

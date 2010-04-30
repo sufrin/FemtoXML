@@ -137,5 +137,10 @@ public class AppElement extends AppTreeImp
   {
     return true;
   }
+  
+  public String elementName() 
+  { return kind; 
+  }
+  
 }
 

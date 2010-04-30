@@ -185,97 +185,24 @@ public class App
   
   /////////////////////////// PATH FEATURES TESTBED /////////////////////////
   
-  /** Returns an iterator that yields the path back to the root (as Trees) */
-  
-  public AppIterator<AppTree> toRoot(final AppTree here)
-  { return new AppIterator<AppTree>()
-    { AppTree cursor = here;
-      public boolean hasNext()
-      { return cursor !=null; 
-      } 
-      public AppTree next()
-      { AppTree result = cursor;
-        cursor = cursor.getParent();
-        return result;
-      }
-    };
-  }
-  
-  /** Returns an iterator that yields the path back to the root (as the names of elements) 
-      with "-" for a leaf.
-  */
-  public AppIterator<String> pathToRoot(final AppTree here)
-  { return new AppIterator<String>()
-    { AppTree cursor = here;
-      public boolean hasNext()
-      { return cursor !=null; 
-      } 
-      public String next()
-      { String result = 
-         (cursor instanceof AppElement) ? ((AppElement) cursor).getKind() : "-";
-        cursor = cursor.getParent();
-        return result;
-      }
-    };
-  }
-  
-  /** Returns a prefix order depth-first iterator */ 
-  public AppIterator<AppTree> prefixIterator(final AppTree here)
-  { return new AppIterator<AppTree>()
-    { /** Acts as a stack */
-      AppIterator<AppTree> agenda = new AppIterator.Unit<AppTree>(here);
-      
-      public boolean hasNext()
-      { return agenda.hasNext(); }
-      
-      public AppTree next()
-      { assert(hasNext());
-        AppTree result = agenda.next();
-        // Push the subtrees onto the stack
-        if (result.isElement())
-           agenda = new AppIterator.Cat<AppTree>(result.iterator(), agenda);
-        return result;
-      }
-    };
-  }
-  
-  /** Returns a breadth-first order iterator */  
-  public AppIterator<AppTree> breadthIterator(final AppTree here)
-  { return new AppIterator<AppTree>()
-    { /** Acts as a queue */
-      AppIterator<AppTree> agenda = new AppIterator.Unit<AppTree>(here);
-      
-      public boolean hasNext()
-      { return agenda.hasNext(); }
-      
-      public AppTree next()
-      { assert(hasNext());
-        AppTree result = agenda.next();
-        // Queue the subtrees 
-        if (result.isElement())
-           agenda = new AppIterator.Cat<AppTree>(agenda, result.iterator());
-        return result;
-      }
-    };
-  }
-  
+     
   /*
      Various traversals -- showing paths back to the root.
   */
   public void testPathFeatures(AppTree t)
   { testRecursive(t);
     System.out.println("-------------------------");
-    for (AppTree node : prefixIterator(t))
+    for (AppTree node : t.prefixIterator())
     {
         System.out.printf("%20s    ", (node.isElement() ? "<"+((AppElement) node).getKind() : node.toString()));
-        for (String s: pathToRoot(node)) System.out.print(s+"/");
+        for (AppTree s: t.pathToRoot()) System.out.print(s.elementName()+"/");
         System.out.println();       
     }
     System.out.println("-------------------------");
-    for (AppTree node : breadthIterator(t))
+    for (AppTree node : t.breadthIterator())
     {
         System.out.printf("%20s    ", (node.isElement() ? "<"+((AppElement) node).getKind() : node.toString()));
-        for (String s: pathToRoot(node)) System.out.print(s+"/");
+        for (AppTree s: node.pathToRoot()) System.out.print(s.elementName()+"/");
         System.out.println();       
     }
   }
@@ -284,7 +211,7 @@ public class App
   { 
     if (t.isElement())
     {
-       for (String s: pathToRoot(t)) System.out.print(s+"/");
+       for (AppTree s: t.pathToRoot()) System.out.print(s.elementName()+"/");
            System.out.println();       
        for (AppTree subtree: t) testRecursive(subtree);
     }    
