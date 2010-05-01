@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF8" ?>
+     <center name="Combo boxes">
+        <col justify='0.5'>
+          <variable id='boxvalue'>
+            "f"
+          </variable>
+          <combobox bordertitle = 'Combo Box' 
+                    editable='true' 
+                    labels='a b c d e f' 
+                    var='boxvalue' 
+                    listener=''/>
+          <strut height='20'/>
+          <variablemonitor bordertitle='Variable Monitor'>
+            The combobox value is: %{boxvalue}
+          </variablemonitor>
+          <strut height='20'/>
+          <button listener='{boxvalue.set(&quot;google&quot;);}'>
+            Set the combobox value to "Google"
+          </button>
+        </col>
+      </center>
