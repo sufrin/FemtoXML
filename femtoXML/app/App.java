@@ -190,11 +190,40 @@ public class App
      
   /*
      Various traversals
-  */
+  */ 
   public void testPathFeatures(AppTree t) throws UnsupportedEncodingException
   {      FormatWriter       out     = new FormatWriter(new OutputStreamWriter(System.out, enc));
-         for (AppTree node : t.prefixIterator().filter(isElement().and(below(isElementMatching("label"), 1)))) { node.printTo(out, 0); out.println(); }
+         Pred.Cached<AppTree> pred = isElement().and(below(isElementMatching("label"), 1)).cache();
+         Pred.Cached<AppTree> cont = isElement().and(containing(isElementMatching(".*t.*"))).cache();
+         // Statistics for the caching
+         long nodes = 0;
+         for (AppTree node : t.prefixIterator()) nodes++;
+         // filtered without cutoff
+         for (AppTree node : t.prefixIterator().filter(cont)) { node.printTo(out, 0); out.println(); }
          out.flush();
+         System.err.printf("Without cutoff: nodes: %d; inspected: %d; missed %d%n", nodes, pred.hits,  pred.cachemisses);
+         
+         for (AppTree node : t.prefixIterator().filter(pred)) { node.printTo(out, 0); out.println(); }
+         out.flush();
+         System.err.printf("Without cutoff: nodes: %d; inspected: %d; missed %d%n", nodes, pred.hits,  pred.cachemisses);
+         
+         pred.hits=pred.cachemisses=0;
+         for (AppTree node : t.prefixIterator(pred).filter(pred)) { node.printTo(out, 0); out.println(); }
+         out.flush();
+         // Statistics for the cacheing
+         System.err.printf("With cutoff: nodes: %d; inspected: %d; missed %d%n", nodes, pred.hits,  pred.cachemisses);
+         
+         pred.hits=pred.cachemisses=0;
+         // filtered without cutoff
+         for (AppTree node : t.breadthIterator().filter(pred)) { node.printTo(out, 0); out.println(); }
+         out.flush();
+         System.err.printf("Without cutoff: nodes: %d; inspected: %d; missed %d%n", nodes, pred.hits,  pred.cachemisses);
+         
+         pred.hits=pred.cachemisses=0;
+         for (AppTree node : t.breadthIterator(pred).filter(pred)) { node.printTo(out, 0); out.println(); }
+         out.flush();
+         // Statistics for the cacheing
+         System.err.printf("With cutoff: nodes: %d; inspected: %d; missed %d%n", nodes, pred.hits,  pred.cachemisses);
   }
   
   public void testPathFeaturesBasic(AppTree t)

@@ -44,14 +44,19 @@ public abstract class AppTreeImp implements AppTree, Iterable<AppTree> {
 	}
 	
 	
-	/** Returns a prefix order depth-first iterator cutting off below <code>pred</code> */
-	public AppIterator<AppTree> prefixIterator(AppPred pred) {
-		return prefixIterator(this, pred);
+	/** Returns a prefix order depth-first iterator cutting off below <code>cutoffBelow</code> */
+	public AppIterator<AppTree> prefixIterator(Pred<AppTree> cutoffBelow) {
+		return prefixIterator(this, cutoffBelow);
 	}
 
 	/** Returns a breadth-first order iterator */
 	public AppIterator<AppTree> breadthIterator() {
-		return breadthIterator(this);
+		return breadthIterator(this, null);
+	}
+
+	/** Returns a breadth-first order iterator */
+	public AppIterator<AppTree> breadthIterator(Pred<AppTree> cutoffBelow) {
+		return breadthIterator(this, cutoffBelow);
 	}
 
 	/** Returns an iterator that yields the path back to the root (as Trees) */
@@ -74,7 +79,7 @@ public abstract class AppTreeImp implements AppTree, Iterable<AppTree> {
 	}
 
 	/** Returns a prefix order depth-first iterator */
-	public static AppIterator<AppTree> prefixIterator(final AppTree here, Pred<AppTree> p) {
+	public static AppIterator<AppTree> prefixIterator(final AppTree here, final Pred<AppTree> cutoffBelow) {
 		return new AppIterator<AppTree>() {
 			/** Acts as a stack */
 			AppIterator<AppTree> agenda = new AppIterator.Unit<AppTree>(here);
@@ -87,7 +92,7 @@ public abstract class AppTreeImp implements AppTree, Iterable<AppTree> {
 				assert (hasNext());
 				AppTree result = agenda.next();
 				// Push the subtrees onto the stack
-				if (result.isElement())
+				if (result.isElement() && (cutoffBelow==null || !cutoffBelow.pass(result)))
 					agenda = new AppIterator.Cat<AppTree>(result.iterator(),
 							agenda);
 				return result;
@@ -96,7 +101,7 @@ public abstract class AppTreeImp implements AppTree, Iterable<AppTree> {
 	}
 
 	/** Returns a breadth-first order iterator */
-	public static AppIterator<AppTree> breadthIterator(final AppTree here) {
+	public static AppIterator<AppTree> breadthIterator(final AppTree here, final Pred<AppTree> cutoffBelow) {
 		return new AppIterator<AppTree>() {
 			/** Acts as a queue */
 			AppIterator<AppTree> agenda = new AppIterator.Unit<AppTree>(here);
@@ -109,7 +114,7 @@ public abstract class AppTreeImp implements AppTree, Iterable<AppTree> {
 				assert (hasNext());
 				AppTree result = agenda.next();
 				// Queue the subtrees
-				if (result.isElement())
+				if (result.isElement() && (cutoffBelow==null || !cutoffBelow.pass(result)))
 					agenda = new AppIterator.Cat<AppTree>(agenda, result
 							.iterator());
 				return result;

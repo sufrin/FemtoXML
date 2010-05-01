@@ -47,6 +47,16 @@ public interface AppTree extends Iterable<AppTree>
   AppIterator<AppTree> breadthIterator();
   
   /**
+   * @return all the subtrees of this node if there are any (depth first prefix order) 
+   */
+  AppIterator<AppTree> prefixIterator(Pred<AppTree> cutoffBelow);
+  
+  /**
+   * @return all the subtrees of this node if there are any (breadth first order)
+   */
+  AppIterator<AppTree> breadthIterator(Pred<AppTree> cutoffBelow);
+  
+  /**
    * @return the immediate subtrees of this node if there are any 
    */
   AppIterator<AppTree> iterator();
