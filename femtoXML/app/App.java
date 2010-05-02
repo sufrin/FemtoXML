@@ -90,8 +90,8 @@ public class App
     public XMLAttributes newAttributes(boolean expandEntitites)
     { XMLAttrMap  map = new XMLAttrMap()
                                .setExpandedEntities(expandEntitites)
-                           .setSplit(splitParam)
-                           .setAlign(alignParam);
+                               .setSplit(splitParam)
+                               .setAlign(alignParam);
       return map;
     }
 
@@ -99,7 +99,7 @@ public class App
   
    
   public void run(String[] args) throws Exception
-  {
+  { // Process the arguments on the command line
     Vector<String> files = new Vector<String>();
     for (int i=0; i<args.length; i++)
     {   String arg = args[i];
@@ -156,11 +156,13 @@ public class App
            files.add(arg);
     }
     
-
+    // Set up parser and format writer
     XMLScanner         scanner = new XMLScanner(parser);
     FormatWriter       out     = new FormatWriter(new OutputStreamWriter(System.out, enc));
     scanner.setExpandEntities(expandEntities);
     out.setCharEntities(isAscii);
+    
+    // Process the input file(s)
     for (String arg : files)
     { try
       { 

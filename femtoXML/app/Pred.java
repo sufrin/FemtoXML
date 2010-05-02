@@ -4,6 +4,7 @@ package femtoXML.app;
  * Predicates and their algebra
  */
 public abstract class Pred<T> {
+	
 	abstract public boolean pass(T t);
 
 	public Pred<T> and(final Pred<T> other) {
