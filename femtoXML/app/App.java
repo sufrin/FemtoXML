@@ -12,7 +12,7 @@ import femtoXML.XMLInputReader;
 import femtoXML.XMLParser;
 import femtoXML.XMLScanner;
 import femtoXML.XMLSyntaxError;
-import static femtoXML.app.AppPred.*;
+import static femtoXML.app.NodePred.*;
 
 /**
  * Example of a <code>femtoXML</code> application. Its main useful function is
@@ -23,7 +23,7 @@ import static femtoXML.app.AppPred.*;
  * accomplished straightforwardly. On the face of it this might be though to
  * compromise the versatility of the API, but this application demonstrates that
  * by appropriate use of inheritance one can achieve specialised effects. An
- * extreme example of this is the subclassing of the <code>AppTreeFactory</code>,
+ * extreme example of this is the subclassing of the <code>TreeFactory</code>,
  * used below: it provides an <i>ad-hoc</i> means of analysis of DTDs that
  * supports the definition of internal entities. Note the sharing of
  * <code>map</code> between the tree factory, the command-line interpreter,
@@ -58,7 +58,7 @@ public class App
   int splitParam = 2;
   
    
-  XMLTreeFactoryWithDTDHandling factory = new XMLTreeFactoryWithDTDHandling(expandEntities);
+  TreeFactoryWithDOCTYPE factory = new TreeFactoryWithDOCTYPE(expandEntities);
  
   /** Mapping from internal entity names to their expansions */
   final Map<String,String> map = factory.getMap();
@@ -73,7 +73,7 @@ public class App
    * and plugs appropriate parameter values into <code>XMLAttributes</code>
    * as they are constructed.
    */
-  XMLParser<AppTree> parser  = new XMLParser<AppTree>(factory)
+  XMLParser<Node> parser  = new XMLParser<Node>(factory)
   { @Override
     public Reader decodeEntity(String name)
     {  String value = map.get(name);
@@ -170,11 +170,11 @@ public class App
         {
           out.println(String.format("<?xml version='1.1' encoding='%s'?>%n", enc));
         }
-        AppElement root = (AppElement) parser.getTree();
+        Element root = (Element) parser.getTree();
         if (testPath)
            testPathFeatures(root);
         else
-           for (AppTree tree : root) tree.printTo(out, 0);
+           for (Node tree : root) tree.printTo(out, 0);
         out.println();
         out.flush();
       }
@@ -191,67 +191,67 @@ public class App
   /*
      Various traversals
   */ 
-  public void testPathFeatures(AppTree t) throws UnsupportedEncodingException
+  public void testPathFeatures(Node t) throws UnsupportedEncodingException
   {      FormatWriter       out     = new FormatWriter(new OutputStreamWriter(System.out, enc));
-         Pred.Cached<AppTree> pred = isElement().and(below(isElementMatching("col"), 1)).cache();
-         Pred.Cached<AppTree> cont = isElement().and(below(isElementMatching("col"), 1).and(containing(isElementMatching(".*tt.*")))).cache();
+         Pred.Cached<Node> pred = isElement().and(below(isElementMatching("col"), 1)).cache();
+         Pred.Cached<Node> cont = isElement().and(below(isElementMatching("col"), 1).and(containing(isElementMatching(".*tt.*")))).cache();
          // Statistics for the caching: count the nodes
          long nodes = 0;
-         for (AppTree node : t.prefixIterator()) nodes++;
+         for (Node node : t.prefixCursor()) nodes++;
          
          // containment
-         for (AppTree node : t.prefixIterator().filter(cont)) { node.printTo(out, 0); out.println(); }
+         for (Node node : t.prefixCursor().filter(cont)) { node.printTo(out, 0); out.println(); }
          out.flush();
          System.err.printf("Without cutoff: nodes: %d; inspected: %d; missed %d%n", nodes, cont.hits,  cont.cachemisses);
          
-         for (AppTree node : t.prefixIterator().filter(pred)) { node.printTo(out, 0); out.println(); }
+         for (Node node : t.prefixCursor().filter(pred)) { node.printTo(out, 0); out.println(); }
          out.flush();
          System.err.printf("Without cutoff: nodes: %d; inspected: %d; missed %d%n------------------%n", nodes, pred.hits,  pred.cachemisses);
          
          pred.hits=pred.cachemisses=0;
-         for (AppTree node : t.prefixIterator(pred).filter(pred)) { node.printTo(out, 0); out.println(); }
+         for (Node node : t.prefixCursor(pred).filter(pred)) { node.printTo(out, 0); out.println(); }
          out.flush();
          // Statistics for the cacheing
          System.err.printf("With cutoff: nodes: %d; inspected: %d; missed %d%n------------------%n", nodes, pred.hits,  pred.cachemisses);
          
          pred.hits=pred.cachemisses=0;
          // filtered without cutoff
-         for (AppTree node : t.breadthIterator().filter(pred)) { node.printTo(out, 0); out.println(); }
+         for (Node node : t.breadthCursor().filter(pred)) { node.printTo(out, 0); out.println(); }
          out.flush();
          System.err.printf("Without cutoff: nodes: %d; inspected: %d; missed %d%n------------------%n", nodes, pred.hits,  pred.cachemisses);
          
          pred.hits=pred.cachemisses=0;
-         for (AppTree node : t.breadthIterator(pred).filter(pred)) { node.printTo(out, 0); out.println(); }
+         for (Node node : t.breadthCursor(pred).filter(pred)) { node.printTo(out, 0); out.println(); }
          out.flush();
          // Statistics for the cacheing
          System.err.printf("With cutoff: nodes: %d; inspected: %d; missed %d%n------------------%n", nodes, pred.hits,  pred.cachemisses);
   }
   
-  public void testPathFeaturesBasic(AppTree t)
+  public void testPathFeaturesBasic(Node t)
   { testRecursive(t);
     System.out.println("-------------------------");
-    for (AppTree node : t.prefixIterator())
+    for (Node node : t.prefixCursor())
     {
-        System.out.printf("%20s    ", (node.isElement() ? "<"+((AppElement) node).getKind() : node.toString()));
-        for (AppTree s: t.pathToRoot()) System.out.print(s.elementName()+"/");
+        System.out.printf("%20s    ", (node.isElement() ? "<"+((Element) node).getKind() : node.toString()));
+        for (Node s: t.pathToRoot()) System.out.print(s.elementName()+"/");
         System.out.println();       
     }
     System.out.println("-------------------------");
-    for (AppTree node : t.breadthIterator())
+    for (Node node : t.breadthCursor())
     {
-        System.out.printf("%20s    ", (node.isElement() ? "<"+((AppElement) node).getKind() : node.toString()));
-        for (AppTree s: node.pathToRoot()) System.out.print(s.elementName()+"/");
+        System.out.printf("%20s    ", (node.isElement() ? "<"+((Element) node).getKind() : node.toString()));
+        for (Node s: node.pathToRoot()) System.out.print(s.elementName()+"/");
         System.out.println();       
     }
   }
   
-  public void testRecursive(AppTree t)
+  public void testRecursive(Node t)
   { 
     if (t.isElement())
     {
-       for (AppTree s: t.pathToRoot()) System.out.print(s.elementName()+"/");
+       for (Node s: t.pathToRoot()) System.out.print(s.elementName()+"/");
            System.out.println();       
-       for (AppTree subtree: t) testRecursive(subtree);
+       for (Node subtree: t) testRecursive(subtree);
     }    
     
   }
