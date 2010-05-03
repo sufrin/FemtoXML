@@ -122,7 +122,7 @@ public interface XMLHandler
   
   /** Called just after the opening  <code>&lt;name</code> of an element is scanned. 
    * @param expandEntities -- true if entities are being expanded by the scanner
-   * @return -- a new <code>XMLAttributes</code> object to store the entitities for this element
+   * @return -- a new <code>XMLAttributes</code> object to store the entities for this element
    */
   public XMLAttributes newAttributes(boolean expandEntities);
 }
