@@ -42,14 +42,12 @@ public class App
   }
   
   /** Command-line switch state*/
-  boolean  literalOutput=false, 
-           expandEntities=true, 
-           isAscii=false, 
-           wantComment=true, 
-           wantPI=true,
-           wantENC=false,
-           alignParam = true,
-           testPath = false; 
+  boolean  
+           expandEntities = true, 
+           isAscii        = false, 
+           wantENC        = false,
+           alignParam     = true,
+           testPath       = false; 
   
   /** Command-line switch state*/
   String enc = "UTF-8", ienc = null;
@@ -58,7 +56,7 @@ public class App
   int splitParam = 2;
   
    
-  TreeFactoryWithDOCTYPE factory = new TreeFactoryWithDOCTYPE(expandEntities);
+  TreeFactory factory = new TreeFactoryWithDOCTYPE(expandEntities);
  
   /** Mapping from internal entity names to their expansions */
   final Map<String,String> map = factory.getMap();
@@ -195,17 +193,18 @@ public class App
   */ 
   public void testPathFeatures(Node t) throws UnsupportedEncodingException
   {      FormatWriter       out     = new FormatWriter(new OutputStreamWriter(System.out, enc));
-         Pred.Cached<Node> pred = isElement().and(below(isElementMatching("col"), 1)).cache();
-         Pred.Cached<Node> cont = isElement().and(below(isElementMatching("col"), 1).and(containing(isElementMatching(".*tt.*")))).cache();
-         // Statistics for the caching: count the nodes
+         // Statistics for the caching: count all the tree nodes
          long nodes = 0;
          for (Node node : t.prefixCursor()) nodes++;
          
-         // containment
-         for (Node node : t.prefixCursor().filter(cont)) { node.printTo(out, 0); out.println(); }
+         ////////////////////////////////////////// Containment test
+         Pred.Cached<Node> cont = below(isElementMatching("hor.*"), 1).and(containing(hasAttr("group", "border.*"))).cache();
+         for (Node node : t.prefixCursor(cont).filter(cont)) { node.printTo(out, 0); out.println(); }
          out.flush();
-         System.err.printf("Without cutoff: nodes: %d; inspected: %d; missed %d%n", nodes, cont.hits,  cont.cachemisses);
+         System.err.printf("With cutoff: nodes: %d; inspected: %d; missed %d%n", nodes, cont.hits,  cont.cachemisses);
          
+         ////////////////////////////////////////// Below tests
+         Pred.Cached<Node> pred = below(isElementMatching("col"), 1).and(isElement()).cache();
          for (Node node : t.prefixCursor().filter(pred)) { node.printTo(out, 0); out.println(); }
          out.flush();
          System.err.printf("Without cutoff: nodes: %d; inspected: %d; missed %d%n------------------%n", nodes, pred.hits,  pred.cachemisses);

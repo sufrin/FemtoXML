@@ -24,16 +24,6 @@ import femtoXML.XMLSyntaxError;
  */
 public class TreeFactoryWithDOCTYPE extends TreeFactory {
 
-	private boolean wantPI = true;
-
-	private boolean wantComment = true;
-
-	private boolean literalOutput = false;
-
-	private boolean logDOCTYPE = false;
-
-	private boolean wantDOCTYPE = true;
-
 	Pattern entity = Pattern
 			.compile(
 					"<!ENTITY\\s+([%]{0,1})\\s*([A-Za-z0-9:_]+)\\s+(PUBLIC|SYSTEM|)\\s*((\"([^\"]*)\")|(\'([^\']*)\'))\\s*((\"([^\"]+)\")|(\'([^\']+)\'))?\\s*>",
@@ -49,8 +39,6 @@ public class TreeFactoryWithDOCTYPE extends TreeFactory {
 	Pattern charref = Pattern.compile("&(#[A-Fa-f0-9:_]+);", Pattern.MULTILINE);
 
 	final Map<String, String> pmap = new HashMap<String, String>();
-
-	private Map<String, String> map = new HashMap<String, String>();
 
 	public TreeFactoryWithDOCTYPE(boolean expandedEntities) {
 		super(expandedEntities);
@@ -90,18 +78,6 @@ public class TreeFactoryWithDOCTYPE extends TreeFactory {
 		}
 		b.append(value.substring(start));
 		return b.toString();
-	}
-
-	Map<String, String> getMap() {
-		return map;
-	}
-
-	protected boolean literalOutput() {
-		return literalOutput;
-	}
-
-	protected boolean logDOCTYPE() {
-		return logDOCTYPE;
 	}
 
 	@Override
@@ -190,41 +166,5 @@ public class TreeFactoryWithDOCTYPE extends TreeFactory {
 		if (errors.length() > 0)
 			throw new XMLSyntaxError(getLocator(), errors.toString());
 
-	}
-
-	protected void setLiteralOutput(boolean literalOutput) {
-		this.literalOutput = literalOutput;
-	}
-
-	protected void setLogDOCTYPE(boolean logDOCTYPE) {
-		this.logDOCTYPE = logDOCTYPE;
-	}
-
-	protected void setWantComment(boolean wantComment) {
-		this.wantComment = wantComment;
-	}
-
-	protected void setWantDOCTYPE(boolean wantDOCTYPE) {
-		this.wantDOCTYPE = wantDOCTYPE;
-	}
-
-	protected void setWantPI(boolean wantPI) {
-		this.wantPI = wantPI;
-	}
-
-	@Override
-	public boolean wantComment() {
-		return wantComment;
-	}
-
-	@Override
-	public boolean wantDOCTYPE() {
-		return wantDOCTYPE;
-	}
-
-
-	@Override
-	public boolean wantPI() {
-		return wantPI;
 	}
 }

@@ -51,8 +51,10 @@ public abstract class Pred<T> {
 	public static class Cached<T> extends Pred<T> {
 		/** Used for instrumentation */
 		public long cachemisses = 0, hits = 0;
-		T n1, n2, n3, n4;
+		// (T, boolean) pairs in reverse order of adding
+		T       n1, n2, n3, n4;
 		boolean b1, b2, b3, b4;
+		// The cached predicate itself
 		Pred<T> cached;
 
 		private Cached(Pred<T> cached) {
@@ -61,6 +63,7 @@ public abstract class Pred<T> {
 
 		public boolean pass(T node) {
 			hits++;
+			// Search cache: most-recently-added first
 			if (node == n1)
 				return b1;
 			else if (node == n2)
@@ -95,9 +98,12 @@ public abstract class Pred<T> {
 	 * also used to cut-off the traversal. For example, when filtering for the
 	 * topmost nodes in a tree that are below a node that satisfies P the
 	 * pattern of use is:
-	 * <code>for Node n :tree.depthFirst(cutoffBelow=p).filter(p))</code>
 	 * 
-	 * On a miss the least-recently-used cache entry is purged.
+	 * <pre>
+	 * <code>for Node n :tree.depthFirst(cutoffBelow=p).filter(p))</code>
+	 * </pre>
+	 * 
+	 * On a miss the least-recently-added cache entry is purged.
 	 */
 	public Cached<T> cache() {
 		return new Cached<T>(this);
