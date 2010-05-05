@@ -58,11 +58,20 @@ public abstract class Cursor<T> implements Iterator<T>, Iterable<T>
   
   /** Class that implements catenation */
   public static class Cat<T> extends Cursor<T>
-  { Iterator<T> a, b;
-    public Cat(Iterator<T> a, Iterator<T> b) { this.a=a; this.b=b; }
-    public boolean hasNext() { return a.hasNext() || b.hasNext(); }
+  { Iterator<T> a, b, t;
+    // INV: t==a || !a.hasNext && t==b || !(a.hasNext || b.hasNext) && t==null
+  
+    public Cat(Iterator<T> a, Iterator<T> b) { this.a=a; this.b=b; this.t=a; }
+    
+    public boolean hasNext() { 
+    	// return a.hasNext() || b.hasNext(); 
+    	while (t!=null)
+    	      if (t.hasNext()) return true; else t = (t==a?b:null);
+    	return false;
+    }
+    
     public T next() 
-    {  if (a.hasNext()) return a.next(); else return b.next(); 
+    {  return t.next(); 
     }
   }
   
@@ -105,8 +114,7 @@ public abstract class Cursor<T> implements Iterator<T>, Iterable<T>
   /** Construct an  <code>Cursor</code> from an <code>Iterable</code>*/
   public static <T> Cursor<T> appIterator(Iterable<T> it)
   { return cursor(it.iterator()); }
-  
-  
+    
   // cursory unit test
   public static void main(String[] args)
   { List<String>        l = asList(args);
