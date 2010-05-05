@@ -33,30 +33,33 @@ public abstract class Generator<T> extends Cursor<T> implements Runnable {
       thread.start();
     }
     
-    public void close() { closed = true; }
+    synchronized public void close() { closed = true; }
     
     /** Generate an element */
-    protected void put(T t) { try {
+    synchronized protected void put(T t)  { try {
 		if (closed) throw new IllegalStateException(); else chan.put(t);
 	} catch (InterruptedException e) {
-		e.printStackTrace();
-		throw new IllegalStateException();
+		throw new IllegalStateException(e);
 	} }
 	
-    /** This must be defined. It should generate all elements */
+    /** This must be defined. It should generate and deliver (all the) elements using put.
+     * @TODO use a specific private exception to signify closed instead of IllegalStateException  
+     */
     abstract public void gen();
     
     public void run() { try { gen(); } catch (IllegalStateException e) { close(); } }
     
     public boolean hasNext() { return !closed; }
     
-    public T next() {
-    	if (closed) throw new IllegalStateException(); 
+    /** Returns the next generated element; waiting for it to be generated if necessary
+     *  @TODO fix potential race between next and hasNext 
+     */
+    synchronized public T next() {
+    	if (closed) throw new IllegalStateException(""); 
 			try {
 				return chan.take();
 			} catch (InterruptedException e) {
-				e.printStackTrace();
-				return null;
+				throw new IllegalStateException(e);
 			}
     }
     
