@@ -62,6 +62,8 @@ public abstract class NodeImp implements Node, Iterable<Node> {
 			public boolean hasNext() {
 				return agenda.hasNext();
 			}
+			
+			public Cursor<Node> copy() { return prefixCursor(cutoffBelow); }
 
 			public Node next() {
 				assert (hasNext());
@@ -103,6 +105,9 @@ public abstract class NodeImp implements Node, Iterable<Node> {
 					agenda = new Cursor.Cat<Node>(agenda, result.iterator());
 				return result;
 			}
+			
+			public Cursor<Node> copy() { return prefixCursor(cutoffBelow); }
+
 		};
 	}
 
@@ -122,6 +127,8 @@ public abstract class NodeImp implements Node, Iterable<Node> {
 				cursor = cursor.getParent();
 				return result;
 			}
+			
+			public Cursor<Node> copy() { return pathToRoot(); }
 		};
 	}
 

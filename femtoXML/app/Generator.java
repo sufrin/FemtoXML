@@ -24,56 +24,70 @@ import java.util.concurrent.SynchronousQueue;
 public abstract class Generator<T> extends Cursor<T> implements Runnable {
 	
     SynchronousQueue<T> chan = new SynchronousQueue<T>(); // channel from generator to iterator
-    boolean closed = false;
+    boolean closed = false, finishedPutting = false;
     Thread  thread = null;
+    T       buf    = null;
     
-    /** Construct an instance of the generate and start generating immediately */
+    /** Construct an instance of the generator and start generating immediately */
     public Generator() {
       thread = new Thread(this);
+      System.err.println("Starting "+this);
       thread.start();
     }
     
-    synchronized public void close() { closed = true; }
+    public void close() { closed = true; }
     
     /** Generate an element */
-    synchronized protected void put(T t)  { try {
-		if (closed) throw new IllegalStateException(); else chan.put(t);
-	} catch (InterruptedException e) {
-		throw new IllegalStateException(e);
-	} }
+    protected void put(T t) {
+			if (!closed)
+				try {
+			      chan.put(t);
+		        } catch (InterruptedException e) {
+		        } 
+	}
 	
     /** This must be defined. It should generate and deliver (all the) elements using put.
      * @TODO use a specific private exception to signify closed instead of IllegalStateException  
      */
     abstract public void gen();
     
-    public void run() { try { gen(); } catch (IllegalStateException e) { close(); } }
+    public void run() { try { gen(); } finally { put(null); finishedPutting=true; closed=true; } }
     
-    public boolean hasNext() { return !closed; }
+    public Cursor<T> copy()
+    { final Generator<T> parent = this;
+      return new Generator<T>() { public void gen() { parent.gen(); } };
+    }
     
-    /** Returns the next generated element; waiting for it to be generated if necessary
-     *  @TODO fix potential race between next and hasNext 
+    @SuppressWarnings("finally")
+	public boolean hasNext() { 
+    	   if (finishedPutting) return false;
+    	   try 
+    	   { if (buf==null) buf = chan.take(); }
+           finally
+           { return buf!=null; }
+    }
+    
+    /** Returns the next generated element
      */
-    synchronized public T next() {
-    	if (closed) throw new IllegalStateException(""); 
-			try {
-				return chan.take();
-			} catch (InterruptedException e) {
-				throw new IllegalStateException(e);
-			}
+    public T next() {
+    	T res = buf;
+    	buf = null;
+    	return res;
     }
     
     
     public static void main(String[] arg)
     {
-      Cursor<Integer> gen = new Generator<Integer>()
+      Cursor<Integer> g = new Generator<Integer>()
       {
     	  public void gen()
-    	  {
+    	  {   System.err.println(this);
     		  for (int i=0; !closed && i<20; i++) put(i);
     	  }
       };
-      while (gen.hasNext()) System.err.println(gen.next());
+      while (g.hasNext()) { System.err.println(g.next()); System.err.flush(); } 
+      Cursor<Integer> g1 = g.copy();
+      while (g1.hasNext()) { System.err.println(g1.next()); System.err.flush(); } 
     }
 
 }
