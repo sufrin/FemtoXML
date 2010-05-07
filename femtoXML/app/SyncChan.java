@@ -6,8 +6,8 @@ public class SyncChan<T>
 {
 	@SuppressWarnings("serial") public static class Closed extends Error {}
 
-	T buf, bufN;
-	boolean readDone, readWaiting, writeWaiting, isOpen = true, bufSet;
+	protected T buf, bufN;
+	protected boolean readDone, readWaiting, writeWaiting, isOpen = true, bufSet;
 
 	/** Closes the channel, interrupting any waiting operation if necessary */
 	public synchronized void close()
