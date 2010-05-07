@@ -5,29 +5,35 @@ import static java.util.Arrays.*;
 import java.util.*;
 
 /**
- * General purpose toolkit for working with iterator-like structures. A
- * <code>Cursor</code> is an iterator with a few derived methods. It doesn't
- * implement <code>remove</code>.
+ * General purpose toolkit for working with iterator-like structures.
+ * A <code>Cursor</code> is an iterator with a few derived methods. It
+ * doesn't implement <code>remove</code>.
  */
-public abstract class Cursor<T> implements Iterator<T>, Iterable<T> {
+public abstract class Cursor<T> implements Iterator<T>, Iterable<T>
+{
 	/** Class that implements catenation */
-	public static class Cat<T> extends Cursor<T> {
+	public static class Cat<T> extends Cursor<T>
+	{
 		Cursor<T> a, b, t;
 
-		// INV: t==a || !a.hasNext && t==b || !(a.hasNext || b.hasNext) &&
+		// INV: t==a || !a.hasNext && t==b || !(a.hasNext ||
+		// b.hasNext) &&
 		// t==null
 
-		public Cat(Cursor<T> a, Cursor<T> b) {
+		public Cat(Cursor<T> a, Cursor<T> b)
+		{
 			this.a = a;
 			this.b = b;
 			this.t = a;
 		}
 
-		public Cursor<T> copy() {
+		public Cursor<T> copy()
+		{
 			return new Cat<T>(a.copy(), b.copy());
 		}
 
-		public boolean hasNext() {
+		public boolean hasNext()
+		{
 			// return a.hasNext() || b.hasNext();
 			while (t != null)
 				if (t.hasNext())
@@ -37,99 +43,122 @@ public abstract class Cursor<T> implements Iterator<T>, Iterable<T> {
 			return false;
 		}
 
-		public T next() {
+		public T next()
+		{
 			return t.next();
 		}
 	}
 
 	/**
-	 * abstract class that implements filtering; needs <code>pass</code> to be
-	 * defined.
+	 * abstract class that implements filtering; needs
+	 * <code>pass</code> to be defined.
 	 */
-	public static abstract class Filter<T> extends Cursor<T> {
+	public static abstract class Filter<T> extends Cursor<T>
+	{
 		/** Base stream being filtered */
 		Cursor<T> base;
-		/** INV: cache!=null => pass(cache) 
-		 *       cache==null => !base.hasNext() 
+		/**
+		 * INV: cache!=null => pass(cache) cache==null =>
+		 * !base.hasNext()
 		 */
 		T cache;
 
-		public Filter(Cursor<T> base) {
+		public Filter(Cursor<T> base)
+		{
 			this.base = base;
 			cache = null;
 			seek();
 		}
 
-		public Cursor<T> copy() {
-			return new Filter<T>(base.copy()) {
-				public boolean pass(T t) {
+		public Cursor<T> copy()
+		{
+			return new Filter<T>(base.copy())
+			{
+				public boolean pass(T t)
+				{
 					return Filter.this.pass(t);
 				}
 			};
 		}
 
-		public boolean hasNext() {
+		public boolean hasNext()
+		{
 			return cache != null;
 		}
 
-		public T next() {
+		public T next()
+		{
 			T result = cache;
 			seek();
 			return result;
 		}
-        
-		/** predicate to be satisfied by the elements from the base stream 
-		 *  in order to be admitted to the filtered stream.
+
+		/**
+		 * predicate to be satisfied by the elements from the base
+		 * stream in order to be admitted to the filtered stream.
 		 */
 		abstract public boolean pass(T t);
-        
+
 		/** (Re) establish the invariant */
-		void seek() {
+		void seek()
+		{
 			cache = null;
-			while (base.hasNext() && cache == null) {
+			while (base.hasNext() && cache == null)
+			{
 				cache = base.next();
-				if (!pass(cache)) cache = null;
+				if (!pass(cache))
+					cache = null;
 			}
 		}
 	}
 
 	/** Generate an empty cursor */
-	public static class Nil<T> extends Cursor<T> {
-		public Cursor<T> copy() {
+	public static class Nil<T> extends Cursor<T>
+	{
+		public Cursor<T> copy()
+		{
 			return this;
 		}
 
-		public boolean hasNext() {
+		public boolean hasNext()
+		{
 			return false;
 		}
 
-		public T next() {
+		public T next()
+		{
 			throw new IllegalStateException();
 		}
 	}
 
 	/** Generate a unit cursor */
-	public static class Unit<T> extends Cursor<T> {
+	public static class Unit<T> extends Cursor<T>
+	{
 		T t;
 		boolean read;
 
-		public Unit(T t) {
+		public Unit(T t)
+		{
 			this.t = t;
 			read = false;
 		}
 
-		public Cursor<T> copy() {
+		public Cursor<T> copy()
+		{
 			return new Unit<T>(t);
 		}
 
-		public boolean hasNext() {
+		public boolean hasNext()
+		{
 			return !read;
 		}
 
-		public T next() {
+		public T next()
+		{
 			if (read)
 				throw new IllegalStateException();
-			else {
+			else
+			{
 				read = true;
 				return t;
 			}
@@ -137,30 +166,47 @@ public abstract class Cursor<T> implements Iterator<T>, Iterable<T> {
 	}
 
 	/** Construct a <code>Cursor</code> from an <code>Iterable</code> */
-	public static <T> Cursor<T> appIterator(final Iterable<T> iterable) {
+	public static <T> Cursor<T> appIterator(final Iterable<T> iterable)
+	{
 		final Iterator<T> it = iterable.iterator();
-		return new Cursor<T>() {
-			public Cursor<T> copy() {
+		return new Cursor<T>()
+		{
+			public Cursor<T> copy()
+			{
 				return Cursor.appIterator(iterable);
 			}
 
-			public boolean hasNext() {
+			public boolean hasNext()
+			{
 				return it.hasNext();
 			}
 
-			public T next() {
+			public T next()
+			{
 				return it.next();
 			}
 		};
 	}
+	
+	/** Construct a <code>Vector</code> whose elements are the (remaining) elements of this cursor. */
+	public java.util.Vector<T> vector()
+	{
+		java.util.Vector<T> r = new java.util.Vector<T>();
+		while (hasNext()) r.add(next());
+		return r;
+	}
+	
 
 	// cursory unit test
-	public static void main(String[] args) {
+	public static void main(String[] args)
+	{
 		List<String> l = asList(args);
 		Cursor<String> a = appIterator(l);
 		Cursor<String> b = appIterator(l);
-		Pred<String> p = new Pred<String>() {
-			public boolean pass(String s) {
+		Pred<String> p = new Pred<String>()
+		{
+			public boolean pass(String s)
+			{
 				return s.endsWith(".class");
 			}
 		};
@@ -169,57 +215,73 @@ public abstract class Cursor<T> implements Iterator<T>, Iterable<T> {
 	}
 
 	/** Catenate this cursor with another */
-	public Cursor<T> cat(Cursor<T> other) {
+	public Cursor<T> cat(Cursor<T> other)
+	{
 		return new Cat<T>(this, other);
 	}
 
 	/** Hint that resources tied up in the cursor may be discarded */
-	public void close() {
+	public void close()
+	{
 	}
 
 	public abstract Cursor<T> copy();
 
 	/** Drop the next n elements from this cursor */
-	public Cursor<T> drop(int n) {
+	public Cursor<T> drop(int n)
+	{
 		for (int i = 0; i < n; hasNext(), i++)
 			next();
 		return this;
 	}
 
 	/** Generate a filtered variant of this iterator */
-	public Cursor<T> filter(final Pred<T> p) {
-		return new Filter<T>(this) {
-			public boolean pass(T t) {
+	public Cursor<T> filter(final Pred<T> p)
+	{
+		return new Filter<T>(this)
+		{
+			public boolean pass(T t)
+			{
 				return p.pass(t);
 			}
 		};
 	}
 
 	/** Interface to fancy for loops */
-	public Iterator<T> iterator() {
+	public Iterator<T> iterator()
+	{
 		return this;
 	}
 
 	/** Unimplemented */
-	public void remove() {
+	public void remove()
+	{
 		throw new UnsupportedOperationException();
 	}
-    
-	/** Generate a new cursor which yields the first n elements of this cursor, and then stops */
-	public Cursor<T> take(final int n) {
+
+	/**
+	 * Generate a new cursor which yields the first n elements of this
+	 * cursor, and then stops
+	 */
+	public Cursor<T> take(final int n)
+	{
 		final Cursor<T> base = this;
-		return new Cursor<T>() {
+		return new Cursor<T>()
+		{
 			int left = n;
 
-			public Cursor<T> copy() {
+			public Cursor<T> copy()
+			{
 				return base.copy();
 			}
 
-			public boolean hasNext() {
+			public boolean hasNext()
+			{
 				return left > 0 && base.hasNext();
 			}
 
-			public T next() {
+			public T next()
+			{
 				assert (hasNext());
 				left--;
 				return base.next();

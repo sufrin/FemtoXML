@@ -11,18 +11,20 @@ import java.util.regex.Pattern;
 import femtoXML.XMLAttributes;
 import femtoXML.XMLCharUtil;
 import femtoXML.XMLSyntaxError;
+
 /**
  * A tree factory that processes entity declarations in DTDs. <br/>
- * <b>WARNING:</b> the algorithm used here is ad-hoc and incomplete: whilst we expand
- * parameter entities in entity declarations, we do not treat any material outside
- * entity declarations. 
+ * <b>WARNING:</b> the algorithm used here is ad-hoc and incomplete:
+ * whilst we expand parameter entities in entity declarations, we do
+ * not treat any material outside entity declarations.
  * <p>
- * Internal entity definitions are placed in the <code>map</code> that is shared by the <code>XMLParser parser</code>
- * defined below.
+ * Internal entity definitions are placed in the <code>map</code> that
+ * is shared by the <code>XMLParser parser</code> defined below.
  * </p>
  * 
  */
-public class TreeFactoryWithDOCTYPE extends TreeFactory {
+public class TreeFactoryWithDOCTYPE extends TreeFactory
+{
 
 	Pattern entity = Pattern
 			.compile(
@@ -33,23 +35,28 @@ public class TreeFactoryWithDOCTYPE extends TreeFactory {
 			.compile(
 					"\\s*([A-Za-z0-9:_]+)\\s*((PUBLIC|SYSTEM)\\s*((\"([^\"]*)\")|(\'([^\']*)\'))\\s*((\"([^\"]+)\")|(\'([^\']+)\'))?)?\\s*(\\[(.*)\\])?\\s*",
 					Pattern.DOTALL);
-	// http://www.w3.org/TR/REC-xml/#sec-entexpand suggests that only &#...; are
+	// http://www.w3.org/TR/REC-xml/#sec-entexpand suggests that only
+	// &#...; are
 	// expanded during entity definition
-	// (this doesn't seem completely right to me, but standards is standards!)
+	// (this doesn't seem completely right to me, but standards is
+	// standards!)
 	Pattern charref = Pattern.compile("&(#[A-Fa-f0-9:_]+);", Pattern.MULTILINE);
 
 	final Map<String, String> pmap = new HashMap<String, String>();
 
-	public TreeFactoryWithDOCTYPE(boolean expandedEntities) {
+	public TreeFactoryWithDOCTYPE(boolean expandedEntities)
+	{
 		super(expandedEntities);
 	}
 
 	/** Expand character references in <code>value</code> */
-	String expandCharRefs(String value) {
+	String expandCharRefs(String value)
+	{
 		int start = 0;
 		Matcher m = charref.matcher(value);
 		StringBuilder b = new StringBuilder();
-		while (m.find(start)) {
+		while (m.find(start))
+		{
 			String pid = m.group(1);
 			char c = XMLCharUtil.decodeCharEntity(pid);
 			b.append(value.substring(start, m.start()));
@@ -63,11 +70,13 @@ public class TreeFactoryWithDOCTYPE extends TreeFactory {
 		return b.toString();
 	}
 
-	String expandParamRefs(String value) {
+	String expandParamRefs(String value)
+	{
 		int start = 0;
 		Matcher m = paramref.matcher(value);
 		StringBuilder b = new StringBuilder();
-		while (m.find(start)) {
+		while (m.find(start))
+		{
 			String pid = m.group(1);
 			String val = pmap.get(pid);
 			if (val == null)
@@ -81,14 +90,17 @@ public class TreeFactoryWithDOCTYPE extends TreeFactory {
 	}
 
 	@Override
-	public Content newContent(String data, boolean cdata) {
+	public Content newContent(String data, boolean cdata)
+	{
 		return new Content(data, cdata, !literalOutput);
 	}
 
 	@Override
-	public Node newDOCTYPE(String data) {
+	public Node newDOCTYPE(String data)
+	{
 		Matcher d = dtd.matcher(data);
-		if (d.lookingAt()) {
+		if (d.lookingAt())
+		{
 			String nameDTD = d.group(1);
 			String systemDTD = d.group(3);
 			boolean isPublicDTD = "PUBLIC".equalsIgnoreCase(systemDTD);
@@ -116,16 +128,19 @@ public class TreeFactoryWithDOCTYPE extends TreeFactory {
 	}
 
 	@Override
-	public Element newElement(String kind, XMLAttributes atts) { // System.err.println(kind);
+	public Element newElement(String kind, XMLAttributes atts)
+	{ // System.err.println(kind);
 		return super.newElement(kind, atts);
 	}
 
-	public void processDTD(String data) {
+	public void processDTD(String data)
+	{
 		int start = 0;
 		Matcher m = entity.matcher(data);
 		StringBuilder errors = new StringBuilder();
 		start = 0;
-		while (m.find(start)) {
+		while (m.find(start))
+		{
 			boolean isPE = m.group(1).equals("%");
 			String name = m.group(2);
 			String system = m.group(3);
@@ -149,11 +164,14 @@ public class TreeFactoryWithDOCTYPE extends TreeFactory {
 								"Malformed PUBLIC entity declaration %s%n", m
 										.group(0)));
 			// For the moment we will only look at internal entities
-			if (!isSystem) {
-				value = expandParamRefs(expandCharRefs(value)); // XML standard
-																// is weird
+			if (!isSystem)
+			{
+				value = expandParamRefs(expandCharRefs(value)); // XML
+				// standard
+				// is weird
 				(isPE ? pmap : getMap()).put(name, value);
-			} else {
+			} else
+			{
 				System.err.printf("Warning: [not yet implemented] %s%n", m
 						.group(0));
 			}

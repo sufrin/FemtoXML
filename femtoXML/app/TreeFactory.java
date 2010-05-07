@@ -10,12 +10,14 @@ import femtoXML.XMLHandler.XMLLocator;
 
 /**
  * A <code>XMLTreeFactory</code> that builds
- * <code>Element, Comment, PI, Content</code> nodes as an XML file is parsed.
- * All optional features (pis, comments, doctypes) are recorded in the tree.
+ * <code>Element, Comment, PI, Content</code> nodes as an XML file is
+ * parsed. All optional features (pis, comments, doctypes) are
+ * recorded in the tree.
  * 
  * @author sufrin
  */
-public class TreeFactory implements XMLTreeFactory<Node> {
+public class TreeFactory implements XMLTreeFactory<Node>
+{
 	/** True if entities have been expanded */
 	protected boolean expandedEntities = true;
 
@@ -23,56 +25,66 @@ public class TreeFactory implements XMLTreeFactory<Node> {
 	 * Construct a TreeFactory
 	 * 
 	 * @param expandedEntitities
-	 *            -- true if entities will have been expanded before the tree
-	 *            nodes are built
+	 *            -- true if entities will have been expanded before
+	 *            the tree nodes are built
 	 */
-	public TreeFactory(boolean expandedEntities) {
+	public TreeFactory(boolean expandedEntities)
+	{
 		this.expandedEntities = expandedEntities;
 	}
 
 	/** <code>this(true)</code> */
-	public TreeFactory() {
+	public TreeFactory()
+	{
 		this(true);
 	}
 
-	public Element newElement(String kind, XMLAttributes atts) {
+	public Element newElement(String kind, XMLAttributes atts)
+	{
 		return new Element(kind, atts);
 	}
 
-	public Element newRoot() {
+	public Element newRoot()
+	{
 		return newElement("", new XMLAttrMap());
 	}
 
-	public Content newContent(String name, boolean cdata) {
+	public Content newContent(String name, boolean cdata)
+	{
 		return new Content(name, cdata, expandedEntities);
 	}
 
-	public Node newComment(String data) {
+	public Node newComment(String data)
+	{
 		return new Comment(data);
 	}
 
-	public Node newDOCTYPE(String data) {
+	public Node newDOCTYPE(String data)
+	{
 		return new DOCTYPE(data);
 	}
 
-	public Node newPI(String data) {
+	public Node newPI(String data)
+	{
 		return new PI(data);
 	}
 
-	public Node newSpaces(String text) {
+	public Node newSpaces(String text)
+	{
 		return new Spaces(text);
 	}
 
-	public boolean wantSpaces() {
+	public boolean wantSpaces()
+	{
 		return false;
 	}
-	
-	protected  Map<String, String> map = new HashMap<String, String>();
-	
-	public Map<String, String> getMap() {
+
+	protected Map<String, String> map = new HashMap<String, String>();
+
+	public Map<String, String> getMap()
+	{
 		return map;
 	}
-
 
 	protected XMLLocator locator;
 	protected boolean wantPI = true;
@@ -81,51 +93,63 @@ public class TreeFactory implements XMLTreeFactory<Node> {
 	protected boolean logDOCTYPE = false;
 	protected boolean wantDOCTYPE = true;
 
-	public void setLocator(XMLLocator locator) {
+	public void setLocator(XMLLocator locator)
+	{
 		this.locator = locator;
 	}
 
-	public XMLLocator getLocator() {
+	public XMLLocator getLocator()
+	{
 		return locator;
 	}
 
-	protected boolean literalOutput() {
+	protected boolean literalOutput()
+	{
 		return literalOutput;
 	}
 
-	protected boolean logDOCTYPE() {
+	protected boolean logDOCTYPE()
+	{
 		return logDOCTYPE;
 	}
 
-	protected void setLiteralOutput(boolean literalOutput) {
+	protected void setLiteralOutput(boolean literalOutput)
+	{
 		this.literalOutput = literalOutput;
 	}
 
-	protected void setLogDOCTYPE(boolean logDOCTYPE) {
+	protected void setLogDOCTYPE(boolean logDOCTYPE)
+	{
 		this.logDOCTYPE = logDOCTYPE;
 	}
 
-	protected void setWantComment(boolean wantComment) {
+	protected void setWantComment(boolean wantComment)
+	{
 		this.wantComment = wantComment;
 	}
 
-	protected void setWantDOCTYPE(boolean wantDOCTYPE) {
+	protected void setWantDOCTYPE(boolean wantDOCTYPE)
+	{
 		this.wantDOCTYPE = wantDOCTYPE;
 	}
 
-	protected void setWantPI(boolean wantPI) {
+	protected void setWantPI(boolean wantPI)
+	{
 		this.wantPI = wantPI;
 	}
 
-	public boolean wantComment() {
+	public boolean wantComment()
+	{
 		return wantComment;
 	}
 
-	public boolean wantDOCTYPE() {
+	public boolean wantDOCTYPE()
+	{
 		return wantDOCTYPE;
 	}
 
-	public boolean wantPI() {
+	public boolean wantPI()
+	{
 		return wantPI;
 	}
 

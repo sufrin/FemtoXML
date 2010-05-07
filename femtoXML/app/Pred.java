@@ -3,65 +3,84 @@ package femtoXML.app;
 /**
  * Predicates and their algebra
  */
-public abstract class Pred<T> {
-	
+public abstract class Pred<T>
+{
+
 	abstract public boolean pass(T t);
 
-	public Pred<T> and(final Pred<T> other) {
-		return new Pred<T>() {
-			public boolean pass(T t) {
+	public Pred<T> and(final Pred<T> other)
+	{
+		return new Pred<T>()
+		{
+			public boolean pass(T t)
+			{
 				return Pred.this.pass(t) && other.pass(t);
 			}
 		};
 	}
 
-	public Pred<T> or(final Pred<T> other) {
-		return new Pred<T>() {
-			public boolean pass(T t) {
+	public Pred<T> or(final Pred<T> other)
+	{
+		return new Pred<T>()
+		{
+			public boolean pass(T t)
+			{
 				return Pred.this.pass(t) || other.pass(t);
 			}
 		};
 	}
 
-	public Pred<T> not() {
-		return new Pred<T>() {
-			public boolean pass(T t) {
+	public Pred<T> not()
+	{
+		return new Pred<T>()
+		{
+			public boolean pass(T t)
+			{
 				return !Pred.this.pass(t);
 			}
 		};
 	}
 
-	public static <T> Pred<T> TRUE() {
-		return new Pred<T>() {
-			public boolean pass(T t) {
+	public static <T> Pred<T> TRUE()
+	{
+		return new Pred<T>()
+		{
+			public boolean pass(T t)
+			{
 				return true;
 			}
 		};
 	}
 
-	public static <T> Pred<T> FALSE() {
-		return new Pred<T>() {
-			public boolean pass(T t) {
+	public static <T> Pred<T> FALSE()
+	{
+		return new Pred<T>()
+		{
+			public boolean pass(T t)
+			{
 				return false;
 			}
 		};
 	}
 
 	/** @see Pred.cache() */
-	public static class Cached<T> extends Pred<T> {
+	public static class Cached<T> extends Pred<T>
+	{
 		/** Used for instrumentation */
 		public long cachemisses = 0, hits = 0;
 		// (T, boolean) pairs in reverse order of adding
-		T       n1, n2, n3, n4;
+		T n1, n2, n3, n4;
 		boolean b1, b2, b3, b4;
 		// The cached predicate itself
 		Pred<T> cached;
 
-		private Cached(Pred<T> cached) {
+		private Cached(Pred<T> cached)
+		{
 			this.cached = cached;
 		}
 
-		public boolean pass(T node) {
+		public boolean pass(T node)
+		{
 			hits++;
 			// Search cache: most-recently-added first
 			if (node == n1)
@@ -72,7 +91,8 @@ public abstract class Pred<T> {
 				return b3;
 			else if (node == n4)
 				return b4;
-			else {
+			else
+			{
 				n4 = n3;
 				b4 = b3;
 				n3 = n2;
@@ -88,24 +108,26 @@ public abstract class Pred<T> {
 	}
 
 	/**
-	 * Transforms a predicate into one that caches very recent results. A cached
-	 * predicate may only be used in contexts where the objects it is applied to
-	 * are immutable (modulo the predicate), but we don't check for this
-	 * dynamically -- though it would be possible to do so at the cost of
-	 * throwing away the efficiency offered by caching.
+	 * Transforms a predicate into one that caches very recent
+	 * results. A cached predicate may only be used in contexts where
+	 * the objects it is applied to are immutable (modulo the
+	 * predicate), but we don't check for this dynamically -- though
+	 * it would be possible to do so at the cost of throwing away the
+	 * efficiency offered by caching.
 	 * 
-	 * Typical usage is with a tree traversal filtered by a predicate P that is
-	 * also used to cut-off the traversal. For example, when filtering for the
-	 * topmost nodes in a tree that are below a node that satisfies P the
-	 * pattern of use is:
+	 * Typical usage is with a tree traversal filtered by a predicate
+	 * P that is also used to cut-off the traversal. For example, when
+	 * filtering for the topmost nodes in a tree that are below a node
+	 * that satisfies P the pattern of use is:
 	 * 
 	 * <pre>
-	 * <code>for Node n :tree.depthFirst(cutoffBelow=p).filter(p))</code>
+	 * &lt;code&gt;for Node n :tree.depthFirst(cutoffBelow=p).filter(p))&lt;/code&gt;
 	 * </pre>
 	 * 
 	 * On a miss the least-recently-added cache entry is purged.
 	 */
-	public Cached<T> cache() {
+	public Cached<T> cache()
+	{
 		return new Cached<T>(this);
 	}
 
