@@ -7,6 +7,7 @@ import femtoXML.FormatWriter;
  * 
  * @author sufrin
  * 
+ * 
  */
 public class Comment extends NodeImp implements Node
 {

@@ -1,15 +1,15 @@
 package femtoXML.app;
 
-/** Synchronous channel */
+/** Synchronous channel 
+ */
 public class SyncChan<T>
 {
-	public static class Closed extends Error
-	{
-	}
+	@SuppressWarnings("serial") public static class Closed extends Error {}
 
 	T buf, bufN;
 	boolean readDone, readWaiting, writeWaiting, isOpen = true, bufSet;
 
+	/** Closes the channel, interrupting any waiting operation if necessary */
 	public synchronized void close()
 	{
 		isOpen = false;
@@ -17,7 +17,8 @@ public class SyncChan<T>
 		if (readWaiting || writeWaiting)
 			notify();
 	}
-
+    
+	/** Write <code>t</code> to the channel.  */
 	public synchronized void write(T t)
 	{
 		if (!isOpen)
@@ -35,16 +36,12 @@ public class SyncChan<T>
 		}
 		// guard against phantom notifications
 		while (!readDone && isOpen)
-			try
-			{
-				wait();
-			} catch (InterruptedException e)
-			{
-			}
+		      try { wait(); } catch (InterruptedException e) { }
 		if (!isOpen)
 			throw new Closed();
 	}
-
+    
+	/** Synchronize with a write, then return true; or return false if the channel is closed */
 	public synchronized boolean hasNext()
 	{
 		if (bufSet)
@@ -52,16 +49,10 @@ public class SyncChan<T>
 		if (writeWaiting)
 			writeWaiting = false;
 		else
-		{
-			readWaiting = true;
+		{   readWaiting = true;
 			// await a write or a close
 			while (readWaiting && isOpen)
-				try
-				{
-					wait();
-				} catch (InterruptedException e)
-				{
-				}
+				  try { wait(); } catch (InterruptedException e) { }
 			// !isOpen || !readWaiting
 			if (!isOpen)
 				return false;
@@ -74,10 +65,8 @@ public class SyncChan<T>
 	}
 
 	public synchronized T next()
-	{
-		if (bufSet)
-		{
-			bufSet = false;
+	{   if (bufSet)
+		{   bufSet = false;
 			return bufN;
 		} else
 			throw new IllegalStateException();

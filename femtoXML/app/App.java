@@ -210,7 +210,7 @@ public class App
 				enc));
 		// Statistics for the caching: count all the tree nodes
 		long nodes = 0;
-		for (Node node : t.prefixCursor())
+		for (@SuppressWarnings("unused") Node node : t.prefixCursor())
 			nodes++;
 
 		// //////////////////////////////////////// Containment test
