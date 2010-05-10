@@ -8,7 +8,7 @@ import femtoXML.FormatWriter;
  * @author sufrin
  * 
  */
-public interface Node extends Iterable<Node>
+public interface Node extends Iterable<Node>, Value
 {
 	/**
 	 * Write this tree node on the given writer at the given
