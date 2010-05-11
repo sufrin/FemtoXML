@@ -13,6 +13,7 @@ import femtoXML.XMLParser;
 import femtoXML.XMLScanner;
 import femtoXML.XMLSyntaxError;
 import static femtoXML.app.NodePred.*;
+import static femtoXML.app.Element.*;
 
 /**
  * Example of a <code>femtoXML</code> application. Its main useful
@@ -47,7 +48,7 @@ public class App
 
 	/** Command-line switch state */
 	boolean expandEntities = true, isAscii = false, wantENC = false,
-			alignParam = true, testPath = false;
+			alignParam = true, testPath = false, rewrite = false;
 
 	/** Command-line switch state */
 	String enc = "UTF-8", ienc = null;
@@ -118,6 +119,7 @@ public class App
 								+ "-aa        -- don't bother aligning attribute values in tags%n"
 								+ "-as <int>  -- show attributes on separate lines of there are more than <int> of them (default 2)%n"
 								+ "-TP        -- test the path iterators features%n"
+								+ "-r         -- (test) rewrite using built-in rules"
 								+ "($Revision$)%n");
 			else if (arg.equals("-a"))
 				isAscii = true;
@@ -127,6 +129,8 @@ public class App
 				splitParam = Integer.parseInt(args[++i]);
 			else if (arg.equals("-TP"))
 				testPath = true;
+			else if (arg.equals("-r"))
+				rewrite = true;
 			else if (arg.equals("-i"))
 			{
 				expandEntities = false;
@@ -184,6 +188,8 @@ public class App
 							"<?xml version='1.1' encoding='%s'?>%n", enc));
 				}
 				Element root = (Element) parser.getTree();
+				if (rewrite)
+					doRewrites(root);
 				if (testPath)
 					testPathFeatures(root);
 				else
@@ -197,6 +203,32 @@ public class App
 			}
 		}
 	}
+	
+	public void doRewrites(final Node root) throws UnsupportedEncodingException
+	{
+		FormatWriter out = new FormatWriter(new OutputStreamWriter(System.out, enc));
+		Expr rhs = new Expr() {
+		  public Value eval(Node article)
+		  { Pred<Node> isAuthor = isElementMatching("author");
+			Cursor<Node> auth = article.prefixCursor().filter(isAuthor);
+			Cursor<Node> body = article.iterator().filter(isAuthor.not());
+			Node author = null;
+			if (auth.hasNext()) author = auth.next();
+		    return element("book").with(element("writer").with(author.iterator())).with(body);
+		  }
+		};
+		Rule rule   = new Rule(isElementMatching("article"), rhs);
+		for (Node node : root.prefixCursor())
+		{
+			Value v = rule.apply(node);
+			if (v==null) continue;
+			v.printTo(out, 0);
+			break;
+		}
+		out.flush();
+		out.close();
+	}
+
 
 	// ///////////////////////// PATH FEATURES TESTBED
 	// /////////////////////////

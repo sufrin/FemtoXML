@@ -41,7 +41,7 @@ public class Element extends NodeImp implements Node, XMLComposite<Node>,
 		String xmlSpace = attrs.get("xml:space");
 		wantSpaces = xmlSpace != null && xmlSpace.equalsIgnoreCase("preserve");
 	}
-
+	
 	public void add(Node t)
 	{
 		if (t != null)
@@ -50,7 +50,7 @@ public class Element extends NodeImp implements Node, XMLComposite<Node>,
 			t.setParent(this);
 		}
 	}
-
+	
 	public String getKind()
 	{
 		return kind;
@@ -143,6 +143,25 @@ public class Element extends NodeImp implements Node, XMLComposite<Node>,
 	public String getAttr(String attrName)
 	{
 		return attrs == null ? null : attrs.get(attrName);
+	}
+	
+	/** Add a node by hand */
+	public Element with(Node t)
+	{ add(t);
+      return this;	 
+	}
+	
+	/** Add a collection of nodes by hand */
+	public Element with(Iterable<Node> c)
+	{ for (Node n : c) add(n);
+      return this;	 
+	}
+	
+	/** Utility method to construct an element by hand */
+	public static Element element(String kind, String ... attrs) 
+	{ femtoXML.XMLAttributes map = new femtoXML.XMLAttrMap();
+	  for (int i=0; i<attrs.length; i+=2) map.put(attrs[i], attrs[i+1]); 
+	  return new Element(kind, map);
 	}
 
 }
