@@ -20,6 +20,9 @@ public class TreeFactory implements XMLTreeFactory<Node>
 {
 	/** True if entities have been expanded */
 	protected boolean expandedEntities = true;
+	
+	/** True if namespaces are being resolved during construction */
+	protected boolean resolvingNameSpaces = false;
 
 	/**
 	 * Construct a TreeFactory
@@ -40,8 +43,9 @@ public class TreeFactory implements XMLTreeFactory<Node>
 	}
 
 	public Element newElement(String kind, XMLAttributes atts)
-	{
-		return new Element(kind, atts);
+	{   Element result = new Element(kind, atts);
+	    if (resolvingNameSpaces) result.resolveNameSpace();
+		return result;
 	}
 
 	public Element newRoot()
@@ -103,6 +107,11 @@ public class TreeFactory implements XMLTreeFactory<Node>
 		return locator;
 	}
 
+	protected void setResolvingNameSpaces(boolean want)
+	{
+		this.resolvingNameSpaces = want;
+	}
+	
 	protected boolean literalOutput()
 	{
 		return literalOutput;

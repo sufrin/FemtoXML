@@ -1,6 +1,7 @@
 package femtoXML;
 
 import java.io.StringWriter;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Set;
 
@@ -55,11 +56,54 @@ public class XMLAttrMap extends LinkedHashMap<String, String> implements
   {
     return super.get(key);
   }
+  
+  /** Add key=value to the mapping; if key is an xmlns:prefix then add prefix=value to the prefix mapping. 
+   *  The namespace key "xmlns" maps to the current default namespace
+   */
+  public String put(String key, String value)
+  { if (key.equals("xmlns")) 
+    { if (nameSpaceMapping==null) nameSpaceMapping=new LinkedHashMap<String, String>();
+      nameSpaceMapping.put("xmlns", value);
+    }
+    else if (key.startsWith("xmlns:")) 
+    { if (nameSpaceMapping==null) nameSpaceMapping=new LinkedHashMap<String, String>();
+      nameSpaceMapping.put(key.substring(6), value.intern());
+    }
 
+    return super.put(key, value); // superficial value
+  }
+  
+  /** return the URN associated with the given prefix name; null if there isn't one. */
+  public String getNameSpace(String prefixName)
+  { 
+	if (nameSpaceMapping!=null) 
+    { String r = nameSpaceMapping.get(prefixName); 
+      if (r!=null) return r;
+    }
+	// if (enclosingScope!=null) System.err.println("enclosing scope: "+enclosingScope.toString()); //**
+    return enclosingScope==null ? null : enclosingScope.getNameSpace(prefixName);
+  }
  
-  /** Construct an XMLAttrMap with default properties */
+  protected XMLAttributes getEnclosingScope()
+  {  	
+	return enclosingScope;
+  }
+
+/** Construct an XMLAttrMap with default properties */
   public XMLAttrMap()
   {
+  }
+  
+  /** Mapping from prefix to URI, null represents empty */
+  protected HashMap<String, String> nameSpaceMapping = null;
+  
+  /** Parent mapping (for prefix scoping) */
+  protected XMLAttributes enclosingScope = null;
+  
+  /** Set the parent mapping (for prefix scoping)*/
+  public void setEnclosingScope(XMLAttributes parent)
+  {
+    this.enclosingScope = parent;
   }
 
   public String toString()
@@ -68,6 +112,7 @@ public class XMLAttrMap extends LinkedHashMap<String, String> implements
     FormatWriter out = new FormatWriter(sw);
     printTo(out, 0);
     out.flush();
+    if (nameSpaceMapping!=null) out.print(" xmlnamespacemapping='"+nameSpaceMapping.toString()+"'"); //**
     return sw.toString();
   }
   
@@ -107,5 +152,6 @@ public class XMLAttrMap extends LinkedHashMap<String, String> implements
         out.print(val);
       out.print(quote);
     }
+    // if (nameSpaceMapping!=null) out.print(" xmlnamespacemapping='"+nameSpaceMapping.toString()+"'"); //**
   }
 }

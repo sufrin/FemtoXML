@@ -114,6 +114,7 @@ public class App
 								+ "-c         -- ignore comments%n"
 								+ "-i         -- indent the source text without expanding entities%n"
 								+ "-x         -- do not re-encode characters in content on output (to simplify some markup tests)%n"
+								+ "-ns        -- resolve namespaces and normalize the tree"
 								+ "-enc  enc  -- output encoding is enc (default is UTF-8)%n"
 								+ "-ienc enc  -- input encoding is enc (the program deduces the encoding otherwise)%n"
 								+ "-aa        -- don't bother aligning attribute values in tags%n"
@@ -125,6 +126,8 @@ public class App
 				isAscii = true;
 			else if (arg.equals("-aa"))
 				alignParam = false;
+			else if (arg.equals("-ns"))
+				factory.setResolvingNameSpaces(true);
 			else if (arg.equals("-as"))
 				splitParam = Integer.parseInt(args[++i]);
 			else if (arg.equals("-TP"))

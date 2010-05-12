@@ -45,6 +45,7 @@ public class XMLParser<T> implements XMLHandler
 
   public void startElement(String kind, XMLAttributes atts)
   {
+	atts.setEnclosingScope(attrs.peek());        // To support early namespace resolution
     stack.push(factory.newElement(kind, atts));
     kinds.push(kind);
     lines.push(locator.lineNumber());
@@ -133,7 +134,11 @@ public class XMLParser<T> implements XMLHandler
       public void printTo(FormatWriter out, int indent) { out.println(toString()); }
       
       public String toString() { return ""; }
-    };
+
+   	  public void setEnclosingScope(XMLAttributes attrs) { }
+
+	  public String getNameSpace(String prefix) { return null; }
+	};
   }
 
   public void endDocument()
@@ -187,7 +192,7 @@ public class XMLParser<T> implements XMLHandler
   
   /**
    * Default returns an
-   * <code>XMLAttrMap</code> with <code>expandEntities</code> set appropriiately.
+   * <code>XMLAttrMap</code> with <code>expandEntities</code> set appropriately.
    */
   public XMLAttributes newAttributes(boolean expandEntitites)
   {
