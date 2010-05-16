@@ -197,7 +197,7 @@ public class App
 					testPathFeatures(root);
 				else
 					for (Node tree : root)
-						tree.printTo(out, 0);
+						tree.copy().printTo(out, 0);
 				out.println();
 				out.flush();
 			} catch (XMLSyntaxError ex)

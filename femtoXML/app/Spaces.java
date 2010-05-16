@@ -37,4 +37,11 @@ public class Spaces extends NodeImp implements Node
 	{
 		return false;
 	}
+	
+	public Node visit(Visitor v) {
+		return v.visit(this);
+	}
+	
+	public Node copy() { return new Spaces(text); }
+
 }

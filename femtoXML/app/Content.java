@@ -97,5 +97,11 @@ public class Content extends NodeImp implements Node
 	{
 		return !cdata;
 	}
+	
+	public Node visit(Visitor v) {
+		return v.visit(this);
+	}
+
+	public Node copy() { return new Content(text, cdata, expandedEntities); }
 
 }

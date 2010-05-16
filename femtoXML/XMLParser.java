@@ -138,6 +138,8 @@ public class XMLParser<T> implements XMLHandler
    	  public void setEnclosingScope(XMLAttributes attrs) { }
 
 	  public String getNameSpace(String prefix) { return null; }
+	  
+	  public XMLAttributes copy() { return this; }
 	};
   }
 

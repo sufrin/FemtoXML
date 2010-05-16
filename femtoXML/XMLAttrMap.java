@@ -26,7 +26,18 @@ public class XMLAttrMap extends LinkedHashMap<String, String> implements
 	  this.expandedEntities = expandedEntities;
 	  return this;
   }
-
+  
+  /** Make a fresh copy with identical attributes */
+  public XMLAttributes copy()
+  { XMLAttrMap r = new XMLAttrMap();
+    r.split = split;
+    r.expandedEntities = expandedEntities;
+    r.split = split;
+    for (String s : keySet()) r.put(s, get(s));
+	return r;
+    
+  }
+  
   /**
    * Largest number of key=value pairs before this is split across several lines
    * when printed

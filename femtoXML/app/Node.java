@@ -89,4 +89,39 @@ public interface Node extends Iterable<Node>, Value
 	 * 
 	 */
 	String elementName();
+	
+	/**
+	 * Methods to apply during a visit
+	 */
+	public static interface Visitor
+	{ Node visit(Element e);
+	  Node visit(PI p);
+	  Node visit(Content p);
+	  Node visit(Comment c);
+	  Node visit(Spaces s);
+	  Node visit(DOCTYPE d);
+	}
+	
+	/**
+	 * Visit this node with the appropriate method of the <code>Visitor v</code>
+	 * @return
+	 */
+	Node visit(Visitor v);
+	
+	/** 
+	 * Make a fresh, isomorphic,  copy of this node
+	 */
+	Node copy();
+	
+	/**
+	 * Default visitor that constructs an isomorphic copy
+	 */
+	public static class CopyVisitor implements Visitor
+	{     public Node visit(Element e)  { return e.copy(); }
+		  public Node visit(PI p) 		{ return p.copy(); }
+		  public Node visit(Content p)	{ return p.copy(); }
+		  public Node visit(Comment c)	{ return c.copy(); }
+		  public Node visit(Spaces s)	{ return s.copy(); }
+		  public Node visit(DOCTYPE d)	{ return d.copy(); }
+	}
 }

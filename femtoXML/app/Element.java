@@ -21,6 +21,8 @@ public class Element extends NodeImp implements Node, XMLComposite<Node>,
 
 	/** Mapping from attribute names to attributes */
 	protected XMLAttributes attrs;
+	
+	
 
 	/** Subtrees of this node */
 	protected Vector<Node> subtrees = new Vector<Node>();
@@ -209,5 +211,19 @@ public class Element extends NodeImp implements Node, XMLComposite<Node>,
 	  for (int i=0; i<attrs.length; i+=2) map.put(attrs[i], attrs[i+1]); 
 	  return new Element(kind, map);
 	}
+	
+	public Node visit(Visitor v) {
+		return v.visit(this);
+	}
+
+	public XMLAttributes getAttrs() {
+		return attrs;
+	}
+	
+	public Node copy() { 
+		   Element r = new Element(kind, attrs); 
+    	   for (Node n : iterator()) r.add(n.copy());
+		   return r;
+    }
 
 }

@@ -35,4 +35,6 @@ public interface XMLAttributes
   /** Get the URN that corresponds to the given prefix in the current or a surrounding scope; null if there isn't one.
   */
   String getNameSpace(String prefix);
+  
+  public XMLAttributes copy();
 }
