@@ -210,18 +210,20 @@ public class App
 	public void doRewrites(final Node root) throws UnsupportedEncodingException
 	{
 		FormatWriter out = new FormatWriter(new OutputStreamWriter(System.out, enc));
-		Expr rhs = new Expr() {
-		  public Value eval(Node article)
+		Expr<Node> rhs = new Expr<Node>() {
+		  public Node eval(Node article)
 		  { Pred<Node> isAuthor = isElementMatching("author");
 			Cursor<Node> auth = article.prefixCursor().filter(isAuthor);
 			Cursor<Node> body = article.iterator().filter(isAuthor.not());
 			Node author = null;
 			if (auth.hasNext()) author = auth.next();
-		    return element("book").with(element("writer").with(author.iterator())).with(body);
+		    return element("book")
+		                  .with(element("writer").with(author.iterator()))
+		    		      .with(body);
 		  }
 		};
 		Rule rule   = new Rule(isElementMatching("article"), rhs);
-		for (Node node : root.prefixCursor())
+		for (Node node : root)
 		{
 			Value v = rule.apply(node);
 			if (v==null) continue;

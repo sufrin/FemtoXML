@@ -1,7 +1,7 @@
 package femtoXML.app;
 
 /** An expression */
-public interface Expr
+public interface Expr<V>
 {
-   Value eval(Node cxt);
+   V eval(Node cxt);
 }
