@@ -42,7 +42,8 @@
         debuglevel="lines,vars,source"
         classpath="${CLASSPATH}"
         source="1.5"
-        encoding="UTF-8">
+        encoding="UTF-8"
+    	includeantruntime="false">
       <compilerarg line="-Xlint:unchecked"/>
       <include name="**/*.java"/>
     </javac>

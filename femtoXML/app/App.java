@@ -193,6 +193,7 @@ public class App
 				Element root = (Element) parser.getTree();
 				if (rewrite)
 					doRewrites(root);
+				else
 				if (testPath)
 					testPathFeatures(root);
 				else
@@ -210,25 +211,31 @@ public class App
 	public void doRewrites(final Node root) throws UnsupportedEncodingException
 	{
 		FormatWriter out = new FormatWriter(new OutputStreamWriter(System.out, enc));
-		Expr<Node> rhs = new Expr<Node>() {
-		  public Node eval(Node article)
-		  { Pred<Node> isAuthor = isElementMatching("author");
-			Cursor<Node> auth = article.prefixCursor().filter(isAuthor);
-			Cursor<Node> body = article.iterator().filter(isAuthor.not());
-			Node author = null;
-			if (auth.hasNext()) author = auth.next();
-		    return element("book")
-		                  .with(element("writer").with(author.iterator()))
-		    		      .with(body);
-		  }
+		
+		/**
+		 *  This rule matches <article> ... <author> author details </author> ... </article>
+		 *  and rewrites it as
+		 *  <book> <writer> author details </writer> ... ... </book>
+		 */
+		Rule rule = new Rule(isElementMatching("article"))
+		{ public Node rewrite(Node article)
+		  { Cursor<Node> authElement = article.body().filter(isElementMatching("author"));
+		    for (Node author: authElement)
+		        return element("book")
+                       .with(element("writer").with(author.body()))
+		               .with(article.iterator().filter(notEqual(author)));
+		    return null;
+		  }			
 		};
-		Rule rule   = new Rule(isElementMatching("article"), rhs);
+		
+		/**
+		 *  This applies the rule to all the nodes read from the input
+		 */
 		for (Node node : root)
 		{
 			Value v = rule.apply(node);
 			if (v==null) continue;
 			v.printTo(out, 0);
-			break;
 		}
 		out.flush();
 		out.close();

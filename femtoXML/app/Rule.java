@@ -1,11 +1,15 @@
 package femtoXML.app;
 
-public class Rule
+/*
+ *  A rule is a guarded template.
+ *
+ */
+public abstract class Rule
 { Pred<Node> guard;
-  Expr<Node>       result;
-  public     Rule(Pred<Node> guard, Expr<Node> result) { this.guard=guard; this.result=result; }
-  public     Value apply(Node target) 
+  abstract public Node rewrite(Node target);
+  public     Rule(Pred<Node> guard) { this.guard=guard; }
+  public     Node apply(Node target) 
   {
-	  return guard.pass(target) ? (Node) result.eval(target) : null;
+	  return guard.pass(target) ? rewrite(target) : null;
   }
 }

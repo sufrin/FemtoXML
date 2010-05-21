@@ -28,6 +28,11 @@ public abstract class NodeImp implements Node, Iterable<Node>
 		return Nil;
 	}
 
+	public Cursor<Node> body()
+	{
+		return iterator();
+	}
+
 	/** Most trees are not elements: this yields false */
 	public boolean isElement()
 	{

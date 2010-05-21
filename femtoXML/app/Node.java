@@ -73,6 +73,11 @@ public interface Node extends Iterable<Node>, Value
 	 * @return the immediate subtrees of this node if there are any
 	 */
 	Cursor<Node> iterator();
+	
+	/**
+	 * @return the immediate subtrees of this node if there are any
+	 */
+	Cursor<Node> body();
 
 	/**
 	 * @return the path back to the root

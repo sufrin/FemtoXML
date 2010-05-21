@@ -36,6 +36,15 @@ public class NodePred
 		};
 	}
 
+	/** Satisfied by nodes other than n */
+	static public Pred<Node> notEqual(final Node n)
+	{
+		return new Pred<Node>()
+		{ public boolean pass(Node node) 
+		  { return node!=n; }
+		};
+	}
+
 	/** Satisfied by nodes with the given <code>name</code> */
 	static public Pred<Node> isElement()
 	{
