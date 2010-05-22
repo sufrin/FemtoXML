@@ -14,6 +14,8 @@ import femtoXML.XMLScanner;
 import femtoXML.XMLSyntaxError;
 import static femtoXML.app.NodePred.*;
 import static femtoXML.app.Element.*;
+import static femtoXML.app.Cursor.*;
+
 
 /**
  * Example of a <code>femtoXML</code> application. Its main useful
@@ -217,8 +219,8 @@ public class App
 		 *  and rewrites it as
 		 *  <blog> <writer> author details </writer> ... ... </blog>
 		 */
-		Rule rule1 = new Rule(isElementMatching("article"))
-		{ public Node eval(Node article)
+		Rule rule1 = new SimpleRule(isElementMatching("article"))
+		{ public Node generateOne(Node article)
 		  { Cursor<Node> authElement = article.body().filter(isElementMatching("author"));
 		    for (Node author: authElement)
 		        return element("blog")
@@ -228,31 +230,26 @@ public class App
 		  }			
 		};
 		
-		Rule rule2 = new Rule(isElementMatching("entry"))
+		/** Transforms <date>...</date> into <dated>...</dated> */
+		final Rule dateRule = new SimpleRule(isElementMatching("date"))
 		{
-			public Node eval(Node entry)
-			  {     Pred<Node> date = isElementMatching("date");
-			        return element("blogEntry")
-	                       .with(element("dated").with(entry.body().filter(date))
-			               .with(entry.body().filter(date.not())));
+			public Node generateOne(Node dated)
+			{      return element("dated").with(dated.body());
+			}	
+		};
+		
+		Rule rule2 = new SimpleRule(isElementMatching("entry"))
+		{  public Node generateOne(Node entry)
+			  {     return element("blogEntry")
+	                       .with(entry.body().map(dateRule))
+			               .with(entry.body().filter(dateRule.not()));
 			  }		
 		};
 		
+		
 		Rule rule = rule1.orElse(rule2);
-		
-		
-	    // for (Node v : root.breadthCursor(rule.getGuard())) { out.println(); v.printTo(out, 0); out.println("\n------------"); }
-
-		out.println("\n------------"); 
-		/**
-		 *  This applies the rule to all the nodes read from the input
-		 */
-		for (Node node : root.breadthCursor(rule.getGuard()))
-		{
-			Value v = rule.apply(node);
-			if (v==null) continue;
-			v.printTo(out, 0);
-		}
+	    /** Construct the new output document and print it */
+		element("collection").with(root.breadthCursor(rule).map(rule)).printTo(out, 0);
 		out.flush();
 		out.close();
 	}

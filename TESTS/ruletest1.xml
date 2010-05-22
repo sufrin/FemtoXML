@@ -1,12 +1,13 @@
 <?xml version="1.0" encoding="UTF8" ?>
 <collection>
    <article>
-     <author>Bernard Sufrin</author>
+     
      <entry>
         <p>
            This is an entry inside an article
         </p>
      </entry>
+     <author>Bernard Sufrin</author>
      <entry>
         <p>
            This is a second entry inside an article
@@ -17,5 +18,11 @@
       <p>
         This is an entry outside an article
       </p>
+   </entry>
+   <entry>
+      <p>
+        This is a dated entry outside an article
+      </p>
+      <date>Today</date>
    </entry>
 </collection>

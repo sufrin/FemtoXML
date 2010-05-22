@@ -193,6 +193,8 @@ public class Element extends NodeImp implements Node, XMLComposite<Node>,
 		return attrs == null ? null : attrs.get(attrName);
 	}
 	
+	/////////////////////////////////////////// CONVENIENCE METHODS //////////////////////////////////
+	
 	/** Add a node by hand */
 	public Element with(Node t)
 	{ add(t);
@@ -202,6 +204,14 @@ public class Element extends NodeImp implements Node, XMLComposite<Node>,
 	/** Add a collection of nodes by hand */
 	public Element with(Iterable<Node> c)
 	{ for (Node n : c) add(n);
+      return this;	 
+	}
+	
+	/** Add a collection of collections of nodes by hand */
+	public Element with(Cursor<Cursor<Node>> its)
+	{ for (Cursor<Node> it : its) 
+		  for (Node n: it)
+			  add(n);
       return this;	 
 	}
 	

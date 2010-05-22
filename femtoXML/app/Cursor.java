@@ -60,6 +60,8 @@ public abstract class Cursor<T> implements Iterator<T>, Iterable<T>
 		public Cursor<U> copy() { return new Map<T,U>(base, expr); }		
 	}
 	
+	public static <T> Cursor<T> concat(Cursor<Cursor<T>> cursors) { return new Concat<T>(cursors); }
+	
 	/** Catenate the cursors from a stream of cursors. */
 	public static class Concat<T> extends Cursor<T>
 	{
@@ -258,6 +260,9 @@ public abstract class Cursor<T> implements Iterator<T>, Iterable<T>
 	{
 		return new Cat<T>(this, other);
 	}
+	
+	/** Map an expression over the elements of this cursor */
+	public <U> Cursor<U> map(Expr<T,U> expr) { return new Map<T,U>(this, expr); }
 
 	/** Hint that resources tied up in the cursor may be discarded */
 	public void close()

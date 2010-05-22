@@ -1,31 +1,33 @@
 package femtoXML.app;
 
 /*
- *  A rule is a guarded Node-valued expression. When applied
- *  at a target Node, it yields null if <code>guard.pass(target)</code> is false; otherwise 
- *  it yields the result of <code>eval(target)</code>. A rule is said
- *  to succeed at a target if its <code>apply</code> method yields a
- *  non-null value.
- *
+ *  A rule is a guarded expression that maps a target Node to a Cursor<Node>. 
+ *  When evaluated at a target, a rule first evaluates its guard's pass method at
+ *  the target. 
+ *  
+ *  If the pass method yields true then the generate method is evaluated; otherwise the
+ *  rule yields the empty Cursor.
  */
-public abstract class Rule implements Expr<Node,Node>
+public abstract class Rule extends Pred<Node> implements Expr<Node,Cursor<Node>>
 { Pred<Node> guard;
 
-  public Pred<Node> getGuard() { return guard; }
+  // public Pred<Node> getGuard() { return guard; }
   
-  /** The expression that is evaluated at targets that satisfy the guard. */
-  abstract   public Node eval(Node target);
+  /** Evaluated at targets that satisfy the guard. */
+  abstract   public Cursor<Node> generate(Node target);
   
   public     Rule(Pred<Node> guard) { this.guard=guard; }
   
-  /** Evaluate the expression of the target satisfies the guard; else return null. */
-  public     Node apply(Node target) 
+  private static Cursor<Node> Nil = new Cursor.Nil<Node>();
+  
+  /** Evaluate the expression if the target satisfies the guard; else return Nil. */
+  public     Cursor<Node> eval(Node target) 
   {
-	  return guard.pass(target) ? eval(target) : null;
+	  return guard.pass(target) ? generate(target) : Nil;
   }
   
   /** Does the target satisfy the guard? */
-  public 	boolean pass(Node target) { return guard.pass(target); }
+  public boolean pass(Node target) { return guard.pass(target); }
   
   /** Return <code>orElse(this, other)</code>. */
   public Rule orElse(Rule other) { return orElse(this, other); }
@@ -37,30 +39,21 @@ public abstract class Rule implements Expr<Node,Node>
   {
     return new Rule(a.guard.or(b.guard))
     {
-    	   public Node eval(Node target)
-    	   {
-    		   Node result = null;
-    		   if (a.pass(target)) result = a.eval(target);
-    		   if (result==null && b.pass(target)) result = b.eval(target);
+    	   public Cursor<Node> generate(Node target)
+    	   {   Cursor<Node> result;
+    		   if (a.pass(target))
+    			  result = a.eval(target); 
+    		   else 
+    		   if (b.pass(target)) 
+    			  result = b.eval(target);
+    		   else 
+    			  result = Nil;
     		   return result;
     	   }
     };
-  }
-
-  public static Rule andThen(final Rule a, final Rule b)
-  {
-    return new Rule(a.guard.or(b.guard))
-    {
-    	   public Node eval(Node target)
-    	   {
-    		   Node result = null;
-    		   if (a.pass(target)) result = a.eval(target);
-    		   if (result==null && b.pass(target)) result = b.eval(target);
-    		   return result;
-    	   }
-    };
-  } 
-  
-  public static Rule ALWAYS = new Rule(NodePred.TRUE) { public Node eval(Node t) { return t; } };
+    
+   }
+ 
+  public static Rule ALWAYS = new Rule(NodePred.TRUE) { public Cursor<Node> generate(Node t) { return new Cursor.Unit<Node>(t); } };
 
 }
