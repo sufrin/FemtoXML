@@ -3,10 +3,11 @@ package femtoXML.app;
 /**
  * Predicates and their algebra
  */
-public abstract class Pred<T>
+public abstract class Pred<T> implements Expr<T,Boolean>
 {
-
 	abstract public boolean pass(T t);
+
+    public Boolean eval(T t)	{ return pass(t); }
 
 	public Pred<T> and(final Pred<T> other)
 	{

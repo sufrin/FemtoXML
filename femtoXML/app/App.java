@@ -218,7 +218,7 @@ public class App
 		 *  <book> <writer> author details </writer> ... ... </book>
 		 */
 		Rule rule = new Rule(isElementMatching("article"))
-		{ public Node rewrite(Node article)
+		{ public Node eval(Node article)
 		  { Cursor<Node> authElement = article.body().filter(isElementMatching("author"));
 		    for (Node author: authElement)
 		        return element("book")

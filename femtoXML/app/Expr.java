@@ -1,7 +1,7 @@
 package femtoXML.app;
 
-/** An expression */
-public interface Expr<V>
+/** An expression: mapping C to V */
+public interface Expr<C,V>
 {
-   V eval(Node cxt);
+   V eval(C cxt);
 }

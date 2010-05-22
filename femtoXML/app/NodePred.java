@@ -80,4 +80,8 @@ public class NodePred
 		};
 	}
 	
+	static public Pred<Node> TRUE  = Pred.TRUE();
+	static public Pred<Node> FALSE = Pred.FALSE();
+
+	
 }
