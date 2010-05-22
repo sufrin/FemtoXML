@@ -1,12 +1,21 @@
 <?xml version="1.0" encoding="UTF8" ?>
-<article xmlns:art="uk.ac.ox.comlab.art"
-         xmlns="uk.ac.ox.comlab.default">
-  <author>Bernard Sufrin</author>
-  <art:p>
-  This is an article
-  </art:p>
-  <tart:p xmlns:tart="ox.tart">
-  This is an article
-  </tart:p>
-</article>
-
+<collection>
+   <article>
+     <author>Bernard Sufrin</author>
+     <entry>
+        <p>
+           This is an entry inside an article
+        </p>
+     </entry>
+     <entry>
+        <p>
+           This is a second entry inside an article
+        </p>
+     </entry>
+   </article>
+   <entry>
+      <p>
+        This is an entry outside an article
+      </p>
+   </entry>
+</collection>

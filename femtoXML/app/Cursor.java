@@ -48,6 +48,45 @@ public abstract class Cursor<T> implements Iterator<T>, Iterable<T>
 			return t.next();
 		}
 	}
+	
+	public static class Map<T,U> extends Cursor<U>
+	{
+		Cursor<T> base;
+		Expr<T,U> expr;
+		public Map(Cursor<T> base, Expr<T,U> expr) {this.base=base; this.expr = expr; }
+		
+		public boolean hasNext() { return base.hasNext(); }
+		public U next() { return expr.eval(base.next()); }
+		public Cursor<U> copy() { return new Map<T,U>(base, expr); }		
+	}
+	
+	/** Catenate the cursors from a stream of cursors. */
+	public static class Concat<T> extends Cursor<T>
+	{
+		Cursor<Cursor<T>> sources;
+		Cursor<T>         current = null;
+		
+		public Concat(Cursor<Cursor<T>> sources) { this.sources=sources; if (sources.hasNext()) current=sources.next(); }
+		
+		public boolean hasNext()
+		{
+			while (current!=null)
+				  if (current.hasNext()) 
+					  return true;
+				  else
+					  current=sources.hasNext() ? sources.next() : null;
+		   // current == null
+		   return false;
+		}
+		
+		public Cursor<T> copy() { return new Concat<T>(sources.copy()); }
+		
+		public T next()
+		{
+			return current.next();
+		}
+		
+	}
 
 	/**
 	 * abstract class that implements filtering; needs

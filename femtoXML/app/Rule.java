@@ -10,6 +10,9 @@ package femtoXML.app;
  */
 public abstract class Rule implements Expr<Node,Node>
 { Pred<Node> guard;
+
+  public Pred<Node> getGuard() { return guard; }
+  
   /** The expression that is evaluated at targets that satisfy the guard. */
   abstract   public Node eval(Node target);
   

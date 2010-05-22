@@ -215,23 +215,39 @@ public class App
 		/**
 		 *  This rule matches <article> ... <author> author details </author> ... </article>
 		 *  and rewrites it as
-		 *  <book> <writer> author details </writer> ... ... </book>
+		 *  <blog> <writer> author details </writer> ... ... </blog>
 		 */
-		Rule rule = new Rule(isElementMatching("article"))
+		Rule rule1 = new Rule(isElementMatching("article"))
 		{ public Node eval(Node article)
 		  { Cursor<Node> authElement = article.body().filter(isElementMatching("author"));
 		    for (Node author: authElement)
-		        return element("book")
+		        return element("blog")
                        .with(element("writer").with(author.body()))
-		               .with(article.iterator().filter(notEqual(author)));
+		               .with(article.body().filter(notEqual(author)));
 		    return null;
 		  }			
 		};
 		
+		Rule rule2 = new Rule(isElementMatching("entry"))
+		{
+			public Node eval(Node entry)
+			  {     Pred<Node> date = isElementMatching("date");
+			        return element("blogEntry")
+	                       .with(element("dated").with(entry.body().filter(date))
+			               .with(entry.body().filter(date.not())));
+			  }		
+		};
+		
+		Rule rule = rule1.orElse(rule2);
+		
+		
+	    // for (Node v : root.breadthCursor(rule.getGuard())) { out.println(); v.printTo(out, 0); out.println("\n------------"); }
+
+		out.println("\n------------"); 
 		/**
 		 *  This applies the rule to all the nodes read from the input
 		 */
-		for (Node node : root)
+		for (Node node : root.breadthCursor(rule.getGuard()))
 		{
 			Value v = rule.apply(node);
 			if (v==null) continue;

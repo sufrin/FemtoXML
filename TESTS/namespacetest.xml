@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF8" ?>
+<article xmlns:art="uk.ac.ox.comlab.art"
+         xmlns="uk.ac.ox.comlab.default">
+  <author>Bernard Sufrin</author>
+  <art:p>
+  This is an article
+  </art:p>
+  <tart:p xmlns:tart="ox.tart">
+  This is an article
+  </tart:p>
+</article>
+
+
