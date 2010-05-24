@@ -1,6 +1,7 @@
 package femtoXML.app;
 
-/*  $Id$
+/**
+ *  $Id$
  * 
  *  A rule is a guarded expression that maps a target Node to a Cursor<Node>. 
  *  When evaluated at a target, a rule first evaluates its guard's pass method at

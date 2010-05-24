@@ -5,7 +5,7 @@ import femtoXML.FormatWriter;
 /**
  * Supertype of all tree nodes.
  * 
- * @author sufrin
+ * $Id$
  * 
  */
 public interface Node extends Iterable<Node>
