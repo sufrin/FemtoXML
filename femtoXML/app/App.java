@@ -218,8 +218,8 @@ public class App
 		 *  and rewrites it as
 		 *  <blog> <writer> author details </writer> ... ... </blog>
 		 */
-		Rule rule1 = new SimpleRule(isElementMatching("article"))
-		{ public Node generateOne(Node article)
+		Template rule1 = new SimpleTemplate(isElementMatching("article"))
+		{ public Node genNode(Node article)
 		  { Stream<Node> authElement = article.body().filter(isElementMatching("author"));
 		    for (Node author: authElement)
 		        return element("blog")
@@ -230,15 +230,15 @@ public class App
 		};
 		
 		/** Transforms <date>...</date> into <dated>...</dated> */
-		final Rule dateRule = new SimpleRule(isElementMatching("date"))
+		final Template dateRule = new SimpleTemplate(isElementMatching("date"))
 		{
-			public Node generateOne(Node dated)
+			public Node genNode(Node dated)
 			{      return element("dated").with(dated.body());
 			}	
 		};
 		
-		Rule rule2 = new SimpleRule(isElementMatching("entry"))
-		{  public Node generateOne(Node entry)
+		Template rule2 = new SimpleTemplate(isElementMatching("entry"))
+		{  public Node genNode(Node entry)
 			  {     return element("blogEntry")
 	                       .with(entry.body().map(dateRule))
 			               .with(entry.body().filter(dateRule.not()));
@@ -246,9 +246,9 @@ public class App
 		};
 		
 		
-		Rule rule = rule1.orElse(rule2);
+		Template template = rule1.orElse(rule2);
 	    /** Construct the new output document and print it */
-		element("collection").with(root.breadthCursor(rule).map(rule)).printTo(out, 0);
+		element("collection").with(root.breadthCursor(template).map(template)).printTo(out, 0);
 		out.flush();
 		out.close();
 	}
