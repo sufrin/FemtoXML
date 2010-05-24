@@ -1,7 +1,7 @@
 package femtoXML.app;
 
 /**
- * $Revision: $
+ * $Id$
  * @author sufrin
  *
  */

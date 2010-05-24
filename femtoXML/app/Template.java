@@ -8,7 +8,7 @@ package femtoXML.app;
  *  If the pass method yields true then the generate method is evaluated; otherwise the
  *  rule yields the empty Cursor.
  *  
- *  $Revision: $
+ *  $Rev: $
  */
 public abstract class Template extends Pred<Node> implements Expr<Node,Stream<Node>>
 { Pred<Node> guard;
