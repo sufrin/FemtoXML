@@ -17,7 +17,7 @@ import static femtoXML.app.Element.*;
 
 
 /**
- * $Id: $
+ * $Id: $ 
  * 
  * Example of a <code>femtoXML</code> application. Its main useful
  * function is to pretty-print its input XML files onto the standard
