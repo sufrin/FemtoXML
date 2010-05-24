@@ -49,40 +49,40 @@ public interface Node extends Iterable<Node>, Value
 	 * @return all the subtrees of this node if there are any (depth
 	 *         first prefix order)
 	 */
-	Cursor<Node> prefixCursor();
+	Stream<Node> prefixCursor();
 
 	/**
 	 * @return all the subtrees of this node if there are any (breadth
 	 *         first order)
 	 */
-	Cursor<Node> breadthCursor();
+	Stream<Node> breadthCursor();
 
 	/**
 	 * @return all the subtrees of this node if there are any (depth
 	 *         first prefix order)
 	 */
-	Cursor<Node> prefixCursor(Pred<Node> cutoffBelow);
+	Stream<Node> prefixCursor(Pred<Node> cutoffBelow);
 
 	/**
 	 * @return all the subtrees of this node if there are any (breadth
 	 *         first order)
 	 */
-	Cursor<Node> breadthCursor(Pred<Node> cutoffBelow);
+	Stream<Node> breadthCursor(Pred<Node> cutoffBelow);
 
 	/**
 	 * @return the immediate subtrees of this node if there are any
 	 */
-	Cursor<Node> iterator();
+	Stream<Node> iterator();
 	
 	/**
 	 * @return the immediate subtrees of this node if there are any
 	 */
-	Cursor<Node> body();
+	Stream<Node> body();
 
 	/**
 	 * @return the path back to the root
 	 */
-	Cursor<Node> pathToRoot();
+	Stream<Node> pathToRoot();
 
 	/**
 	 * @return true if it's an element

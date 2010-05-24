@@ -8,20 +8,20 @@ package femtoXML.app;
  *  If the pass method yields true then the generate method is evaluated; otherwise the
  *  rule yields the empty Cursor.
  */
-public abstract class Rule extends Pred<Node> implements Expr<Node,Cursor<Node>>
+public abstract class Rule extends Pred<Node> implements Expr<Node,Stream<Node>>
 { Pred<Node> guard;
 
   // public Pred<Node> getGuard() { return guard; }
   
   /** Evaluated at targets that satisfy the guard. */
-  abstract   public Cursor<Node> generate(Node target);
+  abstract   public Stream<Node> generate(Node target);
   
   public     Rule(Pred<Node> guard) { this.guard=guard; }
   
-  private static Cursor<Node> Nil = new Cursor.Nil<Node>();
+  private static Stream<Node> Nil = new Stream.Nil<Node>();
   
   /** Evaluate the expression if the target satisfies the guard; else return Nil. */
-  public     Cursor<Node> eval(Node target) 
+  public     Stream<Node> eval(Node target) 
   {
 	  return guard.pass(target) ? generate(target) : Nil;
   }
@@ -39,8 +39,8 @@ public abstract class Rule extends Pred<Node> implements Expr<Node,Cursor<Node>>
   {
     return new Rule(a.guard.or(b.guard))
     {
-    	   public Cursor<Node> generate(Node target)
-    	   {   Cursor<Node> result;
+    	   public Stream<Node> generate(Node target)
+    	   {   Stream<Node> result;
     		   if (a.pass(target))
     			  result = a.eval(target); 
     		   else 
@@ -54,6 +54,6 @@ public abstract class Rule extends Pred<Node> implements Expr<Node,Cursor<Node>>
     
    }
  
-  public static Rule ALWAYS = new Rule(NodePred.TRUE) { public Cursor<Node> generate(Node t) { return new Cursor.Unit<Node>(t); } };
+  public static Rule ALWAYS = new Rule(NodePred.TRUE) { public Stream<Node> generate(Node t) { return new Stream.Unit<Node>(t); } };
 
 }

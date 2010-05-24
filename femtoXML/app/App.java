@@ -14,7 +14,6 @@ import femtoXML.XMLScanner;
 import femtoXML.XMLSyntaxError;
 import static femtoXML.app.NodePred.*;
 import static femtoXML.app.Element.*;
-import static femtoXML.app.Cursor.*;
 
 
 /**
@@ -221,7 +220,7 @@ public class App
 		 */
 		Rule rule1 = new SimpleRule(isElementMatching("article"))
 		{ public Node generateOne(Node article)
-		  { Cursor<Node> authElement = article.body().filter(isElementMatching("author"));
+		  { Stream<Node> authElement = article.body().filter(isElementMatching("author"));
 		    for (Node author: authElement)
 		        return element("blog")
                        .with(element("writer").with(author.body()))

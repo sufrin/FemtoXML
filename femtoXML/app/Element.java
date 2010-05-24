@@ -97,9 +97,9 @@ public class Element extends NodeImp implements Node, XMLComposite<Node>,
 		return kind;
 	}
 
-	public Cursor<Node> iterator()
+	public Stream<Node> iterator()
 	{
-		return Cursor.appIterator(subtrees);
+		return Stream.appIterator(subtrees);
 	}
 
 	public String toString()
@@ -208,8 +208,8 @@ public class Element extends NodeImp implements Node, XMLComposite<Node>,
 	}
 	
 	/** Add a collection of collections of nodes by hand */
-	public Element with(Cursor<Cursor<Node>> its)
-	{ for (Cursor<Node> it : its) 
+	public Element with(Stream<Stream<Node>> its)
+	{ for (Stream<Node> it : its) 
 		  for (Node n: it)
 			  add(n);
       return this;	 

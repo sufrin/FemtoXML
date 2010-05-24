@@ -27,7 +27,7 @@ package femtoXML.app;
  * by calling <code>close()</code>.
  * */
 
-abstract public class Generator<T> extends Cursor<T>
+abstract public class Generator<T> extends Stream<T>
 {
 
 	SyncChan<T> chan = new SyncChan<T>(); // channel from generator to
@@ -77,7 +77,7 @@ abstract public class Generator<T> extends Cursor<T>
 	abstract public void gen();
     
 	/** Unsupported. Use reify on the original */
-	public Cursor<T> copy()
+	public Stream<T> copy()
 	{
 		throw new UnsupportedOperationException();
 	}
@@ -97,7 +97,7 @@ abstract public class Generator<T> extends Cursor<T>
 
 	public static void main(String[] arg)
 	{
-		Cursor<Integer> g = new Generator<Integer>()
+		Stream<Integer> g = new Generator<Integer>()
 		{
 			public void gen()
 			{
@@ -114,7 +114,7 @@ abstract public class Generator<T> extends Cursor<T>
 		}
 		;
 		g.close();
-		Cursor<Integer> g1 = g.copy();
+		Stream<Integer> g1 = g.copy();
 		while (g1.hasNext())
 		{
 			System.out.println(g1.next());

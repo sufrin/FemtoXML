@@ -21,14 +21,14 @@ public abstract class NodeImp implements Node, Iterable<Node>
 		return parent;
 	}
 
-	protected Cursor<Node> Nil = new Cursor.Nil<Node>();
+	protected Stream<Node> Nil = new Stream.Nil<Node>();
 
-	public Cursor<Node> iterator()
+	public Stream<Node> iterator()
 	{
 		return Nil;
 	}
 
-	public Cursor<Node> body()
+	public Stream<Node> body()
 	{
 		return iterator();
 	}
@@ -60,7 +60,7 @@ public abstract class NodeImp implements Node, Iterable<Node>
 	}
 
 	/** Returns a prefix order depth-first iterator */
-	public Cursor<Node> prefixCursor()
+	public Stream<Node> prefixCursor()
 	{
 		return prefixCursor(null);
 	}
@@ -69,19 +69,19 @@ public abstract class NodeImp implements Node, Iterable<Node>
 	 * Returns a prefix order depth-first iterator cutting off below
 	 * nodes that satisfy <code>cutoffBelow</code> if it is non-null
 	 */
-	public Cursor<Node> prefixCursor(final Pred<Node> cutoffBelow)
+	public Stream<Node> prefixCursor(final Pred<Node> cutoffBelow)
 	{
-		return new Cursor<Node>()
+		return new Stream<Node>()
 		{
 			/** Acts as a stack */
-			Cursor<Node> agenda = new Cursor.Unit<Node>(NodeImp.this);
+			Stream<Node> agenda = new Stream.Unit<Node>(NodeImp.this);
 
 			public boolean hasNext()
 			{
 				return agenda.hasNext();
 			}
 
-			public Cursor<Node> copy()
+			public Stream<Node> copy()
 			{
 				return prefixCursor(cutoffBelow);
 			}
@@ -95,14 +95,14 @@ public abstract class NodeImp implements Node, Iterable<Node>
 				// here
 				if (result.isElement()
 						&& (cutoffBelow == null || !cutoffBelow.pass(result)))
-					agenda = new Cursor.Cat<Node>(result.iterator(), agenda);
+					agenda = new Stream.Cat<Node>(result.iterator(), agenda);
 				return result;
 			}
 		};
 	}
 
 	/** Returns a breadth-first order iterator */
-	public Cursor<Node> breadthCursor()
+	public Stream<Node> breadthCursor()
 	{
 		return breadthCursor(null);
 	}
@@ -111,12 +111,12 @@ public abstract class NodeImp implements Node, Iterable<Node>
 	 * Returns a breadth-first order iterator cutting off below nodes
 	 * that satisfy <code>cutoffBelow</code> if it is non-null.
 	 */
-	public Cursor<Node> breadthCursor(final Pred<Node> cutoffBelow)
+	public Stream<Node> breadthCursor(final Pred<Node> cutoffBelow)
 	{
-		return new Cursor<Node>()
+		return new Stream<Node>()
 		{
 			/** Acts as a queue */
-			Cursor<Node> agenda = new Cursor.Unit<Node>(NodeImp.this);
+			Stream<Node> agenda = new Stream.Unit<Node>(NodeImp.this);
 
 			public boolean hasNext()
 			{
@@ -130,11 +130,11 @@ public abstract class NodeImp implements Node, Iterable<Node>
 				// Queue the subtrees unless the cutoff is here
 				if (result.isElement()
 						&& (cutoffBelow == null || !cutoffBelow.pass(result)))
-					agenda = new Cursor.Cat<Node>(agenda, result.iterator());
+					agenda = new Stream.Cat<Node>(agenda, result.iterator());
 				return result;
 			}
 
-			public Cursor<Node> copy()
+			public Stream<Node> copy()
 			{
 				return prefixCursor(cutoffBelow);
 			}
@@ -147,10 +147,10 @@ public abstract class NodeImp implements Node, Iterable<Node>
 	 * Trees)
 	 */
 
-	public Cursor<Node> pathToRoot()
+	public Stream<Node> pathToRoot()
 	{
 		final Node here = this;
-		return new Cursor<Node>()
+		return new Stream<Node>()
 		{
 			Node cursor = here;
 
@@ -166,7 +166,7 @@ public abstract class NodeImp implements Node, Iterable<Node>
 				return result;
 			}
 
-			public Cursor<Node> copy()
+			public Stream<Node> copy()
 			{
 				return pathToRoot();
 			}
