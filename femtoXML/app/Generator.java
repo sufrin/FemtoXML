@@ -12,7 +12,7 @@ package femtoXML.app;
  * 
  * <pre>
  * 
- *    Cursor&lt;Node&gt; gen = new Generator&lt;Node&gt;();
+ *    Stream&lt;Node&gt; gen = new Generator&lt;Node&gt;();
  *       {   void generate(Node n, int l) { if (!closed &amp;&amp; l&gt;K) { put(n); generate(n.left, l+1); generate(n.right, l+1); } }
  *           
  *           public void gen() { generate(root, 0); }
