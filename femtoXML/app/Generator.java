@@ -11,13 +11,13 @@ package femtoXML.app;
  * more than K levels below the root.
  * 
  * <pre>
- * &lt;code&gt;
+ * 
  *    Cursor&lt;Node&gt; gen = new Generator&lt;Node&gt;();
  *       {   void generate(Node n, int l) { if (!closed &amp;&amp; l&gt;K) { put(n); generate(n.left, l+1); generate(n.right, l+1); } }
  *           
  *           public void gen() { generate(root, 0); }
  *       };
- * &lt;/code&gt;
+ * 
  * </pre>
  * 
  * The implementation is unbuffered: each <code>put</code> in the
@@ -28,12 +28,11 @@ package femtoXML.app;
  * */
 
 abstract public class Generator<T> extends Stream<T>
-{
-
-	SyncChan<T> chan = new SyncChan<T>(); // channel from generator to
-											// iterator
+{   SyncChan<T> chan = new SyncChan<T>(); // channel from generator to iterator
 	Thread thread = null;
 	Runnable body = null;
+	/** Starts false; becomes true when the stream is closed. */
+	protected boolean closed = false;
 
 	/**
 	 * Construct an instance of the generator and start generating
@@ -47,27 +46,29 @@ abstract public class Generator<T> extends Stream<T>
 			{
 				try
 				{
-					gen();
+			      gen();
 				} catch (SyncChan.Closed e)
 				{
 				}
 				chan.close();
+				closed = true;
 			}
 		};
 		thread = new Thread(body);
-		System.err.println("Starting " + this);
+		//System.err.println("Starting " + this);
 		thread.start();
 	}
 
 	public void close()
 	{
 		chan.close();
+		closed = true; 
 	}
 
 	/** Generate an element */
 	protected void put(T t)
 	{
-		chan.write(t);
+		try { chan.write(t); } catch (SyncChan.Closed ex) { closed = true; }
 	}
 
 	/**
@@ -76,7 +77,7 @@ abstract public class Generator<T> extends Stream<T>
 	 */
 	abstract public void gen();
     
-	/** Unsupported. Use reify on the original */
+	/** Unsupported. Use <code>vector()</code> on the original */
 	public Stream<T> copy()
 	{
 		throw new UnsupportedOperationException();

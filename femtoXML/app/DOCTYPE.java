@@ -3,7 +3,7 @@ package femtoXML.app;
 import femtoXML.FormatWriter;
 
 /**
- * Represents a <code>DOCTYPE</code> declaration.
+ * Represents an <i>uninterpreted</i> <code>DOCTYPE</code> declaration.
  * 
  * @author sufrin
  * 
@@ -24,7 +24,7 @@ public class DOCTYPE extends NodeImp implements Node
 	}
 
 	/**
-	 * Outputs the text of this PI.
+	 * Outputs the text of this DOCTYPE declaration.
 	 * 
 	 */
 	public void printTo(FormatWriter out, int indent)
