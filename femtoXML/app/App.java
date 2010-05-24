@@ -36,7 +36,7 @@ import static femtoXML.app.Element.*;
  * constructed later.
  * </p>
  * 
- * @author sufrin ($Revision$)
+ * $Id: $
  * 
  */
 public class App

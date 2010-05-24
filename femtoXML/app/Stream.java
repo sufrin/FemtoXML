@@ -5,11 +5,12 @@ import static java.util.Arrays.*;
 import java.util.*;
 
 /**
+ * $Id$
+ * 
  * General purpose toolkit for working with iterator-like structures.
  * A <code>Stream</code> is an iterator with a few derived methods. It
  * doesn't implement <code>remove</code>.
  * 
- * $Revision: $
  */
 public abstract class Stream<T> implements Iterator<T>, Iterable<T>
 {

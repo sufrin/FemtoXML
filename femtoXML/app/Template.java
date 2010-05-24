@@ -1,6 +1,7 @@
 package femtoXML.app;
 
-/*
+/*  $Id$
+ * 
  *  A rule is a guarded expression that maps a target Node to a Cursor<Node>. 
  *  When evaluated at a target, a rule first evaluates its guard's pass method at
  *  the target. 
@@ -8,7 +9,6 @@ package femtoXML.app;
  *  If the pass method yields true then the generate method is evaluated; otherwise the
  *  rule yields the empty Cursor.
  *  
- *  $Rev: $
  */
 public abstract class Template extends Pred<Node> implements Expr<Node,Stream<Node>>
 { Pred<Node> guard;
