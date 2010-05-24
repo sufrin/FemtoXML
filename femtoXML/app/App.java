@@ -17,6 +17,8 @@ import static femtoXML.app.Element.*;
 
 
 /**
+ * $Id: $
+ * 
  * Example of a <code>femtoXML</code> application. Its main useful
  * function is to pretty-print its input XML files onto the standard
  * output stream, but it can also transcode files, expand internal
@@ -35,8 +37,6 @@ import static femtoXML.app.Element.*;
  * the parser that is passed to the <code>XMLScanner</code>
  * constructed later.
  * </p>
- * 
- * $Id: $
  * 
  */
 public class App
@@ -218,7 +218,7 @@ public class App
 		 *  and rewrites it as
 		 *  <blog> <writer> author details </writer> ... ... </blog>
 		 */
-		Template rule1 = new SimpleTemplate(isElementMatching("article"))
+		Template rule1 = new NodeTemplate(isElementMatching("article"))
 		{ public Node genNode(Node article)
 		  { Stream<Node> authElement = article.body().filter(isElementMatching("author"));
 		    for (Node author: authElement)
@@ -230,14 +230,14 @@ public class App
 		};
 		
 		/** Transforms <date>...</date> into <dated>...</dated> */
-		final Template dateRule = new SimpleTemplate(isElementMatching("date"))
+		final Template dateRule = new NodeTemplate(isElementMatching("date"))
 		{
 			public Node genNode(Node dated)
 			{      return element("dated").with(dated.body());
 			}	
 		};
 		
-		Template rule2 = new SimpleTemplate(isElementMatching("entry"))
+		Template rule2 = new NodeTemplate(isElementMatching("entry"))
 		{  public Node genNode(Node entry)
 			  {     return element("blogEntry")
 	                       .with(entry.body().map(dateRule))
