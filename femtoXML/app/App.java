@@ -252,6 +252,16 @@ public class App
 		out.flush();
 		out.close();
 	}
+	
+	/** The value of a named attribute of a target; or a default value if there's no such attribute. */
+	public static Expr<Node,String> attrExpr(final String attr, final String defValue)
+	{   return new Expr<Node,String>()
+		{   public String eval(Node target)
+			{  String result = target.getAttr(attr);
+		       return result==null ? defValue : result;
+			}
+		};
+	}
 
 
 	// ///////////////////////// PATH FEATURES TESTBED
