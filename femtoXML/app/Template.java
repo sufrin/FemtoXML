@@ -21,7 +21,7 @@ public abstract class Template extends Pred<Node> implements Expr<Node,Stream<No
   
   public     Template(Pred<Node> guard) { this.guard=guard; }
   
-  private static Stream<Node> Nil = new Stream.Nil<Node>();
+  protected static Stream<Node> Nil = new Stream.Nil<Node>();
   
   /** Evaluate the expression if the target satisfies the guard; else return Nil. */
   public     Stream<Node> eval(Node target) 
@@ -57,6 +57,11 @@ public abstract class Template extends Pred<Node> implements Expr<Node,Stream<No
     
    }
  
+  /** A template that always returns its target as a singleton stream. */
   public static Template ALWAYS = new Template(NodePred.TRUE) { public Stream<Node> gen(Node t) { return new Stream.Unit<Node>(t); } };
+  /** A template that always returns the empty stream */
+  public static Template EMPTY = new Template(NodePred.TRUE)  { public Stream<Node> gen(Node t) { return Nil; } };
+  /** A template that always fails */
+  public static Template NEVER = new Template(NodePred.FALSE) { public Stream<Node> gen(Node t) { return Nil; } };
 
 }

@@ -214,11 +214,11 @@ public class App
 		FormatWriter out = new FormatWriter(new OutputStreamWriter(System.out, enc));
 		
 		/**
-		 *  This rule matches <article> ... <author> author details </author> ... </article>
+		 *  This template matches <article> ... <author> author details </author> ... </article>
 		 *  and rewrites it as
 		 *  <blog> <writer> author details </writer> ... ... </blog>
 		 */
-		Template rule1 = new NodeTemplate(isElementMatching("article"))
+		Template template1 = new NodeTemplate(isElementMatching("article"))
 		{ public Node genNode(Node article)
 		  { Stream<Node> authElement = article.body().filter(isElementMatching("author"));
 		    for (Node author: authElement)
@@ -237,7 +237,7 @@ public class App
 			}	
 		};
 		
-		Template rule2 = new NodeTemplate(isElementMatching("entry"))
+		Template template2 = new NodeTemplate(isElementMatching("entry"))
 		{  public Node genNode(Node entry)
 			  {     return element("blogEntry")
 	                       .with(entry.body().map(dateRule))
@@ -246,7 +246,7 @@ public class App
 		};
 		
 		
-		Template template = rule1.orElse(rule2);
+		Template template = template1.orElse(template2);
 	    /** Construct the new output document and print it */
 		element("collection").with(root.breadthCursor(template).map(template)).printTo(out, 0);
 		out.flush();
