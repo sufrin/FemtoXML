@@ -60,10 +60,11 @@ public abstract class Stream<T> implements Iterator<T>, Iterable<T>
                 
                 public boolean hasNext() { return base.hasNext(); }
                 public U next() { return expr.eval(base.next()); }
-                public Stream<U> copy() { return new Map<T,U>(base, expr); }            
+                public Stream<U> copy() { return new Map<T,U>(base, expr); } 
         }
         
         public static <T> Stream<T> concat(Stream<Stream<T>> cursors) { return new Concat<T>(cursors); }
+        public static <T> Stream<T> flatten(Stream<Stream<T>> cursors) { return new Concat<T>(cursors); }
         
         /** Catenate the cursors from a stream of cursors. */
         public static class Concat<T> extends Stream<T>
@@ -264,8 +265,14 @@ public abstract class Stream<T> implements Iterator<T>, Iterable<T>
                 return new Cat<T>(this, other);
         }
         
+        /** Catenate this cursor with a singleton */
+        public Stream<T> cat(T other)
+        {
+                return new Cat<T>(this, new Unit<T>(other));
+        }
+        
         /** Map an expression over the elements of this cursor */
-        public <U> Stream<U> map(Expr<T,U> expr) { return new Map<T,U>(this, expr); }
+        public <U> Map<T,U> map(Expr<T,U> expr) { return new Map<T,U>(this, expr); }
 
         /** Hint that resources tied up in the cursor may be discarded */
         public void close()

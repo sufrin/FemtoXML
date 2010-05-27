@@ -214,6 +214,19 @@ public class Element extends NodeImp implements Node, XMLComposite<Node>,
 			  add(n);
       return this;	 
 	}
+	/** Add the first of a collection of nodes by hand */
+	public Element withFirst(Iterable<Node> c)
+	{ for (Node n : c) { add(n); return this; }
+      return this;	 
+	}
+	
+	/** Add the first of a collection of collections of nodes by hand */
+	public Element withFirst(Stream<Stream<Node>> its)
+	{ for (Stream<Node> it : its) 
+		  for (Node n: it)
+		      { add(n); return this; }
+      return this;	 
+	}
 	
 	/** Utility method to construct an element by hand */
 	public static Element element(String kind, String ... attrs) 

@@ -14,6 +14,7 @@ import femtoXML.XMLScanner;
 import femtoXML.XMLSyntaxError;
 import static femtoXML.app.NodePred.*;
 import static femtoXML.app.Element.*;
+import static femtoXML.app.Stream.*;
 
 
 /**
@@ -220,31 +221,45 @@ public class App
 		 */
 		Template template1 = new NodeTemplate(isElementMatching("article"))
 		{ public Node genNode(Node article)
-		  { Stream<Node> authElement = article.body().filter(isElementMatching("author"));
-		    for (Node author: authElement)
+		  { for (Node author: article.body().filter(isElementMatching("author")))
 		        return element("blog")
                        .with(element("writer").with(author.body()))
 		               .with(article.body().filter(notEqual(author)));
 		    return null;
 		  }			
 		};
-		
+
+		final Expr<Node, String> dateAttr = attrExpr("date", "unknown");
+
 		/** Transforms <date>...</date> into <dated>...</dated> */
 		final Template dateRule = new NodeTemplate(isElementMatching("date"))
-		{
-			public Node genNode(Node dated)
-			{      return element("dated").with(dated.body());
-			}	
-		};
+		{  public Node genNode(Node dated) { return element("dated").with(dated.body()); }};
+		
+		final Template defaultDate = new NodeTemplate(TRUE)
+		{  public Node genNode(Node target) { return element("dated").with(new Content(dateAttr.eval(target))); }};
+		
 		
 		Template template2 = new NodeTemplate(isElementMatching("entry"))
-		{  public Node genNode(Node entry)
+		{  
+		   public Node genNode(Node entry)
 			  {     return element("blogEntry")
-	                       .with(entry.body().map(dateRule))
+	                       .withFirst(entry.body().map(dateRule).cat(entry.body().map(defaultDate)))
 			               .with(entry.body().filter(dateRule.not()));
 			  }		
 		};
+
+		Template template3 = new NodeTemplate(isElementMatching("entry"))
+		{  
+		   public Node genNode(Node entry)
+			  {     for (Node date : flatten(entry.body().map(dateRule).cat(entry.body().map(defaultDate))))
+			        return element("blogEntry")
+	                       .with(date)
+			               .with(entry.body().filter(dateRule.not()));
+			        return null;
+			  }		
+		};
 		
+
 		
 		Template template = template1.orElse(template2);
 	    /** Construct the new output document and print it */
