@@ -12,6 +12,21 @@ public class NodePred
 		};
 	}
 	
+	/** Satisfied by nodes whose names match patterns[0]/patterns[1]/... */
+	static public Pred<Node> isPath(final String ... patterns)
+	{
+		return new Pred<Node>()
+		{ public boolean pass(Node node) 
+		  { if (node.isElement())
+			{ for (int i=patterns.length-1; i>=0; i--)
+				  if (node.elementName().equals(patterns[i])) node = node.getParent(); else return false; 	
+			  return true;
+			}
+		    else return false;
+		  }
+		};
+	}
+	
 	/** Satisfied by elements with named attributes that match the given regular expression <code>pattern</code> */
 	static public Pred<Node> hasAttr(final String attrName, final String pattern)
 	{
