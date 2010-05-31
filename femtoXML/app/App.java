@@ -16,9 +16,8 @@ import static femtoXML.app.NodePred.*;
 import static femtoXML.app.Element.*;
 import static femtoXML.app.Stream.*;
 
-
 /**
- * $Id$ 
+ * $Id$
  * 
  * Example of a <code>femtoXML</code> application. Its main useful
  * function is to pretty-print its input XML files onto the standard
@@ -206,56 +205,66 @@ public class App
 			}
 		}
 	}
-	
+
 	public Template elementBody(String elementName)
 	{
-	   return new Template(isElementMatching(elementName))
-	   {
-		   public Stream<Node> gen(Node elt)
-		   {
-			   return elt.body();
-		   }
-	   };
-	}
-	
-	public NodeTemplate renameElement(final String elementName, final String newName)
-	{
-	   return new NodeTemplate(isElementMatching(elementName))
-	   {
-		   public Node genNode(Node elt)
-		   {
-			   return element(newName).with(elt.body());
-		   }
-	   };
-	}
-	
-	public void doRewrites(final Node root) throws UnsupportedEncodingException
-	{
-		
-		Template tabulateCDs = new NodeTemplate(isElementMatching("catalog"))
-		{   Template titleBody  = renameElement("title",  "td");
-		    Template artistBody = renameElement("artist", "td");
-		    Template cd         = new NodeTemplate(isElementMatching("cd"))
-		    {
-		    	public Node genNode(Node cd) 
-		    	{
-		    		return element("tr").with(cd.body().filter(titleBody).cat(cd.body().filter(artistBody)));
-		    	}
-		    };
-		    
-			public Node genNode(Node catalog)
-			{   
-				return element("table", "border", "1").with(catalog.body().map(cd));
+		return new Template(isElementMatching(elementName))
+		{
+			public Stream<Node> gen(Node elt)
+			{
+				return elt.body();
 			}
 		};
-		
-		
-		FormatWriter out = new FormatWriter(new OutputStreamWriter(System.out, enc));
-		
-		element("html")
-		       .with
-		        (element("body").with(root.body().map(tabulateCDs))).printTo(out, 0);
-		
+	}
+
+	public NodeTemplate renameElement(final String elementName,
+			final String newName)
+	{
+		return new NodeTemplate(isElementMatching(elementName))
+		{
+			public Node genNode(Node elt)
+			{
+				return element(newName).with(elt.body());
+			}
+		};
+	}
+
+	/** Equivalent to the xslt transform
+	 * <pre>
+	 * <code>
+	 *  <html>
+		   <body>
+		    <table border="1">
+		    <xsl:for-each select="catalog/cd">
+		    <tr>
+		      <td><xsl:value-of select="title"/></td>
+		      <td><xsl:value-of select="artist"/></td>
+		    </tr>
+		    </xsl:for-each>
+		    </table>
+		   </body>
+		 </html>
+	 * </code>
+	 * </pre>
+	 * 
+	 */
+	public Node cdCatalogue(Node root)
+	{
+		final Template titleBody = renameElement("title", "td");
+		final Template artistBody = renameElement("artist", "td");
+
+		Template tabulateCDs = new NodeTemplate(isPath("catalog", "cd"))
+		{  public Node genNode(Node cd) {return element("tr").with(cd.body().filter(titleBody).cat(cd.body().filter(artistBody))); }};
+
+		return element("html").with(
+				element("body").with(
+						element("table", "border", "1").with(
+								root.prefixCursor(tabulateCDs).filter(tabulateCDs).map(tabulateCDs))));
+	}
+
+	public void doRewrites(final Node root) throws UnsupportedEncodingException
+	{   FormatWriter out = new FormatWriter(new OutputStreamWriter(System.out, enc));
+		cdCatalogue(root).printTo(out, 0);
 		out.flush();
 		out.close();
 	}
