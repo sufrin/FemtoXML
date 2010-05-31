@@ -196,11 +196,8 @@ public class App
 				if (rewrite)
 					doRewrites(root);
 				else
-				if (testPath)
-					testPathFeatures(root);
-				else
 					for (Node tree : root)
-						tree.copy().printTo(out, 0);
+						tree.printTo(out, 0);
 				out.println();
 				out.flush();
 			} catch (XMLSyntaxError ex)
@@ -210,190 +207,57 @@ public class App
 		}
 	}
 	
-	public void doRewrites(final Node root) throws UnsupportedEncodingException
+	public Template elementBody(String elementName)
 	{
-		FormatWriter out = new FormatWriter(new OutputStreamWriter(System.out, enc));
-		
-		/**
-		 *  This template matches <article> ... <author> author details </author> ... </article>
-		 *  and rewrites it as
-		 *  <blog> <writer> author details </writer> ... ... </blog>
-		 */
-		Template template1 = new NodeTemplate(isElementMatching("article"))
-		{ public Node genNode(Node article)
-		  { for (Node author: article.body().filter(isElementMatching("author")))
-		        return element("blog")
-                       .with(element("writer").with(author.body()))
-		               .with(article.body().filter(notEqual(author)));
-		    return null;
-		  }			
-		};
-
-		final Expr<Node, String> dateAttr = attrExpr("date", "unknown");
-
-		/** Transforms <date>...</date> into <dated>...</dated> */
-		final Template dateRule = new NodeTemplate(isElementMatching("date"))
-		{  public Node genNode(Node dated) { return element("dated").with(dated.body()); }};
-		
-		final Template defaultDate = new NodeTemplate(TRUE)
-		{  public Node genNode(Node target) { return element("dated").with(new Content(dateAttr.eval(target))); }};
-		
-		
-		Template template2 = new NodeTemplate(isElementMatching("entry"))
-		{  
-		   public Node genNode(Node entry)
-			  {     return element("blogEntry")
-	                       .withFirst(entry.body().map(dateRule).cat(entry.body().map(defaultDate)))
-			               .with(entry.body().filter(dateRule.not()));
-			  }		
-		};
-
-		Template template3 = new NodeTemplate(isElementMatching("entry"))
-		{  
-		   public Node genNode(Node entry)
-			  {     for (Node date : flatten(entry.body().map(dateRule).cat(entry.body().map(defaultDate))))
-			        return element("blogEntry")
-	                       .with(date)
-			               .with(entry.body().filter(dateRule.not()));
-			        return null;
-			  }		
-		};
-		
-
-		
-		Template template = template1.orElse(template2);
-	    /** Construct the new output document and print it */
-		element("collection").with(root.breadthCursor(template).map(template)).printTo(out, 0);
-		out.flush();
-		out.close();
+	   return new Template(isElementMatching(elementName))
+	   {
+		   public Stream<Node> gen(Node elt)
+		   {
+			   return elt.body();
+		   }
+	   };
 	}
 	
-	/** The value of a named attribute of a target; or a default value if there's no such attribute. */
-	public static Expr<Node,String> attrExpr(final String attr, final String defValue)
-	{   return new Expr<Node,String>()
-		{   public String eval(Node target)
-			{  String result = target.getAttr(attr);
-		       return result==null ? defValue : result;
+	public NodeTemplate renameElement(final String elementName, final String newName)
+	{
+	   return new NodeTemplate(isElementMatching(elementName))
+	   {
+		   public Node genNode(Node elt)
+		   {
+			   return element(newName).with(elt.body());
+		   }
+	   };
+	}
+	
+	public void doRewrites(final Node root) throws UnsupportedEncodingException
+	{
+		
+		Template tabulateCDs = new NodeTemplate(isElementMatching("catalog"))
+		{   Template titleBody  = renameElement("title",  "td");
+		    Template artistBody = renameElement("artist", "td");
+		    Template cd         = new NodeTemplate(isElementMatching("cd"))
+		    {
+		    	public Node genNode(Node cd) 
+		    	{
+		    		return element("tr").with(cd.body().filter(titleBody).cat(cd.body().filter(artistBody)));
+		    	}
+		    };
+		    
+			public Node genNode(Node catalog)
+			{   
+				return element("table", "border", "1").with(catalog.body().map(cd));
 			}
 		};
-	}
-
-
-	// ///////////////////////// PATH FEATURES TESTBED
-	// /////////////////////////
-
-	/*
-	 * Various traversals
-	 */
-	public void testPathFeatures(Node t) throws UnsupportedEncodingException
-	{
-		FormatWriter out = new FormatWriter(new OutputStreamWriter(System.out,
-				enc));
-		// Statistics for the caching: count all the tree nodes
-		long nodes = 0;
-		for (@SuppressWarnings("unused") Node node : t.prefixCursor())
-			nodes++;
-
-		// //////////////////////////////////////// Containment test
-		Pred.Cached<Node> cont = below(isElementMatching("hor.*"), 1).and(
-				containing(hasAttr("group", "border.*"))).cache();
-		for (Node node : t.prefixCursor(cont).filter(cont))
-		{
-			node.printTo(out, 0);
-			out.println();
-		}
+		
+		
+		FormatWriter out = new FormatWriter(new OutputStreamWriter(System.out, enc));
+		
+		element("html")
+		       .with
+		        (element("body").with(root.body().map(tabulateCDs))).printTo(out, 0);
+		
 		out.flush();
-		System.err.printf("With cutoff: nodes: %d; inspected: %d; missed %d%n",
-				nodes, cont.hits, cont.cachemisses);
-
-		// //////////////////////////////////////// Below tests
-		Pred.Cached<Node> pred = below(isElementMatching("col"), 1).and(
-				isElement()).cache();
-		for (Node node : t.prefixCursor().filter(pred))
-		{
-			node.printTo(out, 0);
-			out.println();
-		}
-		out.flush();
-		System.err
-				.printf(
-						"Without cutoff: nodes: %d; inspected: %d; missed %d%n------------------%n",
-						nodes, pred.hits, pred.cachemisses);
-
-		pred.hits = pred.cachemisses = 0;
-		for (Node node : t.prefixCursor(pred).filter(pred))
-		{
-			node.printTo(out, 0);
-			out.println();
-		}
-		out.flush();
-		// Statistics for the cacheing
-		System.err
-				.printf(
-						"With cutoff: nodes: %d; inspected: %d; missed %d%n------------------%n",
-						nodes, pred.hits, pred.cachemisses);
-
-		pred.hits = pred.cachemisses = 0;
-		// filtered without cutoff
-		for (Node node : t.breadthCursor().filter(pred))
-		{
-			node.printTo(out, 0);
-			out.println();
-		}
-		out.flush();
-		System.err
-				.printf(
-						"Without cutoff: nodes: %d; inspected: %d; missed %d%n------------------%n",
-						nodes, pred.hits, pred.cachemisses);
-
-		pred.hits = pred.cachemisses = 0;
-		for (Node node : t.breadthCursor(pred).filter(pred))
-		{
-			node.printTo(out, 0);
-			out.println();
-		}
-		out.flush();
-		// Statistics for the cacheing
-		System.err
-				.printf(
-						"With cutoff: nodes: %d; inspected: %d; missed %d%n------------------%n",
-						nodes, pred.hits, pred.cachemisses);
-	}
-
-	public void testPathFeaturesBasic(Node t)
-	{
-		testRecursive(t);
-		System.out.println("-------------------------");
-		for (Node node : t.prefixCursor())
-		{
-			System.out.printf("%20s    ", (node.isElement() ? "<"
-					+ ((Element) node).getKind() : node.toString()));
-			for (Node s : t.pathToRoot())
-				System.out.print(s.elementName() + "/");
-			System.out.println();
-		}
-		System.out.println("-------------------------");
-		for (Node node : t.breadthCursor())
-		{
-			System.out.printf("%20s    ", (node.isElement() ? "<"
-					+ ((Element) node).getKind() : node.toString()));
-			for (Node s : node.pathToRoot())
-				System.out.print(s.elementName() + "/");
-			System.out.println();
-		}
-	}
-
-	public void testRecursive(Node t)
-	{
-		if (t.isElement())
-		{
-			for (Node s : t.pathToRoot())
-				System.out.print(s.elementName() + "/");
-			System.out.println();
-			for (Node subtree : t)
-				testRecursive(subtree);
-		}
-
+		out.close();
 	}
 
 }
