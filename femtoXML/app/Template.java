@@ -56,6 +56,22 @@ public abstract class Template extends Pred<Node> implements Expr<Node,Stream<No
     };
     
    }
+  
+  public Template cat(Template other) { return cat(this, other); }
+  
+  /** A rule that catenates the result of <code>a</code> to that of <code>b</code>; succeeds if either succeeds. */
+  public static Template cat(final Template a, final Template b)
+  {
+    return new Template(a.guard.or(b.guard))
+    {
+    	   public Stream<Node> gen(Node target)
+    	   {   Stream<Node> result =  a.eval(target).cat(b.eval(target));
+     		   return result;
+    	   }
+    };
+    
+   }
+
  
   /** A template that always returns its target as a singleton stream. */
   public static Template ALWAYS = new Template(NodePred.TRUE) { public Stream<Node> gen(Node t) { return new Stream.Unit<Node>(t); } };

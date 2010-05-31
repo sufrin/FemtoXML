@@ -206,9 +206,9 @@ public class App
 		}
 	}
 
-	public Template elementBody(String elementName)
+	public Template selectBody(Pred<Node> pred)
 	{
-		return new Template(isElementMatching(elementName))
+		return new Template(pred)
 		{
 			public Stream<Node> gen(Node elt)
 			{
@@ -217,18 +217,17 @@ public class App
 		};
 	}
 
-	public NodeTemplate renameElement(final String elementName,
-			final String newName)
+	public NodeTemplate mapElement(Pred<Node> pred, final String elementName)
 	{
-		return new NodeTemplate(isElementMatching(elementName))
+		return new NodeTemplate(pred)
 		{
 			public Node genNode(Node elt)
 			{
-				return element(newName).with(elt.body());
+				return element(elementName).with(elt.body());
 			}
 		};
 	}
-
+	
 	/** Equivalent to the xslt transform
 	 * <pre>
 	 * <code>
@@ -250,16 +249,17 @@ public class App
 	 */
 	public Node cdCatalogue(Node root)
 	{
-		final Template titleBody = renameElement("title", "td");
-		final Template artistBody = renameElement("artist", "td");
+		final Template titleBody  = mapElement(isPath("title"),  "td");
+		final Template artistBody = mapElement(isPath("artist"), "td");
+		final Template newBody = titleBody.cat(artistBody);
 
 		Template tabulateCDs = new NodeTemplate(isPath("catalog", "cd"))
-		{  public Node genNode(Node cd) {return element("tr").with(cd.body().filter(titleBody).cat(cd.body().filter(artistBody))); }};
+		{  public Node genNode(Node cd) {return element("tr").with(cd.body().map(newBody)); }};
 
 		return element("html").with(
 				element("body").with(
 						element("table", "border", "1").with(
-								root.prefixCursor(tabulateCDs).filter(tabulateCDs).map(tabulateCDs))));
+								root.prefixCursor(tabulateCDs).map(tabulateCDs))));
 	}
 
 	public void doRewrites(final Node root) throws UnsupportedEncodingException
