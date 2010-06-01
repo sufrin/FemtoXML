@@ -249,12 +249,11 @@ public class App
 	*/
 	public Node cdCatalogue(Node root)
 	{
-		final Template titleBody  = mapElement(isPath("title"),  "td");
-		final Template artistBody = mapElement(isPath("artist"), "td");
-		final Template newBody = titleBody.cat(artistBody);
-
-		Template tabulateCDs = new NodeTemplate(isPath("catalog", "cd"))
-		{  public Node genNode(Node cd) {return element("tr").with(cd.body().map(newBody)); }};
+		final Template titleBody   = mapElement(isPath("title"),  "td");
+		final Template artistBody  = mapElement(isPath("artist"), "td");
+		final Template newBody     = titleBody.cat(artistBody);
+		final Template tabulateCDs = new NodeTemplate(isPath("catalog", "cd"))
+		               {  public Node genNode(Node cd) {return element("tr").with(cd.body().map(newBody)); }};
 
 		return element("html").with(
 				element("body").with(
