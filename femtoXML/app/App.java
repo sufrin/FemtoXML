@@ -228,25 +228,25 @@ public class App
 		};
 	}
 	
-	/** Equivalent to the xslt transform
-	 * <pre>
-	 * <code>
-	 *  <html>
-		   <body>
-		    <table border="1">
-		    <xsl:for-each select="catalog/cd">
-		    <tr>
-		      <td><xsl:value-of select="title"/></td>
-		      <td><xsl:value-of select="artist"/></td>
-		    </tr>
-		    </xsl:for-each>
-		    </table>
-		   </body>
-		 </html>
-	 * </code>
-	 * </pre>
-	 * 
-	 */
+  /** Equivalent to the xslt transform
+	* <pre>
+	* <code><!--
+	*  <html>
+	*	   <body>
+	*	    <table border="1">
+	*	    <xsl:for-each select="catalog/cd">
+	*	    <tr>
+	*	      <td><xsl:value-of select="title"/></td>
+	*	      <td><xsl:value-of select="artist"/></td>
+	*	    </tr>
+	*	    </xsl:for-each>
+	*	    </table>
+	*	   </body>
+	*	 </html>-->
+	* </code>
+	* </pre>
+	* 
+	*/
 	public Node cdCatalogue(Node root)
 	{
 		final Template titleBody  = mapElement(isPath("title"),  "td");
