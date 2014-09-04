@@ -8,7 +8,7 @@ java -jar CLASS/femtoprint.jar  \
         TESTS/bigtest.xml
 -->
 
-<interface> &anonentity;&foo; &foo;
+<interface> <!-- &anonentity;&foo; &foo; -->
   <string id='title &foo;'>
     GUI Builder Component Demo&extendDemo; foolish
   </ string>
@@ -515,6 +515,7 @@ java -jar CLASS/femtoprint.jar  \
     </tabbedpane>
   </frame>
 </interface>
+
 
 
 

@@ -8,7 +8,7 @@ function femto()
   java -jar CLASS/femtoprint.jar "$@"
 }
 
-function ------()
+function XXXXXXXXX()
 { echo "----------------------------------------------------------------"
 }
 
@@ -19,7 +19,7 @@ function test()
       echo $m
   done
   femto /dev/stdin
-  ------
+  XXXXXXXXX
 }
 
 function pretty()
@@ -28,7 +28,7 @@ function pretty()
       echo $m
   done
   femto -i /dev/stdin
-  ------
+  XXXXXXXXX
 }
 
 ################################################################################
@@ -240,13 +240,13 @@ echo 'TEST 16 (prettyprint fixpoint of a large file: bigtest.xml)'
 femto -i TESTS/bigtest.xml >/tmp/a
 femto -i /tmp/a            >/tmp/b
 diff /tmp/a /tmp/b
-------
+XXXXXXXXX
 
 echo 'TEST 17 (fixpoint of a large file: bigtest.xml)'
 femto  TESTS/bigtest.xml >/tmp/a
 femto  /tmp/a            >/tmp/b
 diff /tmp/a /tmp/b
-------
+XXXXXXXXX
 
 echo 'TEST 18 (Suppressing comments, etc.)'
 femto -c -d -p /dev/stdin<<END
@@ -263,7 +263,7 @@ femto -c -d -p /dev/stdin<<END
  &verse;
 </start>
 END
-------
+XXXXXXXXX
 
 echo 'TEST 19 (Suppressing all but doctype, with literal content output)'
 femto -c -p -x /dev/stdin<<END
@@ -279,7 +279,7 @@ femto -c -p -x /dev/stdin<<END
  &verse;
 </start>
 END
-------
+XXXXXXXXX
 
 echo 'TEST 20 (Suppressing doctype)'
 femto -d /dev/stdin<<END
@@ -295,5 +295,6 @@ femto -d /dev/stdin<<END
  &verse;
 </start>
 END
-------
+XXXXXXXXX
+
 

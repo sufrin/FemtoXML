@@ -7,7 +7,7 @@ function femto()
   java -jar CLASS/femtoprint.jar "$@"
 }
 
-function ------()
+function XXXXXXXXXXXX()
 { echo "----------------------------------------------------------------"
 }
 
@@ -18,7 +18,7 @@ function test()
       echo $m
   done
   femto /dev/stdin
-  ------
+  XXXXXXXXXXXX
 }
 
 function pretty()
@@ -27,7 +27,7 @@ function pretty()
       echo $m
   done
   femto -i /dev/stdin
-  ------
+  XXXXXXXXXXXX
 }
 
 function litcontent()
@@ -37,7 +37,7 @@ function litcontent()
       echo $m
   done
   femto -x /dev/stdin
-  ------
+  XXXXXXXXXXXX
 }
 
 ################################################################################
@@ -108,5 +108,6 @@ litcontent 'DTD 4C (From W3C Website: http://www.w3.org/TR/REC-xml/#sec-entexpan
 ]>
 <book> &example; </book>
 END
+
 
 
