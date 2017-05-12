@@ -2,93 +2,89 @@
 <!--
     $Id$
 -->
-<project name="FemtoXML" default="femtoprint.jar">
-  <property name="BUILD" value="CLASS"/>
-  <property name="TEST" value="TEST"/>
-  <property name="SRC" value="./femtoXML"/>
-  <property name="DOC" value="DOC"/>
+<project name = "FemtoXML" default = "femtoprint.jar">
+  <property name = "BUILD" value = "BUILD"/>
+  <property name = "TEST" value = "TEST"/>
+  <property name = "SRC" value = "./femtoXML"/>
+  <property name = "DOC" value = "DOC"/>
   <!-- ********************************************************* -->
-  <target name="all" depends="femtoprint.jar,femtoXML.jar,doc"/>
+  <target name = "all" depends = "femtoprint.jar,femtoXML.jar,doc"/>
   <!-- ********************************************************* -->
   <target
-      name="doc"
-      depends="compile"
-      description="Write the java documentation">
+      name        = "doc"
+      depends     = "compile"
+      description = "Write the java documentation">
     <javadoc
-        destdir="${DOC}"
-        charset="UTF8"
-        use="Yes"
-        >
-        <fileset dir="${SRC}" defaultexcludes="yes"> 
-          <include name="**/*.java"/> 
-        </fileset> 
-       
+        destdir = "${DOC}"
+        charset = "UTF8"
+        use     = "Yes">
+      <fileset dir = "${SRC}" defaultexcludes = "yes">
+        <include name = "**/*.java"/>
+      </fileset>
     </javadoc>
   </target>
   <!-- ********************************************************* -->
   <target
-      name="compile"
-      description="Compile all .java files below ${SRC}"
-      depends="prepare">
+      name        = "compile"
+      description = "Compile all .java files below ${SRC}"
+      depends     = "prepare">
     <depend
-        srcdir="${SRC}"
-        destdir="${BUILD}"
-        cache="${BUILD}/dependencies"
-        closure="true"/>
+        srcdir  = "${SRC}"
+        destdir = "${BUILD}"
+        cache   = "${BUILD}/dependencies"
+        closure = "true"/>
     <javac
-        srcdir="${SRC}"
-        destdir="${BUILD}"
-        debug="true"
-        debuglevel="lines,vars,source"
-        classpath="${CLASSPATH}"
-        source="1.5"
-        encoding="UTF-8"
-    	includeantruntime="false">
-      <compilerarg line="-Xlint:unchecked"/>
-      <include name="**/*.java"/>
+        srcdir            = "${SRC}"
+        destdir           = "${BUILD}"
+        debug             = "true"
+        debuglevel        = "lines,vars,source"
+        classpath         = "${CLASSPATH}"
+        source            = "1.5"
+        encoding          = "UTF-8"
+        includeantruntime = "false">
+      <compilerarg line = "-Xlint:unchecked"/>
+      <include name = "**/*.java"/>
     </javac>
   </target>
   <!-- ********************************************************* -->
   <target
-      name="femtoprint.jar"
-      description="Make a self-contained runnable femtoprint.jar in ${BUILD}"
-      depends="compile">
+      name        = "femtoprint.jar"
+      description = "Make a self-contained runnable femtoprint.jar in ${BUILD}"
+      depends     = "compile">
     <jar
-        basedir="${BUILD}"
-        destfile="${BUILD}/femtoprint.jar"
-        includes="**/*.class"
-        excludes="">
+        basedir  = "${BUILD}"
+        destfile = "${BUILD}/femtoprint.jar"
+        includes = "**/*.class"
+        excludes = "">
       <manifest>
-        <attribute name="Main-Class" value="femtoXML.app.App"/>
+        <attribute name = "Main-Class" value = "femtoXML.app.App"/>
       </manifest>
     </jar>
   </target>
   <!-- ********************************************************* -->
   <target
-      name="femtoXML.jar"
-      description="Make a self-contained runnable femtoXML.jar in ${BUILD}"
-      depends="compile">
+      name        = "femtoXML.jar"
+      description = "Make a self-contained runnable femtoXML.jar in ${BUILD}"
+      depends     = "compile">
     <jar
-        basedir="${BUILD}"
-        destfile="${BUILD}/femtoXML.jar"
-        includes="**/*.class"
-        excludes="femtoXML/app/*">
+        basedir  = "${BUILD}"
+        destfile = "${BUILD}/femtoXML.jar"
+        includes = "**/*.class"
+        excludes = "femtoXML/app/*">
       <manifest>
-        <attribute name="Main-Class" value="femtoXML.app.App"/>
+        <attribute name = "Main-Class" value = "femtoXML.app.App"/>
       </manifest>
     </jar>
   </target>
   <!-- ********************************************************* -->
-  <target name="prepare">
-    <mkdir dir="${BUILD}"/>
-    <mkdir dir="${DOC}"/>
+  <target name = "prepare">
+    <mkdir dir = "${BUILD}"/>
+    <mkdir dir = "${DOC}"/>
   </target>
   <!-- ********************************************************* -->
-  <target name="clean">
-    <delete dir="${BUILD}"/>
-    <delete dir="${DOC}"/>
+  <target name = "clean">
+    <delete dir = "${BUILD}"/>
+    <delete dir = "${DOC}"/>
   </target>
 </project>
-
-
 

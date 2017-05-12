@@ -24,7 +24,7 @@ final public class XMLInputReader extends Reader
   final static int        bufsize   = 1024;
   final static int        lookahead = 128;
   String   prop = System.getProperty("femtoXML.XMLInputReader.level");
-  String   level = prop==null?"info":prop;
+  String   level = prop==null?"warning":prop;
   boolean debug = "fine".equalsIgnoreCase(level);
   boolean info  = debug || "info".equalsIgnoreCase(level);  
   boolean none  = "none".equalsIgnoreCase(level);
@@ -206,4 +206,5 @@ final public class XMLInputReader extends Reader
     rawstream.close();
   }
 }
+
 
