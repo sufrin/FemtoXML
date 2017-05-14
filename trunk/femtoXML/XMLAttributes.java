@@ -36,5 +36,12 @@ public interface XMLAttributes
   */
   String getNameSpace(String prefix);
   
+  /** Put the resolved namespace identifier of into the attribute mapping.
+  */
+  public String putNameSpace(String value);
+  
+
+  
   public XMLAttributes copy();
 }
+

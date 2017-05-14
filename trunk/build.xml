@@ -39,7 +39,8 @@
         debug             = "true"
         debuglevel        = "lines,vars,source"
         classpath         = "${CLASSPATH}"
-        source            = "1.5"
+        source            = "1.7"
+        target            = "1.7"
         encoding          = "UTF-8"
         includeantruntime = "false">
       <compilerarg line = "-Xlint:unchecked"/>
@@ -87,4 +88,5 @@
     <delete dir = "${DOC}"/>
   </target>
 </project>
+
 

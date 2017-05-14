@@ -23,8 +23,8 @@ public class XMLAttrMap extends LinkedHashMap<String, String> implements
   
   public XMLAttrMap setExpandedEntities(boolean expandedEntities)
   {
-	  this.expandedEntities = expandedEntities;
-	  return this;
+          this.expandedEntities = expandedEntities;
+          return this;
   }
   
   /** Make a fresh copy with identical attributes */
@@ -34,7 +34,7 @@ public class XMLAttrMap extends LinkedHashMap<String, String> implements
     r.expandedEntities = expandedEntities;
     r.split = split;
     for (String s : keySet()) r.put(s, get(s));
-	return r;
+        return r;
     
   }
   
@@ -84,20 +84,26 @@ public class XMLAttrMap extends LinkedHashMap<String, String> implements
     return super.put(key, value); // superficial value
   }
   
+  public String putNameSpace(String value)
+  { 
+    return super.put("xmlns", value); // Resolved namespace
+  }
+  
+  
   /** return the URN associated with the given prefix name; null if there isn't one. */
   public String getNameSpace(String prefixName)
   { 
-	if (nameSpaceMapping!=null) 
+        if (nameSpaceMapping!=null) 
     { String r = nameSpaceMapping.get(prefixName); 
       if (r!=null) return r;
     }
-	// if (enclosingScope!=null) System.err.println("enclosing scope: "+enclosingScope.toString()); //**
+        // if (enclosingScope!=null) System.err.println("enclosing scope: "+enclosingScope.toString()); //**
     return enclosingScope==null ? null : enclosingScope.getNameSpace(prefixName);
   }
  
   protected XMLAttributes getEnclosingScope()
-  {  	
-	return enclosingScope;
+  {     
+        return enclosingScope;
   }
 
 /** Construct an XMLAttrMap with default properties */
@@ -166,3 +172,4 @@ public class XMLAttrMap extends LinkedHashMap<String, String> implements
     // if (nameSpaceMapping!=null) out.print(" xmlnamespacemapping='"+nameSpaceMapping.toString()+"'"); //**
   }
 }
+
