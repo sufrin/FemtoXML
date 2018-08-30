@@ -31,6 +31,7 @@ can be added to the tables.
 XML analysis can be performed with or without entity expansion, thus it
 is fairly easy to build an XML ''prettifier''. In fact the main example
 application we provide is a prettifier that constructs a complete
-''parse tree'' before outputting it.
+xml parse tree before outputting it.
 
 Bernard Sufrin, March 2006
+
